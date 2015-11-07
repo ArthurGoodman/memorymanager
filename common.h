@@ -1,13 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
-
-#include <list>
-#include <vector>
-#include <cstdlib>
-#include <memory>
-#include <cmath>
-using namespace std;
+#pragma once
 
 typedef unsigned char byte;
-
-#endif // COMMON_H
+typedef unsigned int uint;
+typedef unsigned long long ulong;

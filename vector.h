@@ -1,5 +1,6 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
+
+#include <vector>
 
 #include "common.h"
 
@@ -12,7 +13,7 @@ class Vector {
 public:
     Vector();
     Vector(const Vector &v);
-    Vector(const vector<byte> &v);
+    Vector(const std::vector<byte> &v);
 
     ~Vector();
 
@@ -26,5 +27,3 @@ public:
     int getSize() const;
     int getCapacity() const;
 };
-
-#endif // VECTOR_H

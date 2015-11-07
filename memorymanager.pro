@@ -8,9 +8,15 @@ CONFIG += c++11
 SOURCES += main.cpp \
     vector.cpp \
     memorymanager.cpp \
-    common.cpp
+    common.cpp \
+    object.cpp \
+    list.cpp \
+    hashtable.cpp
 
 HEADERS += \
     vector.h \
     memorymanager.h \
-    common.h
+    common.h \
+    object.h \
+    list.h \
+    hashtable.h

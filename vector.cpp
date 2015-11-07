@@ -1,5 +1,9 @@
 #include "vector.h"
 
+#include <memory>
+#include <cmath>
+#include <cstdlib>
+
 Vector::Vector()
     : size(0), capacity(0), data(0) {
 }
@@ -10,7 +14,7 @@ Vector::Vector(const Vector &v)
     memcpy(data, v.getData(), size);
 }
 
-Vector::Vector(const vector<byte> &v)
+Vector::Vector(const std::vector<byte> &v)
     : size(0), capacity(0), data(0) {
     allocate(v.size());
     memcpy(data, v.data(), size);
@@ -30,7 +34,7 @@ byte *Vector::allocate(int count) {
         if (!newCapacity)
             newCapacity = InitialCapacity;
 
-        newCapacity *= pow(2, max(0.0, ceil(log2(double(size + count) / newCapacity))));
+        newCapacity *= pow(2, std::max(0.0, ceil(log2(double(size + count) / newCapacity))));
 
         byte *newData = (byte *)realloc(data, newCapacity);
 
