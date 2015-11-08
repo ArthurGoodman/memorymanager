@@ -18,3 +18,7 @@ public:
 private:
     MemoryManager();
 };
+
+inline MemoryManager *MemoryManager::instance() {
+    return manager;
+}

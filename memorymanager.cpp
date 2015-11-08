@@ -2,11 +2,7 @@
 
 #include "object.h"
 
-MemoryManager *MemoryManager::manager = new MemoryManager();
-
-MemoryManager *MemoryManager::instance() {
-    return manager;
-}
+MemoryManager *MemoryManager::manager = new MemoryManager;
 
 Object *MemoryManager::allocate(int size) {
     return (Object *)memory.allocate(size);

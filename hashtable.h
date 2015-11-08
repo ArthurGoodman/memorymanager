@@ -1,16 +1,29 @@
 #pragma once
-#include "object.h"
 
-class List;
+#include "list.h"
 
+template <typename K, typename V>
 class HashTable : public Object {
-    static const int BucketsCount = 100;
+    class HashNode {
+        K key;
+        V value;
+    };
 
-    List *buckets[BucketsCount];
+    static const int TableSize = 10;
+
+    List<HashNode> **table;
     int size;
 
 public:
-    HashTable();
+    HashTable()
+        : size(0) {
+        table = new List<HashNode> *[TableSize];
 
-    int getSize();
+        for (int i = 0; i < TableSize; i++)
+            table[i] = new List<HashNode>;
+    }
+
+    int getSize() {
+        return size;
+    }
 };

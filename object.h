@@ -2,11 +2,13 @@
 
 #include "common.h"
 
+template <typename K, typename V>
 class HashTable;
 
 class Object {
     int flags;
-    HashTable *attributes;
+    int size;
+    HashTable<char *, Object *> *attributes;
 
 public:
     enum Flag {
@@ -14,11 +16,15 @@ public:
         FlagMark = 1 << 1,
     };
 
-public:
+    static void *operator new(uint size);
+    static void operator delete(void *p);
+
     Object();
+    virtual ~Object();
 
     void setFlag(Flag flag, bool value = true);
 
-    static void *operator new(uint size);
-    static void operator delete(void *p);
+    virtual void mark();
+
+    virtual ulong hash();
 };
