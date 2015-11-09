@@ -2,7 +2,10 @@
 
 #include "common.h"
 
-template <typename K, typename V>
+template <typename K>
+class HashFunction;
+
+template <typename K, typename V, typename F = HashFunction<K>>
 class HashTable;
 
 class Object {

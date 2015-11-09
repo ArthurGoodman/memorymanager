@@ -16,4 +16,8 @@ public:
     List()
         : size(0), first(0), last(0) {
     }
+
+    int getSize() const {
+        return size;
+    }
 };
