@@ -3,24 +3,15 @@
 
 #include "hashtable.h"
 
-class MyHashFunction {
-public:
-    ulong operator()(const std::string &key) const {
-        ulong value = 0;
-        memcpy(&value, key.data(), std::min(sizeof(ulong), key.length()));
-        return value;
-    }
-};
-
 int main() {
-    HashTable<std::string, int, MyHashFunction> *ht = new HashTable<std::string, int, MyHashFunction>;
+    HashTable<std::string, int> *ht = new HashTable<std::string, int>;
 
-    ht->put("lel", 1);
-    ht->put("kappa", 2);
-    ht->put("lelelerinoe", 3);
-    ht->put("lele", 4);
+    ht->put("1", 11);
+    ht->put("2", 12);
+    ht->put("3", 13);
+    ht->put("4", 14);
 
-    std::cout << ht->get("lel") << "\n";
+    std::cout << ht->get("3") << "\n";
 
     return 0;
 }

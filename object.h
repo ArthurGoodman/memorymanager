@@ -2,10 +2,9 @@
 
 #include "common.h"
 
-template <typename K>
-class HashFunction;
+#include <functional>
 
-template <typename K, typename V, typename F = HashFunction<K>>
+template <typename K, typename V, typename F = std::hash<K>>
 class HashTable;
 
 class Object {
@@ -19,8 +18,8 @@ public:
         FlagMark = 1 << 1,
     };
 
-    static void *operator new(uint size);
-    static void operator delete(void *p);
+    //static void *operator new(uint size);
+    //static void operator delete(void *p);
 
     Object();
     virtual ~Object();

@@ -3,13 +3,13 @@
 #include "memorymanager.h"
 #include "hashtable.h"
 
-void *Object::operator new(uint size) {
-    return (void *)MemoryManager::instance()->allocate(size);
-}
+//void *Object::operator new(uint size) {
+//    return (void *)MemoryManager::instance()->allocate(size);
+//}
 
-void Object::operator delete(void *p) {
-    return MemoryManager::instance()->free((Object *)p);
-}
+//void Object::operator delete(void *p) {
+//    return MemoryManager::instance()->free((Object *)p);
+//}
 
 Object::Object()
     : flags(0), attributes(0) {

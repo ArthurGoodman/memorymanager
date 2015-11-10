@@ -6,12 +6,6 @@
 
 #include <iostream>
 
-template <typename K>
-class HashFunction {
-public:
-    ulong operator()(const K &key) const;
-};
-
 template <typename K, typename V, typename F>
 class HashTable : public Object {
     class HashNode : public Object {
@@ -88,8 +82,6 @@ public:
     void put(const K &key, const V &value) {
         ulong hashValue = hashFunction(key) % HashTableSize;
 
-        std::cout << "hash: " << hashValue << "\n";
-
         HashNode *prev = 0;
         HashNode *entry = table[hashValue];
 
@@ -133,8 +125,3 @@ public:
         delete entry;
     }
 };
-
-template <typename K>
-ulong HashFunction<K>::operator()(const K &key) const {
-    return reinterpret_cast<const ulong &>(key);
-}
