@@ -7,8 +7,8 @@ class MyHashFunction {
 public:
     ulong operator()(const std::string &key) const {
         ulong value = 0;
-        memcpy(&value, key.data(), key.length());
-        return value % HashTableSize;
+        memcpy(&value, key.data(), std::min(sizeof(ulong), key.length()));
+        return value;
     }
 };
 

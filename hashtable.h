@@ -12,8 +12,6 @@ public:
     ulong operator()(const K &key) const;
 };
 
-static const int HashTableSize = 10;
-
 template <typename K, typename V, typename F>
 class HashTable : public Object {
     class HashNode : public Object {
@@ -47,6 +45,8 @@ class HashTable : public Object {
         }
     };
 
+    static const int HashTableSize = 10;
+
     F hashFunction;
     HashNode **table;
 
@@ -72,7 +72,7 @@ public:
     }
 
     V get(const K &key) const {
-        ulong hashValue = hashFunction(key);
+        ulong hashValue = hashFunction(key) % HashTableSize;
         HashNode *entry = table[hashValue];
 
         while (entry != 0) {
@@ -86,7 +86,7 @@ public:
     }
 
     void put(const K &key, const V &value) {
-        ulong hashValue = hashFunction(key);
+        ulong hashValue = hashFunction(key) % HashTableSize;
 
         std::cout << "hash: " << hashValue << "\n";
 
@@ -112,7 +112,7 @@ public:
     }
 
     void remove(const K &key) {
-        ulong hashValue = hashFunction(key);
+        ulong hashValue = hashFunction(key) % HashTableSize;
 
         HashNode *prev = 0;
         HashNode *entry = table[hashValue];
@@ -136,5 +136,5 @@ public:
 
 template <typename K>
 ulong HashFunction<K>::operator()(const K &key) const {
-    return reinterpret_cast<const ulong &>(key) % HashTableSize;
+    return reinterpret_cast<const ulong &>(key);
 }
