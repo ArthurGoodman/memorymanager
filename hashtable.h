@@ -52,11 +52,14 @@ class HashTable : public Object {
     static const int HashTableSize = 10;
 
     F hashFunction;
-    HashNode **table;
+    HashNode *table[HashTableSize];
 
 public:
     HashTable() {
-        table = new HashNode *[HashTableSize]();
+        //table = new HashNode *[HashTableSize]();
+
+        for (int i = 0; i < HashTableSize; i++)
+            table[i] = 0;
     }
 
     ~HashTable() {
@@ -72,7 +75,7 @@ public:
             table[i] = 0;
         }
 
-        delete[] table;
+        //delete[] table;
     }
 
     V get(const K &key) const {
@@ -140,7 +143,7 @@ public:
     void shiftPointers(int delta) {
         Object::shiftPointers(delta);
 
-        for(int i = 0; i < HashTableSize; i++) {
+        for (int i = 0; i < HashTableSize; i++) {
             table[i] += delta;
 
             HashNode *entry = table[i];
