@@ -2,17 +2,33 @@
 
 #include "object.h"
 
-#include <iostream>
-
 MemoryManager *MemoryManager::manager = new MemoryManager;
 
 Object *MemoryManager::allocate(int size) {
-    return (Object *)memory.allocate(size);
+    byte *oldAddress = memory.getData();
+    Object *object = (Object *)memory.allocate(size);
+    delta = memory.getData() - oldAddress;
+
+    objectCount++;
+
+    if(delta > 0)
+        shiftPointers();
+
+    return object;
 }
 
 void MemoryManager::free(Object *object) {
     object->setFlag(Object::FlagFree);
 }
 
-MemoryManager::MemoryManager() {
+int MemoryManager::getDelta() {
+    return delta;
+}
+
+MemoryManager::MemoryManager()
+    : delta(0), objectCount(0) {
+}
+
+void MemoryManager::shiftPointers() {
+    Object *objects = (Object *)memory.getData();
 }

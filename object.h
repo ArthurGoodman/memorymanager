@@ -18,8 +18,8 @@ public:
         FlagMark = 1 << 1,
     };
 
-    //static void *operator new(uint size);
-    //static void operator delete(void *p);
+    static void *operator new(uint size);
+    static void operator delete(void *p);
 
     Object();
     virtual ~Object();
@@ -29,4 +29,7 @@ public:
     virtual void mark();
 
     virtual ulong hash();
+
+    virtual void shiftPointers(int delta);
+    virtual int getSize();
 };

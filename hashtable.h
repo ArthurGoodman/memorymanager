@@ -3,8 +3,7 @@
 #include <stdexcept>
 
 #include "object.h"
-
-#include <iostream>
+#include "memorymanager.h"
 
 template <typename K, typename V, typename F>
 class HashTable : public Object {
@@ -36,6 +35,17 @@ class HashTable : public Object {
 
         void setNext(HashNode *next) {
             HashNode::next = next;
+        }
+
+        void shiftPointers(int delta) {
+            Object::shiftPointers(delta);
+
+            next += delta;
+            next->shiftPointers(delta);
+        }
+
+        int getSize() {
+            return sizeof(*this);
         }
     };
 
@@ -97,6 +107,8 @@ public:
 
         entry = new HashNode(key, value);
 
+        prev += MemoryManager::instance()->getDelta();
+
         if (prev == 0)
             table[hashValue] = entry;
         else
@@ -123,5 +135,24 @@ public:
             prev->setNext(entry->getNext());
 
         delete entry;
+    }
+
+    void shiftPointers(int delta) {
+        Object::shiftPointers(delta);
+
+        for(int i = 0; i < HashTableSize; i++) {
+            table[i] += delta;
+
+            HashNode *entry = table[i];
+
+            while (entry != 0) {
+                entry->shiftPointers(delta);
+                entry = entry->getNext();
+            }
+        }
+    }
+
+    int getSize() {
+        return sizeof(*this);
     }
 };
