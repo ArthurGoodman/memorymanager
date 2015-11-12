@@ -40,33 +40,35 @@ class HashTable : public Object {
         void shiftPointers(int delta) {
             Object::shiftPointers(delta);
 
-            next += delta;
-            next->shiftPointers(delta);
+            if (next) {
+                next += delta;
+                next->shiftPointers(delta);
+            }
         }
 
         int getSize() {
-            return sizeof(*this);
+            return sizeof(HashNode);
         }
     };
 
     static const int HashTableSize = 10;
 
     F hashFunction;
-    HashNode *table[HashTableSize];
+    HashNode **table;//[HashTableSize];
 
 public:
     HashTable() {
-        //table = new HashNode *[HashTableSize]();
+        table = new HashNode *[HashTableSize]();
 
-        for (int i = 0; i < HashTableSize; i++)
-            table[i] = 0;
+//        for (int i = 0; i < HashTableSize; i++)
+//            table[i] = 0;
     }
 
     ~HashTable() {
         for (int i = 0; i < HashTableSize; i++) {
             HashNode *entry = table[i];
 
-            while (entry != 0) {
+            while (entry) {
                 HashNode *prev = entry;
                 entry = entry->getNext();
                 delete prev;
@@ -75,14 +77,14 @@ public:
             table[i] = 0;
         }
 
-        //delete[] table;
+        delete[] table;
     }
 
     V get(const K &key) const {
         ulong hashValue = hashFunction(key) % HashTableSize;
         HashNode *entry = table[hashValue];
 
-        while (entry != 0) {
+        while (entry) {
             if (entry->getKey() == key)
                 return entry->getValue();
 
@@ -98,12 +100,12 @@ public:
         HashNode *prev = 0;
         HashNode *entry = table[hashValue];
 
-        while (entry != 0 && entry->getKey() != key) {
+        while (entry && entry->getKey() != key) {
             prev = entry;
             entry = entry->getNext();
         }
 
-        if (entry != 0) {
+        if (entry) {
             entry->setValue(value);
             return;
         }
@@ -112,7 +114,7 @@ public:
 
         prev += MemoryManager::instance()->getDelta();
 
-        if (prev == 0)
+        if (!prev)
             table[hashValue] = entry;
         else
             prev->setNext(entry);
@@ -124,15 +126,15 @@ public:
         HashNode *prev = 0;
         HashNode *entry = table[hashValue];
 
-        while (entry != 0 && entry->getKey() != key) {
+        while (entry && entry->getKey() != key) {
             prev = entry;
             entry = entry->getNext();
         }
 
-        if (entry == 0)
+        if (!entry)
             return;
 
-        if (prev == 0)
+        if (!prev)
             table[hashValue] = entry->getNext();
         else
             prev->setNext(entry->getNext());
@@ -143,19 +145,23 @@ public:
     void shiftPointers(int delta) {
         Object::shiftPointers(delta);
 
+//        table += delta;
+
         for (int i = 0; i < HashTableSize; i++) {
-            table[i] += delta;
+            if (table[i]) {
+                table[i] += delta;
 
-            HashNode *entry = table[i];
+                HashNode *entry = table[i];
 
-            while (entry != 0) {
-                entry->shiftPointers(delta);
-                entry = entry->getNext();
+                while (entry) {
+                    entry->shiftPointers(delta);
+                    entry = entry->getNext();
+                }
             }
         }
     }
 
     int getSize() {
-        return sizeof(*this);
+        return sizeof(HashTable);
     }
 };

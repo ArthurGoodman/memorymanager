@@ -50,5 +50,5 @@ void Object::shiftPointers(int delta) {
 }
 
 int Object::getSize() {
-    return sizeof(*this);
+    return sizeof(Object);
 }

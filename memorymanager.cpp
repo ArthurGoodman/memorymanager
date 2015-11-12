@@ -11,7 +11,7 @@ Object *MemoryManager::allocate(int size) {
 
     objectCount++;
 
-    if (delta > 0)
+//    if (delta > 0)
         shiftPointers();
 
     return object;
@@ -33,7 +33,7 @@ void MemoryManager::shiftPointers() {
     Object *objects = (Object *)memory.getData();
 
     for (int i = 0; i < objectCount - 1; i++) {
-        objects[i].shiftPointers(delta);
-        objects += objects[i].getSize();
+        objects->shiftPointers(delta);
+        objects += objects->getSize();
     }
 }

@@ -11,7 +11,7 @@ int main() {
     ht->put("3", 13);
     ht->put("4", 14);
 
-    std::cout << ht->get("3") << "\n";
+    std::cout << ht->get("2") << "\n";
 
     return 0;
 }
