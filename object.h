@@ -30,6 +30,6 @@ public:
 
     virtual ulong hash();
 
-    virtual void shiftPointers(int delta);
+    virtual void shiftPointers();
     virtual int getSize();
 };

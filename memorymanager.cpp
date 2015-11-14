@@ -31,7 +31,7 @@ void MemoryManager::shiftPointers() {
     byte *objects = memory.getData();
 
     for (int i = 0; i < objectCount - 1; i++) {
-        ((Object *)objects)->shiftPointers(delta);
+        ((Object *)objects)->shiftPointers();
         objects += ((Object *)objects)->getSize();
     }
 }

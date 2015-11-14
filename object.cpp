@@ -42,13 +42,11 @@ ulong Object::hash() {
     return value;
 }
 
-void Object::shiftPointers(int delta) {
-    if (attributes) {
+void Object::shiftPointers() {
+    if (attributes)
         attributes = MemoryManager::shiftPointer(attributes);
-        attributes->shiftPointers(delta);
-    }
 }
 
 int Object::getSize() {
-    return sizeof(Object);
+    return sizeof(*this);
 }

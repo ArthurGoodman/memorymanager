@@ -37,17 +37,15 @@ class HashTable : public Object {
             HashNode::next = next;
         }
 
-        void shiftPointers(int delta) {
-            Object::shiftPointers(delta);
+        void shiftPointers() {
+            Object::shiftPointers();
 
-            if (next) {
+            if (next)
                 next = MemoryManager::shiftPointer(next);
-                next->shiftPointers(delta);
-            }
         }
 
         int getSize() {
-            return sizeof(HashNode);
+            return sizeof(*this);
         }
     };
 
@@ -57,11 +55,8 @@ class HashTable : public Object {
     HashNode *table[HashTableSize];
 
 public:
-    HashTable() {
-        //table = new HashNode *[HashTableSize]();
-
-        for (int i = 0; i < HashTableSize; i++)
-            table[i] = 0;
+    HashTable()
+        : table{0} {
     }
 
     ~HashTable() {
@@ -76,8 +71,6 @@ public:
 
             table[i] = 0;
         }
-
-        //delete[] table;
     }
 
     V get(const K &key) const {
@@ -112,11 +105,13 @@ public:
 
         entry = new HashNode(key, value);
 
+        HashTable<K, V, F> *newThis = MemoryManager::shiftPointer(this);
+
         if (prev)
             prev = MemoryManager::shiftPointer(prev);
 
         if (!prev)
-            table[hashValue] = entry;
+            newThis->table[hashValue] = entry;
         else
             prev->setNext(entry);
     }
@@ -143,26 +138,15 @@ public:
         delete entry;
     }
 
-    void shiftPointers(int delta) {
-        Object::shiftPointers(delta);
+    void shiftPointers() {
+        Object::shiftPointers();
 
-        //table += delta;
-
-        for (int i = 0; i < HashTableSize; i++) {
-            if (table[i]) {
+        for (int i = 0; i < HashTableSize; i++)
+            if (table[i])
                 table[i] = MemoryManager::shiftPointer(table[i]);
-
-                HashNode *entry = table[i];
-
-                while (entry) {
-                    entry->shiftPointers(delta);
-                    entry = entry->getNext();
-                }
-            }
-        }
     }
 
     int getSize() {
-        return sizeof(HashTable);
+        return sizeof(*this);
     }
 };
