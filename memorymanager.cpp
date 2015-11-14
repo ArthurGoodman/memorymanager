@@ -2,8 +2,6 @@
 
 #include "object.h"
 
-#include <iostream>
-
 MemoryManager *MemoryManager::manager = new MemoryManager;
 
 Object *MemoryManager::allocate(int size) {
