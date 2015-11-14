@@ -41,7 +41,7 @@ class HashTable : public Object {
             Object::shiftPointers(delta);
 
             if (next) {
-                next += delta;
+                next = MemoryManager::shiftPointer(next);
                 next->shiftPointers(delta);
             }
         }
@@ -54,14 +54,14 @@ class HashTable : public Object {
     static const int HashTableSize = 10;
 
     F hashFunction;
-    HashNode **table;//[HashTableSize];
+    HashNode *table[HashTableSize];
 
 public:
     HashTable() {
-        table = new HashNode *[HashTableSize]();
+        //table = new HashNode *[HashTableSize]();
 
-//        for (int i = 0; i < HashTableSize; i++)
-//            table[i] = 0;
+        for (int i = 0; i < HashTableSize; i++)
+            table[i] = 0;
     }
 
     ~HashTable() {
@@ -77,7 +77,7 @@ public:
             table[i] = 0;
         }
 
-        delete[] table;
+        //delete[] table;
     }
 
     V get(const K &key) const {
@@ -112,7 +112,8 @@ public:
 
         entry = new HashNode(key, value);
 
-        prev += MemoryManager::instance()->getDelta();
+        if (prev)
+            prev = MemoryManager::shiftPointer(prev);
 
         if (!prev)
             table[hashValue] = entry;
@@ -145,11 +146,11 @@ public:
     void shiftPointers(int delta) {
         Object::shiftPointers(delta);
 
-//        table += delta;
+        //table += delta;
 
         for (int i = 0; i < HashTableSize; i++) {
             if (table[i]) {
-                table[i] += delta;
+                table[i] = MemoryManager::shiftPointer(table[i]);
 
                 HashNode *entry = table[i];
 

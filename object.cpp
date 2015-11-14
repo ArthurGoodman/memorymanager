@@ -44,7 +44,7 @@ ulong Object::hash() {
 
 void Object::shiftPointers(int delta) {
     if (attributes) {
-        attributes += delta;
+        attributes = MemoryManager::shiftPointer(attributes);
         attributes->shiftPointers(delta);
     }
 }

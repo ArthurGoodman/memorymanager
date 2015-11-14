@@ -2,6 +2,8 @@
 
 #include "object.h"
 
+#include <iostream>
+
 MemoryManager *MemoryManager::manager = new MemoryManager;
 
 Object *MemoryManager::allocate(int size) {
@@ -11,7 +13,7 @@ Object *MemoryManager::allocate(int size) {
 
     objectCount++;
 
-//    if (delta > 0)
+    if (delta != 0)
         shiftPointers();
 
     return object;
@@ -21,19 +23,15 @@ void MemoryManager::free(Object *object) {
     object->setFlag(Object::FlagFree);
 }
 
-int MemoryManager::getDelta() {
-    return delta;
-}
-
 MemoryManager::MemoryManager()
     : delta(0), objectCount(0) {
 }
 
 void MemoryManager::shiftPointers() {
-    Object *objects = (Object *)memory.getData();
+    byte *objects = memory.getData();
 
     for (int i = 0; i < objectCount - 1; i++) {
-        objects->shiftPointers(delta);
-        objects += objects->getSize();
+        ((Object *)objects)->shiftPointers(delta);
+        objects += ((Object *)objects)->getSize();
     }
 }

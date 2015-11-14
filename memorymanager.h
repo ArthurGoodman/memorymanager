@@ -18,13 +18,19 @@ public:
     Object *allocate(int size);
     void free(Object *object);
 
-    int getDelta();
+    template <typename T>
+    static T *shiftPointer(T *pointer);
 
 private:
     MemoryManager();
 
     void shiftPointers();
 };
+
+template <typename T>
+T *MemoryManager::shiftPointer(T *pointer) {
+    return (T *)((byte *)pointer + MemoryManager::instance()->delta);
+}
 
 inline MemoryManager *MemoryManager::instance() {
     return manager;
