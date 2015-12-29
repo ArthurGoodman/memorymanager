@@ -2,7 +2,7 @@
 
 #include "vector.h"
 
-class Object;
+class ManagedObject;
 class Pointer;
 
 class MemoryManager {
@@ -18,8 +18,8 @@ class MemoryManager {
 public:
     static MemoryManager *instance();
 
-    Object *allocate(int size);
-    void free(Object *object);
+    ManagedObject *allocate(int size);
+    void free(ManagedObject *object);
 
     template <typename T>
     static T *shiftPointer(T *pointer);

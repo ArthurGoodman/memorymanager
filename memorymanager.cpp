@@ -1,15 +1,15 @@
 #include "memorymanager.h"
 
-#include "object.h"
+#include "managedobject.h"
 #include "pointer.h"
 
 #include <iostream>
 
 MemoryManager *MemoryManager::manager = new MemoryManager;
 
-Object *MemoryManager::allocate(int size) {
+ManagedObject *MemoryManager::allocate(int size) {
     byte *oldAddress = memory.getData();
-    Object *object = (Object *)memory.allocate(size);
+    ManagedObject *object = (ManagedObject *)memory.allocate(size);
     delta = memory.getData() - oldAddress;
 
     if (delta != 0)
@@ -20,8 +20,8 @@ Object *MemoryManager::allocate(int size) {
     return object;
 }
 
-void MemoryManager::free(Object *object) {
-    object->setFlag(Object::FlagFree);
+void MemoryManager::free(ManagedObject *object) {
+    object->setFlag(ManagedObject::FlagFree);
 }
 
 void MemoryManager::registerPointer(Pointer *p) {
@@ -65,6 +65,16 @@ void MemoryManager::shiftPointers() {
     Pointer *p = firstPointer;
 
     while (p) {
+        if (p->magic != 0xdeadbeef) {
+            p = shiftPointer(p);
+
+            if (p->prev)
+                p->prev->next = p;
+
+            if (p->next)
+                p->next->prev = p;
+        }
+
         p->shift(delta);
         p = p->next;
     }

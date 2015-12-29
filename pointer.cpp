@@ -10,15 +10,23 @@ Pointer::Pointer(Object *object)
     MemoryManager::instance()->registerPointer(this);
 }
 
+Pointer::Pointer(const Pointer &p)
+    : object(p.object), prev(0), next(0) {
+    MemoryManager::instance()->registerPointer(this);
+}
+
 Pointer::~Pointer() {
     MemoryManager::instance()->removePointer(this);
 }
 
-void Pointer::shift(int delta) {
-    //    std::cout << "Pointer::shift{this=" << this << ", delta=" << delta << "}\n";
+Pointer &Pointer::operator=(Object *object) {
+    this->object = object;
+    return *this;
+}
 
-    if (object)
-        object = (Object *)((byte *)object + delta);
+Pointer &Pointer::operator=(const Pointer &p) {
+    this->object = p.object;
+    return  *this;
 }
 
 Object *Pointer::operator*() {
@@ -29,6 +37,9 @@ Object *Pointer::operator->() {
     return object;
 }
 
-Pointer::operator Object *() {
-    return object;
+void Pointer::shift(int delta) {
+    std::cout << "Pointer::shift{this=" << this << ", delta=" << delta << "}\n";
+
+    if (object)
+        object = (Object *)((byte *)object + delta);
 }
