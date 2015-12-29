@@ -14,6 +14,5 @@ public:
     Object();
 
     virtual void mark();
-
     virtual int getSize();
 };

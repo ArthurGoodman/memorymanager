@@ -13,7 +13,7 @@ class HashTable : public Object {
     class HashNode : public Object {
         K key;
         V value;
-        Pointer<HashNode> next;
+        HashNode *next;
 
     public:
         HashNode(K key, V value)
@@ -40,6 +40,11 @@ class HashTable : public Object {
             HashNode::next = next;
         }
 
+        void shiftPointers(int delta) {
+            if (next)
+                MemoryManager::shiftPointer(next, delta);
+        }
+
         int getSize() {
             return sizeof *this;
         }
@@ -48,9 +53,13 @@ class HashTable : public Object {
     static const int HashTableSize = 10;
 
     F hashFunction;
-    Pointer<HashNode> table[HashTableSize];
+    HashNode *table[HashTableSize];
 
 public:
+    HashTable()
+        : table{0} {
+    }
+
     ~HashTable() {
         for (int i = 0; i < HashTableSize; i++) {
             Pointer<HashNode> entry = table[i];
@@ -131,6 +140,12 @@ public:
             prev->setNext(entry->getNext());
 
         delete *entry;
+    }
+
+    void shiftPointers(int delta) {
+        for (int i = 0; i < HashTableSize; i++)
+            if (table[i])
+                MemoryManager::shiftPointer(table[i], delta);
     }
 
     int getSize() {

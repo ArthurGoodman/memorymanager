@@ -56,28 +56,18 @@ MemoryManager::MemoryManager()
 void MemoryManager::shiftPointers() {
     std::cout << "MemoryManager::shiftPointers{}\n";
 
-    //    byte *objects = memory.getData();
+    byte *objects = memory.getData();
 
-    //    for (int i = 0; i < objectCount - 1; i++) {
-    //        ((Object *)objects)->shiftPointers();
-    //        objects += ((Object *)objects)->getSize();
-    //    }
+    for (int i = 0; i < objectCount; i++) {
+        ((ManagedObject *)objects)->shiftPointers(delta);
+        objects += ((ManagedObject *)objects)->getSize();
+    }
 
     Pointer<ManagedObject> *p = firstPointer;
 
     while (p) {
-        if (p->magic != 0xdeadbeef) {
-            p = shiftPointer(p);
-
-            if (p->prev)
-                p->prev->next = p;
-
-            if (p->next)
-                p->next->prev = p;
-        }
-
         if (p->pointer)
-            p->pointer = shiftPointer(p->pointer);
+            shiftPointer(p->pointer, delta);
 
         p = p->next;
     }

@@ -8,8 +8,6 @@ template <typename T>
 class Pointer {
     friend class MemoryManager;
 
-    const unsigned magic = 0xdeadbeef;
-
     T *pointer;
     Pointer<T> *prev, *next;
 

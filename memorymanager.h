@@ -24,7 +24,7 @@ public:
     void free(ManagedObject *object);
 
     template <typename T>
-    static T *shiftPointer(T *pointer);
+    static void shiftPointer(T *&pointer, int delta);
 
     void registerPointer(Pointer<ManagedObject> *pointer);
     void removePointer(Pointer<ManagedObject> *pointer);
@@ -36,8 +36,8 @@ private:
 };
 
 template <typename T>
-T *MemoryManager::shiftPointer(T *pointer) {
-    return (T *)((byte *)pointer + MemoryManager::instance()->delta);
+void MemoryManager::shiftPointer(T *&pointer, int delta) {
+    pointer = (T *)((byte *)pointer + delta);
 }
 
 inline MemoryManager *MemoryManager::instance() {

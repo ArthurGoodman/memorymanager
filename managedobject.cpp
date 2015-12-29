@@ -20,3 +20,6 @@ ManagedObject::~ManagedObject() {
 void ManagedObject::setFlag(Flag flag, bool value) {
     value ? flags |= flag : flags &= ~flag;
 }
+
+void ManagedObject::shiftPointers(int delta) {
+}
