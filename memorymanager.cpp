@@ -21,11 +21,12 @@ ManagedObject *MemoryManager::allocate(int size) {
 }
 
 void MemoryManager::free(ManagedObject *object) {
+    std::cout << "MemoryManager::free{object=" << object << "}\n";
     object->setFlag(ManagedObject::FlagFree);
 }
 
-void MemoryManager::registerPointer(Pointer *p) {
-    std::cout << "MemoryManager::registerPointer{this=" << this << ", p=" << p << "}\n";
+void MemoryManager::registerPointer(Pointer<ManagedObject> *p) {
+    std::cout << "MemoryManager::registerPointer{p=" << p << "}\n";
 
     p->next = firstPointer;
 
@@ -35,8 +36,8 @@ void MemoryManager::registerPointer(Pointer *p) {
     firstPointer = p;
 }
 
-void MemoryManager::removePointer(Pointer *p) {
-    std::cout << "MemoryManager::removePointer{this=" << this << ", p=" << p << "}\n";
+void MemoryManager::removePointer(Pointer<ManagedObject> *p) {
+    std::cout << "MemoryManager::removePointer{p=" << p << "}\n";
 
     if (p->next)
         p->next->prev = p->prev;
@@ -53,7 +54,7 @@ MemoryManager::MemoryManager()
 }
 
 void MemoryManager::shiftPointers() {
-    std::cout << "MemoryManager::shiftPointers{this=" << this << "}\n";
+    std::cout << "MemoryManager::shiftPointers{}\n";
 
     //    byte *objects = memory.getData();
 
@@ -62,7 +63,7 @@ void MemoryManager::shiftPointers() {
     //        objects += ((Object *)objects)->getSize();
     //    }
 
-    Pointer *p = firstPointer;
+    Pointer<ManagedObject> *p = firstPointer;
 
     while (p) {
         if (p->magic != 0xdeadbeef) {
@@ -75,7 +76,9 @@ void MemoryManager::shiftPointers() {
                 p->next->prev = p;
         }
 
-        p->shift(delta);
+        if (p->pointer)
+            p->pointer = shiftPointer(p->pointer);
+
         p = p->next;
     }
 }

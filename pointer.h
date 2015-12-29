@@ -1,26 +1,52 @@
 #pragma once
 
-class Object;
-class MemoryManager;
+#include "memorymanager.h"
 
+#include <iostream>
+
+template <typename T>
 class Pointer {
     friend class MemoryManager;
 
     const unsigned magic = 0xdeadbeef;
 
-    Object *object;
-    Pointer *prev, *next;
+    T *pointer;
+    Pointer<T> *prev, *next;
 
 public:
-    Pointer(Object *object = 0);
-    Pointer(const Pointer &object);
-    ~Pointer();
+    Pointer(T *p = 0)
+        : pointer(p), prev(0), next(0) {
+        MemoryManager::instance()->registerPointer((Pointer<ManagedObject> *)this);
+    }
 
-    Pointer &operator=(Object *object);
-    Pointer &operator=(const Pointer &p);
+    Pointer(const Pointer<T> &p)
+        : pointer(p.pointer), prev(0), next(0) {
+        MemoryManager::instance()->registerPointer((Pointer<ManagedObject> *)this);
+    }
 
-    Object *operator*();
-    Object *operator->();
+    ~Pointer() {
+        MemoryManager::instance()->removePointer((Pointer<ManagedObject> *)this);
+    }
 
-    void shift(int delta);
+    Pointer<T> &operator=(T *p) {
+        this->pointer = p;
+        return *this;
+    }
+
+    Pointer<T> &operator=(const Pointer<T> &p) {
+        this->pointer = p.pointer;
+        return *this;
+    }
+
+    T *operator*() const {
+        return pointer;
+    }
+
+    T *operator->() const {
+        return pointer;
+    }
+
+    operator T *() const {
+        return pointer;
+    }
 };

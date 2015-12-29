@@ -5,28 +5,15 @@
 #include "pointer.h"
 
 int main() {
-    //    HashTable<std::string, int> *ht = new HashTable<std::string, int>;
+    Pointer<HashTable<std::string, int>> ht = new HashTable<std::string, int>;
 
-    //    ht->put("1", 1);
-    //    ht = MemoryManager::shiftPointer(ht);
-    //    ht->put("2", 2);
-    //    ht = MemoryManager::shiftPointer(ht);
-    //    ht->put("3", 3);
-    //    ht = MemoryManager::shiftPointer(ht);
-    //    ht->put("4", 4);
-    //    ht = MemoryManager::shiftPointer(ht);
+    ht->put("1", 1);
+    ht->put("2", 2);
+    ht->put("3", 3);
+    ht->put("4", 4);
+    ht->put("5", 5);
 
-    //    std::cout << ht->get("3") << "\n";
-
-    Pointer ht = new HashTable<std::string, int>;
-
-    ((HashTable<std::string, int> *)*ht)->put("1", 1);
-    ((HashTable<std::string, int> *)*ht)->put("2", 2);
-    ((HashTable<std::string, int> *)*ht)->put("3", 3);
-    ((HashTable<std::string, int> *)*ht)->put("4", 4);
-    ((HashTable<std::string, int> *)*ht)->put("5", 5);
-
-    std::cout << ((HashTable<std::string, int> *)*ht)->get("3") << "\n";
+    std::cout << ht->get("3") << "\n";
 
     return 0;
 }

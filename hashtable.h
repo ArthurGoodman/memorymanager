@@ -13,7 +13,7 @@ class HashTable : public Object {
     class HashNode : public Object {
         K key;
         V value;
-        Pointer next;
+        Pointer<HashNode> next;
 
     public:
         HashNode(K key, V value)
@@ -33,19 +33,12 @@ class HashTable : public Object {
         }
 
         HashNode *getNext() const {
-            return (HashNode *)*(Pointer &)next;
+            return next;
         }
 
         void setNext(HashNode *next) {
             HashNode::next = next;
         }
-
-        //        void shiftPointers() {
-        //            Object::shiftPointers();
-
-        //            if (next)
-        //                next = MemoryManager::shiftPointer(next);
-        //        }
 
         int getSize() {
             return sizeof *this;
@@ -55,39 +48,34 @@ class HashTable : public Object {
     static const int HashTableSize = 10;
 
     F hashFunction;
-    //    HashNode *table[HashTableSize];
-    Pointer table[HashTableSize];
+    Pointer<HashNode> table[HashTableSize];
 
 public:
-    HashTable()
-    /*: table{0}*/ {
+    ~HashTable() {
+        for (int i = 0; i < HashTableSize; i++) {
+            Pointer<HashNode> entry = table[i];
+
+            while (entry) {
+                Pointer<HashNode> prev = entry;
+                entry = entry->getNext();
+                delete prev;
+            }
+
+            table[i] = 0;
+        }
     }
-
-    //    ~HashTable() {
-    //        for (int i = 0; i < HashTableSize; i++) {
-    //            Pointer entry = table[i];
-
-    //            while (entry) {
-    //                Pointer prev = entry;
-    //                entry = ((HashNode *)*entry)->getNext();
-    //                delete prev;
-    //            }
-
-    //            table[i] = 0;
-    //        }
-    //    }
 
     V get(const K &key) const {
         std::cout << "HashTable::get{this=" << this << ", key=" << key << "}\n";
 
         ulong hashValue = hashFunction(key) % HashTableSize;
-        Pointer entry = table[hashValue];
+        Pointer<HashNode> entry = table[hashValue];
 
         while (*entry) {
-            if (((HashNode *)*entry)->getKey() == key)
-                return ((HashNode *)*entry)->getValue();
+            if (entry->getKey() == key)
+                return entry->getValue();
 
-            entry = ((HashNode *)*entry)->getNext();
+            entry = entry->getNext();
         }
 
         throw std::out_of_range("HashTable::get");
@@ -98,34 +86,27 @@ public:
 
         ulong hashValue = hashFunction(key) % HashTableSize;
 
-        Pointer prev = 0;
-        Pointer entry = table[hashValue];
+        Pointer<HashNode> prev = 0;
+        Pointer<HashNode> entry = table[hashValue];
 
-        while (*entry && ((HashNode *)*entry)->getKey() != key) {
+        while (entry && entry->getKey() != key) {
             prev = entry;
-            entry = ((HashNode *)*entry)->getNext();
+            entry = entry->getNext();
         }
 
-        if (*entry) {
-            ((HashNode *)*entry)->setValue(value);
+        if (entry) {
+            entry->setValue(value);
             return;
         }
 
-        Pointer _this = this;
+        Pointer<HashTable<K, V, F>> _this = this;
 
         entry = new HashNode(key, value);
 
-        //        HashTable<K, V, F> *newThis = MemoryManager::shiftPointer(this);
-
-        //        if (*prev)
-        //            prev = MemoryManager::shiftPointer(*prev);
-
-        //        shiftPointers();
-
-        if (!*prev)
-            ((HashTable<K, V, F> *)*_this)->table[hashValue] = (HashNode *)*entry;
+        if (!prev)
+            _this->table[hashValue] = entry;
         else
-            ((HashNode *)*prev)->setNext((HashNode *)*entry);
+            prev->setNext(entry);
     }
 
     void remove(const K &key) {
@@ -133,32 +114,24 @@ public:
 
         ulong hashValue = hashFunction(key) % HashTableSize;
 
-        Pointer prev = 0;
-        Pointer entry = table[hashValue];
+        Pointer<HashNode> prev = 0;
+        Pointer<HashNode> entry = table[hashValue];
 
-        while (*entry && ((HashNode *)*entry)->getKey() != key) {
+        while (entry && entry->getKey() != key) {
             prev = entry;
-            entry = ((HashNode *)*entry)->getNext();
+            entry = entry->getNext();
         }
 
-        if (!*entry)
+        if (!entry)
             return;
 
-        if (!*prev)
-            table[hashValue] = ((HashNode *)*entry)->getNext();
+        if (!prev)
+            table[hashValue] = entry->getNext();
         else
-            ((HashNode *)*prev)->setNext(((HashNode *)*entry)->getNext());
+            prev->setNext(entry->getNext());
 
         delete *entry;
     }
-
-    //    void shiftPointers() {
-    //        //        Object::shiftPointers();
-
-    //        for (int i = 0; i < HashTableSize; i++)
-    //            if (table[i])
-    //                table[i] = MemoryManager::shiftPointer(table[i]);
-    //    }
 
     int getSize() {
         return sizeof *this;

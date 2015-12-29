@@ -3,6 +3,8 @@
 #include "vector.h"
 
 class ManagedObject;
+
+template <typename>
 class Pointer;
 
 class MemoryManager {
@@ -13,7 +15,7 @@ class MemoryManager {
 
     int objectCount;
 
-    Pointer *firstPointer;
+    Pointer<ManagedObject> *firstPointer;
 
 public:
     static MemoryManager *instance();
@@ -24,8 +26,8 @@ public:
     template <typename T>
     static T *shiftPointer(T *pointer);
 
-    void registerPointer(Pointer *pointer);
-    void removePointer(Pointer *pointer);
+    void registerPointer(Pointer<ManagedObject> *pointer);
+    void removePointer(Pointer<ManagedObject> *pointer);
 
 private:
     MemoryManager();
