@@ -71,7 +71,7 @@ public:
         ulong hashValue = hashFunction(key) % HashTableSize;
         Pointer<HashNode> entry = table[hashValue];
 
-        while (*entry) {
+        while (entry) {
             if (entry->getKey() == key)
                 return entry->getValue();
 
