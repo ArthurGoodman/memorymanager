@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     common.cpp \
     object.cpp \
     list.cpp \
-    hashtable.cpp
+    hashtable.cpp \
+    pointer.cpp
 
 HEADERS += \
     vector.h \
@@ -19,4 +20,5 @@ HEADERS += \
     common.h \
     object.h \
     list.h \
-    hashtable.h
+    hashtable.h \
+    pointer.h

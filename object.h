@@ -4,13 +4,12 @@
 
 #include <functional>
 
-template <typename K, typename V, typename F = std::hash<K>>
-class HashTable;
+//template <typename K, typename V, typename F = std::hash<K>>
+//class HashTable;
 
 class Object {
     int flags;
-    int size;
-    HashTable<char *, Object *> *attributes;
+    //    HashTable<char *, Object *> *attributes;
 
 public:
     enum Flag {
@@ -30,6 +29,6 @@ public:
 
     virtual ulong hash();
 
-    virtual void shiftPointers();
+    //    virtual void shiftPointers();
     virtual int getSize();
 };

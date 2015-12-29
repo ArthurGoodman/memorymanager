@@ -12,7 +12,7 @@ void Object::operator delete(void *p) {
 }
 
 Object::Object()
-    : flags(0), attributes(0) {
+    : flags(13) /*, attributes(0)*/ {
 }
 
 Object::~Object() {
@@ -25,8 +25,8 @@ void Object::setFlag(Flag flag, bool value) {
 void Object::mark() {
     setFlag(FlagMark);
 
-    if (attributes)
-        attributes->mark();
+    //    if (attributes)
+    //        attributes->mark();
 }
 
 ulong Object::hash() {
@@ -42,10 +42,10 @@ ulong Object::hash() {
     return value;
 }
 
-void Object::shiftPointers() {
-    if (attributes)
-        attributes = MemoryManager::shiftPointer(attributes);
-}
+//void Object::shiftPointers() {
+//    if (attributes)
+//        attributes = MemoryManager::shiftPointer(attributes);
+//}
 
 int Object::getSize() {
     return sizeof(*this);
