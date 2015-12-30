@@ -36,7 +36,7 @@ Object *Object::getAttribute(std::string name) {
     return attributes ? attributes->get(name) : 0;
 }
 
-void Object::setAttribute(std::string name, Pointer<Object> value) {
+void Object::setAttribute(std::string name, Object *value) {
     if (!attributes)
         attributes = new HashTable<std::string, Object *>;
 

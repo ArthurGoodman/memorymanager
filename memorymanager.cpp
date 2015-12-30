@@ -47,15 +47,6 @@ MemoryManager::MemoryManager()
 }
 
 void MemoryManager::shiftPointers() {
-    Pointer<ManagedObject> *p = firstPointer;
-
-    while (p) {
-        if (p->pointer)
-            shiftPointer(p->pointer, delta);
-
-        p = p->next;
-    }
-
     byte *objects = memory.getData();
 
     for (int i = 0; i < objectCount; i++) {
@@ -68,5 +59,14 @@ void MemoryManager::shiftPointers() {
     for (int i = 0; i < objectCount; i++) {
         ((ManagedObject *)objects)->shiftPointersAgain(delta);
         objects += ((ManagedObject *)objects)->getSize();
+    }
+
+    Pointer<ManagedObject> *p = firstPointer;
+
+    while (p) {
+        if (p->pointer)
+            shiftPointer(p->pointer, delta);
+
+        p = p->next;
     }
 }

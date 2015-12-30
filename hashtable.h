@@ -143,8 +143,8 @@ public:
     }
 
     bool contains(const K &key) {
-        for(auto i : *this)
-            if(key == *i.first)
+        for (auto i : *this)
+            if (key == i.first)
                 return true;
 
         return false;
@@ -165,10 +165,10 @@ public:
     class iterator {
         friend class HashTable;
 
-        Pointer<HashNode *> table;
+        HashNode **table;
 
         int i;
-        Pointer<HashNode> node;
+        HashNode *node;
 
     public:
         iterator &operator++() {
@@ -193,8 +193,8 @@ public:
             return *this;
         }
 
-        std::pair<K *, V *> operator*() const {
-            return std::make_pair(&node->key, &node->value);
+        std::pair<K, V *> operator*() const {
+            return std::make_pair(node->key, &node->value);
         }
 
         bool operator!=(const iterator &other) const {
