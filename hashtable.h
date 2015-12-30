@@ -3,8 +3,6 @@
 #include <stdexcept>
 
 #include "object.h"
-#include "memorymanager.h"
-#include "pointer.h"
 
 template <class K, class V>
 class HashTable : public Object {

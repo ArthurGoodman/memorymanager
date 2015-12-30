@@ -3,8 +3,8 @@
 #include <string>
 
 #include "common.h"
-#include "managedobject.h"
 #include "pointer.h"
+#include "managedobject.h"
 
 template <class K, class V>
 class HashTable;

@@ -2,8 +2,6 @@
 
 #include "memorymanager.h"
 
-#include <iostream>
-
 template <class T>
 class Pointer {
     friend class MemoryManager;
