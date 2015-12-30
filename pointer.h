@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-template <typename T>
+template <class T>
 class Pointer {
     friend class MemoryManager;
 

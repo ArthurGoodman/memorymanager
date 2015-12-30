@@ -24,9 +24,6 @@ void ManagedObject::setFlag(Flag flag, bool value) {
 void ManagedObject::shiftPointers(int) {
 }
 
-void ManagedObject::shiftPointersAgain(int) {
-}
-
 void ManagedObject::mark() {
     setFlag(FlagMark);
 }

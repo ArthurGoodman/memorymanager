@@ -2,7 +2,7 @@
 
 #include "object.h"
 
-template <typename T>
+template <class T>
 class List : public Object {
     class ListNode : public Object {
         T value;

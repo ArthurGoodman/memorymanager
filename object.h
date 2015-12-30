@@ -6,7 +6,7 @@
 #include "managedobject.h"
 #include "pointer.h"
 
-template <typename K, typename V>
+template <class K, class V>
 class HashTable;
 
 class Object : public ManagedObject {
@@ -16,7 +16,6 @@ public:
     Object();
 
     virtual void shiftPointers(int delta);
-    virtual void shiftPointersAgain(int delta);
 
     virtual void mark();
     virtual int getSize();

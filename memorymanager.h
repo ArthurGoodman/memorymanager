@@ -4,19 +4,10 @@
 
 class ManagedObject;
 
-template <typename>
+template <class>
 class Pointer;
 
-//<temp>
-template <typename K, typename V>
-class HashTable;
-
-class Object;
-//</temp>
-
 class MemoryManager {
-    friend class HashTable<std::string, Object *>; // temp
-
     static MemoryManager *manager;
 
     Vector memory;
@@ -37,6 +28,8 @@ public:
 
     void registerPointer(Pointer<ManagedObject> *pointer);
     void removePointer(Pointer<ManagedObject> *pointer);
+
+    int getDelta();
 
 private:
     MemoryManager();

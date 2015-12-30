@@ -6,12 +6,10 @@
 #include "memorymanager.h"
 #include "pointer.h"
 
-template <typename K, typename V>
+template <class K, class V>
 class HashTable : public Object {
     class HashNode : public Object {
         friend class HashTable::iterator;
-
-        friend class HashTable; // temp
 
         K key;
         V value;
@@ -112,7 +110,7 @@ public:
 
         entry = new HashNode(key, value);
 
-        MemoryManager::shiftPointer(entry->value, MemoryManager::instance()->delta); //THIS!!!
+        entry->shiftPointers(MemoryManager::instance()->getDelta());
 
         if (!prev)
             _this->table[hashValue] = entry;
@@ -193,8 +191,8 @@ public:
             return *this;
         }
 
-        std::pair<K, V *> operator*() const {
-            return std::make_pair(node->key, &node->value);
+        std::pair<K, V> operator*() const {
+            return std::make_pair(node->key, node->value);
         }
 
         bool operator!=(const iterator &other) const {
@@ -223,3 +221,14 @@ public:
         return iterator(table);
     }
 };
+
+template <>
+inline void HashTable<std::string, Object *>::HashNode::shiftPointers(int delta) {
+    Object::shiftPointers(delta);
+
+    if (next)
+        MemoryManager::shiftPointer(next, delta);
+
+    if (value)
+        MemoryManager::shiftPointer(value, delta);
+}

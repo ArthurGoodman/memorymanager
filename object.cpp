@@ -11,12 +11,6 @@ void Object::shiftPointers(int delta) {
         MemoryManager::shiftPointer(attributes, delta);
 }
 
-void Object::shiftPointersAgain(int delta) {
-    if (attributes)
-        for (auto i : *attributes)
-            MemoryManager::shiftPointer(*i.second, delta);
-}
-
 void Object::mark() {
     ManagedObject::mark();
 

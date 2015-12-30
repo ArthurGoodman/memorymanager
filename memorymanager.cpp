@@ -42,6 +42,10 @@ void MemoryManager::removePointer(Pointer<ManagedObject> *p) {
         firstPointer = firstPointer->next;
 }
 
+int MemoryManager::getDelta() {
+    return delta;
+}
+
 MemoryManager::MemoryManager()
     : delta(0), objectCount(0), firstPointer(0) {
 }
@@ -51,13 +55,6 @@ void MemoryManager::shiftPointers() {
 
     for (int i = 0; i < objectCount; i++) {
         ((ManagedObject *)objects)->shiftPointers(delta);
-        objects += ((ManagedObject *)objects)->getSize();
-    }
-
-    objects = memory.getData();
-
-    for (int i = 0; i < objectCount; i++) {
-        ((ManagedObject *)objects)->shiftPointersAgain(delta);
         objects += ((ManagedObject *)objects)->getSize();
     }
 

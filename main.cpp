@@ -18,7 +18,7 @@ int main() {
     obj->setAttribute("9", new String("nine"));
     obj->setAttribute("10", new String("ten"));
 
-    std::cout << obj->getAttribute("3")->toString() << std::endl;
+    std::cout << obj->getAttribute("2")->toString() << std::endl;
 
     return 0;
 }
