@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <cmath>
-#include <cstdlib>
 
 Vector::Vector()
     : size(0), capacity(0), data(0) {
@@ -12,12 +11,6 @@ Vector::Vector(const Vector &v)
     : size(0), capacity(0), data(0) {
     allocate(v.getSize());
     memcpy(data, v.getData(), size);
-}
-
-Vector::Vector(const std::vector<byte> &v)
-    : size(0), capacity(0), data(0) {
-    allocate(v.size());
-    memcpy(data, v.data(), size);
 }
 
 Vector::~Vector() {

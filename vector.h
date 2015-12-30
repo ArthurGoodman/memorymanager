@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "common.h"
 
 class Vector {
@@ -13,7 +11,6 @@ class Vector {
 public:
     Vector();
     Vector(const Vector &v);
-    Vector(const std::vector<byte> &v);
 
     ~Vector();
 

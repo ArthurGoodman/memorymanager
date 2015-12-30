@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     list.cpp \
     hashtable.cpp \
     pointer.cpp \
-    managedobject.cpp
+    managedobject.cpp \
+    string.cpp
 
 HEADERS += \
     vector.h \
@@ -23,4 +24,5 @@ HEADERS += \
     list.h \
     hashtable.h \
     pointer.h \
-    managedobject.h
+    managedobject.h \
+    string.h

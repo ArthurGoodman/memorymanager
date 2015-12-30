@@ -20,7 +20,8 @@ public:
     void setFlag(Flag flag, bool value = true);
 
     virtual void shiftPointers(int delta);
+    virtual void shiftPointersAgain(int delta);
+    virtual void mark();
 
-    virtual void mark() = 0;
     virtual int getSize() = 0;
 };

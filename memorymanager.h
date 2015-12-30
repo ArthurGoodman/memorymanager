@@ -7,7 +7,16 @@ class ManagedObject;
 template <typename>
 class Pointer;
 
+//<temp>
+template <typename K, typename V>
+class HashTable;
+
+class Object;
+//</temp>
+
 class MemoryManager {
+    friend class HashTable<std::string, Object *>; // temp
+
     static MemoryManager *manager;
 
     Vector memory;

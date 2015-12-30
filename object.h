@@ -1,18 +1,29 @@
 #pragma once
 
+#include <string>
+
 #include "common.h"
-
 #include "managedobject.h"
+#include "pointer.h"
 
-//template <typename K, typename V, typename F = std::hash<K>>
-//class HashTable;
+template <typename K, typename V>
+class HashTable;
 
 class Object : public ManagedObject {
-    //    HashTable<char *, Object *> *attributes;
+    HashTable<std::string, Object *> *attributes;
 
 public:
     Object();
 
+    virtual void shiftPointers(int delta);
+    virtual void shiftPointersAgain(int delta);
+
     virtual void mark();
     virtual int getSize();
+
+    bool hasAttribute(std::string name);
+    Object *getAttribute(std::string name);
+    void setAttribute(std::string name, Pointer<Object> value);
+
+    virtual std::string toString();
 };

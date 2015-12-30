@@ -3,8 +3,6 @@
 #include "managedobject.h"
 #include "pointer.h"
 
-#include <iostream>
-
 MemoryManager *MemoryManager::manager = new MemoryManager;
 
 ManagedObject *MemoryManager::allocate(int size) {
@@ -21,13 +19,10 @@ ManagedObject *MemoryManager::allocate(int size) {
 }
 
 void MemoryManager::free(ManagedObject *object) {
-    std::cout << "MemoryManager::free{object=" << object << "}\n";
     object->setFlag(ManagedObject::FlagFree);
 }
 
 void MemoryManager::registerPointer(Pointer<ManagedObject> *p) {
-    std::cout << "MemoryManager::registerPointer{p=" << p << "}\n";
-
     p->next = firstPointer;
 
     if (firstPointer)
@@ -37,8 +32,6 @@ void MemoryManager::registerPointer(Pointer<ManagedObject> *p) {
 }
 
 void MemoryManager::removePointer(Pointer<ManagedObject> *p) {
-    std::cout << "MemoryManager::removePointer{p=" << p << "}\n";
-
     if (p->next)
         p->next->prev = p->prev;
 
@@ -54,7 +47,14 @@ MemoryManager::MemoryManager()
 }
 
 void MemoryManager::shiftPointers() {
-    std::cout << "MemoryManager::shiftPointers{}\n";
+    Pointer<ManagedObject> *p = firstPointer;
+
+    while (p) {
+        if (p->pointer)
+            shiftPointer(p->pointer, delta);
+
+        p = p->next;
+    }
 
     byte *objects = memory.getData();
 
@@ -63,12 +63,10 @@ void MemoryManager::shiftPointers() {
         objects += ((ManagedObject *)objects)->getSize();
     }
 
-    Pointer<ManagedObject> *p = firstPointer;
+    objects = memory.getData();
 
-    while (p) {
-        if (p->pointer)
-            shiftPointer(p->pointer, delta);
-
-        p = p->next;
+    for (int i = 0; i < objectCount; i++) {
+        ((ManagedObject *)objects)->shiftPointersAgain(delta);
+        objects += ((ManagedObject *)objects)->getSize();
     }
 }

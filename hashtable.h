@@ -6,11 +6,13 @@
 #include "memorymanager.h"
 #include "pointer.h"
 
-#include <iostream>
-
-template <typename K, typename V, typename F = std::hash<K>>
+template <typename K, typename V>
 class HashTable : public Object {
     class HashNode : public Object {
+        friend class HashTable::iterator;
+
+        friend class HashTable; // temp
+
         K key;
         V value;
         HashNode *next;
@@ -41,6 +43,8 @@ class HashTable : public Object {
         }
 
         void shiftPointers(int delta) {
+            Object::shiftPointers(delta);
+
             if (next)
                 MemoryManager::shiftPointer(next, delta);
         }
@@ -52,7 +56,7 @@ class HashTable : public Object {
 
     static const int HashTableSize = 10;
 
-    F hashFunction;
+    std::hash<K> hashFunction;
     HashNode *table[HashTableSize];
 
 public:
@@ -62,10 +66,10 @@ public:
 
     ~HashTable() {
         for (int i = 0; i < HashTableSize; i++) {
-            Pointer<HashNode> entry = table[i];
+            HashNode *entry = table[i];
 
             while (entry) {
-                Pointer<HashNode> prev = entry;
+                HashNode *prev = entry;
                 entry = entry->getNext();
                 delete prev;
             }
@@ -75,10 +79,8 @@ public:
     }
 
     V get(const K &key) const {
-        std::cout << "HashTable::get{this=" << this << ", key=" << key << "}\n";
-
         ulong hashValue = hashFunction(key) % HashTableSize;
-        Pointer<HashNode> entry = table[hashValue];
+        HashNode *entry = table[hashValue];
 
         while (entry) {
             if (entry->getKey() == key)
@@ -91,8 +93,6 @@ public:
     }
 
     void put(const K &key, const V &value) {
-        std::cout << "HashTable::put{this=" << this << ", key=" << key << ", value=" << value << "}\n";
-
         ulong hashValue = hashFunction(key) % HashTableSize;
 
         Pointer<HashNode> prev = 0;
@@ -108,9 +108,11 @@ public:
             return;
         }
 
-        Pointer<HashTable<K, V, F>> _this = this;
+        Pointer<HashTable<K, V>> _this = this;
 
         entry = new HashNode(key, value);
+
+        MemoryManager::shiftPointer(entry->value, MemoryManager::instance()->delta); //THIS!!!
 
         if (!prev)
             _this->table[hashValue] = entry;
@@ -119,12 +121,10 @@ public:
     }
 
     void remove(const K &key) {
-        std::cout << "HashTable::remove{this=" << this << ", key=" << key << "}\n";
-
         ulong hashValue = hashFunction(key) % HashTableSize;
 
-        Pointer<HashNode> prev = 0;
-        Pointer<HashNode> entry = table[hashValue];
+        HashNode *prev = 0;
+        HashNode *entry = table[hashValue];
 
         while (entry && entry->getKey() != key) {
             prev = entry;
@@ -142,7 +142,17 @@ public:
         delete *entry;
     }
 
+    bool contains(const K &key) {
+        for(auto i : *this)
+            if(key == *i.first)
+                return true;
+
+        return false;
+    }
+
     void shiftPointers(int delta) {
+        Object::shiftPointers(delta);
+
         for (int i = 0; i < HashTableSize; i++)
             if (table[i])
                 MemoryManager::shiftPointer(table[i], delta);
@@ -150,5 +160,66 @@ public:
 
     int getSize() {
         return sizeof *this;
+    }
+
+    class iterator {
+        friend class HashTable;
+
+        Pointer<HashNode *> table;
+
+        int i;
+        Pointer<HashNode> node;
+
+    public:
+        iterator &operator++() {
+            if (node->next)
+                node = node->next;
+            else {
+                i++;
+
+                while (i < HashTableSize) {
+                    if (table[i]) {
+                        node = table[i];
+                        break;
+                    }
+
+                    i++;
+                }
+
+                if (i == HashTableSize)
+                    node = 0;
+            }
+
+            return *this;
+        }
+
+        std::pair<K *, V *> operator*() const {
+            return std::make_pair(&node->key, &node->value);
+        }
+
+        bool operator!=(const iterator &other) const {
+            return node != other.node;
+        }
+
+    private:
+        iterator(HashNode **table)
+            : table(table), i(0), node(0) {
+        }
+
+        iterator(HashNode **table, int i)
+            : table(table), i(i), node(table[i]) {
+        }
+    };
+
+    iterator begin() {
+        for (int i = 0; i < HashTableSize; i++)
+            if (table[i])
+                return iterator(table, i);
+
+        return iterator(table);
+    }
+
+    iterator end() {
+        return iterator(table);
     }
 };

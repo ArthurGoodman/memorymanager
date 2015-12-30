@@ -21,5 +21,12 @@ void ManagedObject::setFlag(Flag flag, bool value) {
     value ? flags |= flag : flags &= ~flag;
 }
 
-void ManagedObject::shiftPointers(int delta) {
+void ManagedObject::shiftPointers(int) {
+}
+
+void ManagedObject::shiftPointersAgain(int) {
+}
+
+void ManagedObject::mark() {
+    setFlag(FlagMark);
 }
