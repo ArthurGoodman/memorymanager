@@ -21,6 +21,10 @@ void ManagedObject::setFlag(Flag flag, bool value) {
     value ? flags |= flag : flags &= ~flag;
 }
 
+bool ManagedObject::isFree() {
+    return flags & FlagFree;
+}
+
 void ManagedObject::shiftPointers(int) {
 }
 

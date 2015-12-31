@@ -3,7 +3,7 @@
 #include "managedobject.h"
 #include "pointer.h"
 
-MemoryManager *MemoryManager::manager = new MemoryManager;
+MemoryManager MemoryManager::manager;
 
 ManagedObject *MemoryManager::allocate(int size) {
     byte *oldAddress = memory.getData();

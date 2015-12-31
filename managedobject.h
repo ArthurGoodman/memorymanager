@@ -19,6 +19,8 @@ public:
 
     void setFlag(Flag flag, bool value = true);
 
+    bool isFree();
+
     virtual void shiftPointers(int delta);
     virtual void mark();
 
