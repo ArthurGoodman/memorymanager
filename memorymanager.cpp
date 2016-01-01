@@ -3,8 +3,6 @@
 #include "managedobject.h"
 #include "pointer.h"
 
-#include <iostream>
-
 MemoryManager MemoryManager::manager;
 
 ManagedObject *MemoryManager::allocate(int size) {
