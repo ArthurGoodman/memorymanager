@@ -1,7 +1,9 @@
 #include "object.h"
 
 #include "hashtable.h"
+#include "pointer.h"
 #include "utility.h"
+#include "memorymanager.h"
 
 Object::Object()
     : attributes(0) {

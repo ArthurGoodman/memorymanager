@@ -5,7 +5,14 @@
 
 MemoryManager MemoryManager::manager;
 
+MemoryManager *MemoryManager::instance() {
+    return &manager;
+}
+
 ManagedObject *MemoryManager::allocate(int size) {
+    if (!memory.enoughSpace(size))
+        collectGarbage();
+
     byte *oldAddress = memory.getData();
     ManagedObject *object = (ManagedObject *)memory.allocate(size);
     delta = memory.getData() - oldAddress;
@@ -16,10 +23,6 @@ ManagedObject *MemoryManager::allocate(int size) {
     objectCount++;
 
     return object;
-}
-
-void MemoryManager::free(ManagedObject *object) {
-    object->setFlag(ManagedObject::FlagFree);
 }
 
 void MemoryManager::registerPointer(Pointer<ManagedObject> *p) {
@@ -67,4 +70,27 @@ void MemoryManager::shiftPointers() {
 
         p = p->next;
     }
+}
+
+void MemoryManager::collectGarbage() {
+    mark();
+    sweep();
+    defragment();
+}
+
+void MemoryManager::mark() {
+    Pointer<ManagedObject> *p = firstPointer;
+
+    while (p) {
+        if (p->pointer)
+            (*p)->mark();
+
+        p = p->next;
+    }
+}
+
+void MemoryManager::sweep() {
+}
+
+void MemoryManager::defragment() {
 }

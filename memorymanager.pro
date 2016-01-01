@@ -15,7 +15,6 @@ SOURCES += main.cpp \
     pointer.cpp \
     managedobject.cpp \
     string.cpp \
-    emptyobject.cpp \
     utility.cpp
 
 HEADERS += \
@@ -28,5 +27,4 @@ HEADERS += \
     pointer.h \
     managedobject.h \
     string.h \
-    emptyobject.h \
     utility.h

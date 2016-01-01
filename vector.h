@@ -12,7 +12,6 @@ public:
     static void setInitialCapacity(int initialCapacity);
 
     Vector();
-
     ~Vector();
 
     byte *allocate(int count);

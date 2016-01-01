@@ -13,7 +13,5 @@ class List : public Object {
     ListNode *first, *last;
 
 public:
-    List()
-        : size(0), first(0), last(0) {
-    }
+    List();
 };

@@ -6,10 +6,6 @@ void *ManagedObject::operator new(uint size) {
     return (void *)MemoryManager::instance()->allocate(size);
 }
 
-void ManagedObject::operator delete(void *p) {
-    return MemoryManager::instance()->free((ManagedObject *)p);
-}
-
 ManagedObject::ManagedObject()
     : flags(0) {
 }

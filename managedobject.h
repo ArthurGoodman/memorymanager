@@ -12,7 +12,6 @@ public:
     };
 
     static void *operator new(uint size);
-    static void operator delete(void *p);
 
     ManagedObject();
     virtual ~ManagedObject();

@@ -2,12 +2,13 @@
 
 #include <string>
 
-#include "common.h"
-#include "pointer.h"
 #include "managedobject.h"
 
-template <class K, class V>
+template <class, class>
 class HashTable;
+
+template <class>
+class Pointer;
 
 class Object : public ManagedObject {
     HashTable<std::string, Object *> *attributes;
@@ -16,8 +17,8 @@ public:
     Object();
 
     virtual void shiftPointers(int delta);
-
     virtual void mark();
+
     virtual int getSize();
 
     bool hasAttribute(std::string name);
