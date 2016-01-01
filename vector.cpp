@@ -3,14 +3,14 @@
 #include <memory>
 #include <cmath>
 
-Vector::Vector()
-    : size(0), capacity(0), data(0) {
+int Vector::initialCapacity = 2;
+
+void Vector::setInitialCapacity(int initialCapacity) {
+    Vector::initialCapacity = initialCapacity;
 }
 
-Vector::Vector(const Vector &v)
+Vector::Vector()
     : size(0), capacity(0), data(0) {
-    allocate(v.getSize());
-    memcpy(data, v.getData(), size);
 }
 
 Vector::~Vector() {
@@ -25,7 +25,7 @@ byte *Vector::allocate(int count) {
         int newCapacity = capacity;
 
         if (!newCapacity)
-            newCapacity = InitialCapacity;
+            newCapacity = initialCapacity;
 
         newCapacity *= pow(2, std::max(0.0, ceil(log2(double(size + count) / newCapacity))));
 

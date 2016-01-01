@@ -31,7 +31,7 @@ Object *Object::getAttribute(std::string name) {
     return attributes ? attributes->get(name) : 0;
 }
 
-void Object::setAttribute(std::string name, Pointer<Object> value) {
+void Object::setAttribute(std::string name, const Pointer<Object> &value) {
     Pointer<Object> _this = this;
 
     if (!attributes)

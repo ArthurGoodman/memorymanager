@@ -48,6 +48,7 @@ int MemoryManager::getDelta() {
 
 MemoryManager::MemoryManager()
     : delta(0), objectCount(0), firstPointer(0) {
+    Vector::setInitialCapacity(128);
 }
 
 void MemoryManager::shiftPointers() {

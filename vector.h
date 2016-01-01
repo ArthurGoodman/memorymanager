@@ -3,14 +3,15 @@
 #include "common.h"
 
 class Vector {
-    static const int InitialCapacity = 128;
+    static int initialCapacity;
 
     int size, capacity;
     byte *data;
 
 public:
+    static void setInitialCapacity(int initialCapacity);
+
     Vector();
-    Vector(const Vector &v);
 
     ~Vector();
 
