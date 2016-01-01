@@ -7,8 +7,6 @@
 template <class K, class V>
 class HashTable : public Object {
     class HashNode : public Object {
-        friend class HashTable::iterator;
-
         K key;
         V value;
         HashNode *next;
@@ -18,11 +16,11 @@ class HashTable : public Object {
             : key(key), value(value), next(0) {
         }
 
-        K getKey() const {
+        K &getKey() {
             return key;
         }
 
-        V getValue() const {
+        V &getValue() {
             return value;
         }
 
@@ -139,9 +137,17 @@ public:
     }
 
     bool contains(const K &key) {
-        for (auto i : *this)
-            if (key == i.first)
+        iterator i(table, hashFunction(key) % HashTableSize);
+
+        while (i.node) {
+            if (i.key() == key)
                 return true;
+
+            if (i.node->getNext())
+                i.node = i.node->getNext();
+            else
+                i.node = 0;
+        }
 
         return false;
     }
@@ -168,8 +174,8 @@ public:
 
     public:
         iterator &operator++() {
-            if (node->next)
-                node = node->next;
+            if (node->getNext())
+                node = node->getNext();
             else {
                 i++;
 
@@ -189,12 +195,20 @@ public:
             return *this;
         }
 
-        std::pair<K, V> operator*() const {
-            return std::make_pair(node->key, node->value);
+        iterator &operator*() {
+            return *this;
         }
 
         bool operator!=(const iterator &other) const {
             return node != other.node;
+        }
+
+        K &key() {
+            return node->getKey();
+        }
+
+        V &value() {
+            return node->getValue();
         }
 
     private:
