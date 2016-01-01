@@ -22,7 +22,7 @@ public:
 
     bool hasAttribute(std::string name);
     Object *getAttribute(std::string name);
-    void setAttribute(std::string name, Object *value);
+    void setAttribute(std::string name, Pointer<Object> value);
 
     virtual std::string toString();
 };

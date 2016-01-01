@@ -1,6 +1,7 @@
 #include "object.h"
 
 #include "hashtable.h"
+#include "utility.h"
 
 Object::Object()
     : attributes(0) {
@@ -30,13 +31,15 @@ Object *Object::getAttribute(std::string name) {
     return attributes ? attributes->get(name) : 0;
 }
 
-void Object::setAttribute(std::string name, Object *value) {
-    if (!attributes)
-        attributes = new HashTable<std::string, Object *>;
+void Object::setAttribute(std::string name, Pointer<Object> value) {
+    Pointer<Object> _this = this;
 
-    attributes->put(name, value);
+    if (!attributes)
+        _this->attributes = new HashTable<std::string, Object *>;
+
+    _this->attributes->put(name, value);
 }
 
 std::string Object::toString() {
-    return ::toString<void *>(this);
+    return Utility::toString<void *>(this);
 }
