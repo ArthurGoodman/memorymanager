@@ -24,7 +24,7 @@ public:
 
 private:
     enum Flag {
-        FlagMark = 1 << 1,
+        FlagMark = 1 << 0,
     };
 
     void setFlag(Flag flag, bool value = true);

@@ -107,13 +107,18 @@ void MemoryManager::compact() {
 
     p = memory.getData();
 
-    for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
-        if (((ManagedObject *)p)->isMarked() && ((ManagedObject *)p)->forwardAddress != p) {
-            memcpy(((ManagedObject *)p)->forwardAddress, p, ((ManagedObject *)p)->getSize());
+    for (int i = 0, size = 0; i < objectCount; i++, p += size) {
+        size = ((ManagedObject *)p)->getSize();
 
-            ((ManagedObject *)((ManagedObject *)p)->forwardAddress)->unmark();
-            ((ManagedObject *)((ManagedObject *)p)->forwardAddress)->forwardAddress = 0;
+        if (((ManagedObject *)p)->isMarked()) {
+            byte *destination = ((ManagedObject *)p)->forwardAddress;
+
+            memmove(destination, p, ((ManagedObject *)p)->getSize());
+
+            ((ManagedObject *)destination)->unmark();
+            ((ManagedObject *)destination)->forwardAddress = 0;
         }
+    }
 
     memory.free(freeSize);
     objectCount = liveCount;
