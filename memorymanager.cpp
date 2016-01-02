@@ -29,6 +29,17 @@ ManagedObject *MemoryManager::allocate(int size) {
     return object;
 }
 
+void MemoryManager::collectGarbage() {
+    std::cout << "\nMemoryManager::collectGarbage()\n";
+
+    int oldSize = memory.getSize(), oldObjectCount = objectCount;
+
+    mark();
+    compact();
+
+    std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", oldObjectCount=" << oldObjectCount << "\n\n";
+}
+
 void MemoryManager::registerPointer(Pointer<ManagedObject> *p) {
     p->next = pointers;
 
@@ -59,7 +70,7 @@ MemoryManager::~MemoryManager() {
 }
 
 void MemoryManager::shiftPointers() {
-    std::cout << "MemoryManager::shiftPointers() //delta=" << delta << "\n";
+    std::cout << "MemoryManager::shiftPointers() //delta=" << delta << "\n\n";
 
     byte *p = memory.getData();
 
@@ -69,17 +80,6 @@ void MemoryManager::shiftPointers() {
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p)
             shiftPointer(**p);
-}
-
-void MemoryManager::collectGarbage() {
-    std::cout << "\nMemoryManager::collectGarbage()\n";
-
-    int oldSize = memory.getSize(), oldObjectCount = objectCount;
-
-    mark();
-    compact();
-
-    std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", oldObjectCount=" << oldObjectCount << "\n\n";
 }
 
 void MemoryManager::mark() {
@@ -106,7 +106,7 @@ void MemoryManager::compact() {
 
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p && (*p)->isMarked())
-            **p = (ManagedObject *)(*p)->forwardAddress;
+            **p = (ManagedObject *)(*p)->getForwardAddress();
 
     p = memory.getData();
 

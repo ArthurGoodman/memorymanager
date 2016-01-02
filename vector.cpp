@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-int Vector::initialCapacity = 2;
+int Vector::initialCapacity = 1;
 
 void Vector::setInitialCapacity(int initialCapacity) {
     Vector::initialCapacity = initialCapacity;
@@ -24,7 +24,7 @@ byte *Vector::allocate(int count) {
         return 0;
 
     if (!enoughSpace(count)) {
-        std::cout << "//reallocating\n";
+        std::cout << "//reallocating\n\n";
 
         int newCapacity = capacity;
 

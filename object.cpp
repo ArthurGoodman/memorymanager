@@ -5,14 +5,8 @@
 #include "utility.h"
 #include "memorymanager.h"
 
-#include <iostream>
-
 Object::Object()
     : attributes(0) {
-}
-
-Object::~Object() {
-    std::cout << "Object::~Object()\n";
 }
 
 void Object::shiftPointers() {
@@ -22,7 +16,7 @@ void Object::shiftPointers() {
 
 void Object::forwardPointers() {
     if (attributes)
-        attributes = (HashTable *)attributes->forwardAddress;
+        attributes = (HashTable *)attributes->getForwardAddress();
 }
 
 void Object::mark() {

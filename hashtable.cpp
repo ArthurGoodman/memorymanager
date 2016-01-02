@@ -49,10 +49,10 @@ void HashTable::HashNode::forwardPointers() {
     Object::forwardPointers();
 
     if (next)
-        next = (HashNode *)next->forwardAddress;
+        next = (HashNode *)next->getForwardAddress();
 
     if (value)
-        value = (Object *)value->forwardAddress;
+        value = (Object *)value->getForwardAddress();
 }
 
 void HashTable::HashNode::mark() {
@@ -223,7 +223,7 @@ void HashTable::forwardPointers() {
 
     for (int i = 0; i < HashTableSize; i++)
         if (table[i])
-            table[i] = (HashNode *)table[i]->forwardAddress;
+            table[i] = (HashNode *)table[i]->getForwardAddress();
 }
 
 void HashTable::mark() {

@@ -14,7 +14,6 @@ class Object : public ManagedObject {
 
 public:
     Object();
-    ~Object();
 
     virtual void shiftPointers();
     virtual void forwardPointers();

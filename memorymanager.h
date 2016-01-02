@@ -25,6 +25,8 @@ public:
 
     ManagedObject *allocate(int size);
 
+    void collectGarbage();
+
     void registerPointer(Pointer<ManagedObject> *pointer);
     void removePointer(Pointer<ManagedObject> *pointer);
 
@@ -34,7 +36,6 @@ private:
 
     void shiftPointers();
 
-    void collectGarbage();
     void mark();
     void compact();
 

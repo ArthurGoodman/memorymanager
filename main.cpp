@@ -5,6 +5,7 @@
 #include "string.h"
 
 #include "utility.h"
+#include "memorymanager.h"
 
 int main() {
     Pointer<Object> obj = new Object;
@@ -22,6 +23,11 @@ int main() {
 
             if (obj->hasAttribute(str))
                 obj->removeAttribute(str);
+        }
+
+        if(rand() % 1000 == 0) {
+            std::cout << "\n//random garbage collection";
+            MemoryManager::instance()->collectGarbage();
         }
     }
 
