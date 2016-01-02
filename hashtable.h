@@ -20,9 +20,7 @@ class HashTable : public Object {
         HashNode *getNext() const;
         void setNext(HashNode *next);
 
-        void shiftPointers();
-        void forwardPointers();
-        void mark();
+        void getReferences(References &references);
 
         int getSize();
     };
@@ -66,9 +64,7 @@ public:
     void remove(const std::string &key);
     bool contains(const std::string &key);
 
-    void shiftPointers();
-    void forwardPointers();
-    void mark();
+    void getReferences(References &references);
 
     int getSize();
 };

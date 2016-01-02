@@ -15,9 +15,7 @@ class Object : public ManagedObject {
 public:
     Object();
 
-    virtual void shiftPointers();
-    virtual void forwardPointers();
-    virtual void mark();
+    virtual void getReferences(References &references);
 
     virtual int getSize();
 

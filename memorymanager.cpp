@@ -75,7 +75,7 @@ void MemoryManager::shiftPointers() {
     byte *p = memory.getData();
 
     for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
-        ((ManagedObject *)p)->shiftPointers();
+        shiftPointers((ManagedObject *)p);
 
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p)
@@ -85,7 +85,7 @@ void MemoryManager::shiftPointers() {
 void MemoryManager::mark() {
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p && !(*p)->isMarked())
-            (*p)->mark();
+            mark(*p);
 }
 
 void MemoryManager::compact() {
@@ -102,7 +102,7 @@ void MemoryManager::compact() {
 
     for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
         if (((ManagedObject *)p)->isMarked())
-            ((ManagedObject *)p)->forwardPointers();
+            forwardPointers((ManagedObject *)p);
 
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p && (*p)->isMarked())
@@ -116,7 +116,7 @@ void MemoryManager::compact() {
         size = ((ManagedObject *)p)->getSize();
 
         if (((ManagedObject *)p)->isMarked()) {
-            byte *destination = ((ManagedObject *)p)->forwardAddress;
+            byte *destination = ((ManagedObject *)p)->getForwardAddress();
 
             memmove(destination, p, ((ManagedObject *)p)->getSize());
 
@@ -143,4 +143,31 @@ void MemoryManager::release() {
         size = ((ManagedObject *)p)->getSize();
         ((ManagedObject *)p)->~ManagedObject();
     }
+}
+
+void MemoryManager::shiftPointers(ManagedObject *object) {
+    References references;
+    object->getReferences(references);
+
+    for (ManagedObject *&reference : references)
+        shiftPointer(reference);
+}
+
+void MemoryManager::forwardPointers(ManagedObject *object) {
+    References references;
+    object->getReferences(references);
+
+    for (ManagedObject *&reference : references)
+        reference = (ManagedObject *)reference->getForwardAddress();
+}
+
+void MemoryManager::mark(ManagedObject *object) {
+    object->mark();
+
+    References references;
+    object->getReferences(references);
+
+    for (ManagedObject *&reference : references)
+        if (!reference->isMarked())
+            mark(reference);
 }

@@ -13,12 +13,16 @@ ManagedObject::ManagedObject()
 ManagedObject::~ManagedObject() {
 }
 
-void ManagedObject::setFlag(Flag flag, bool value) {
+void ManagedObject::setFlag(int flag, bool value) {
     value ? flags |= flag : flags &= ~flag;
 }
 
 bool ManagedObject::isMarked() {
     return flags & FlagMark;
+}
+
+void ManagedObject::mark() {
+    setFlag(FlagMark);
 }
 
 void ManagedObject::unmark() {
@@ -29,12 +33,5 @@ byte *ManagedObject::getForwardAddress() {
     return forwardAddress;
 }
 
-void ManagedObject::shiftPointers() {
-}
-
-void ManagedObject::forwardPointers() {
-}
-
-void ManagedObject::mark() {
-    setFlag(FlagMark);
+void ManagedObject::getReferences(References &) {
 }

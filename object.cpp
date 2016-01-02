@@ -9,21 +9,9 @@ Object::Object()
     : attributes(0) {
 }
 
-void Object::shiftPointers() {
+void Object::getReferences(References &references) {
     if (attributes)
-        MemoryManager::shiftPointer(attributes);
-}
-
-void Object::forwardPointers() {
-    if (attributes)
-        attributes = (HashTable *)attributes->getForwardAddress();
-}
-
-void Object::mark() {
-    ManagedObject::mark();
-
-    if (attributes && !attributes->isMarked())
-        attributes->mark();
+        references << (ManagedObject *&)attributes;
 }
 
 int Object::getSize() {

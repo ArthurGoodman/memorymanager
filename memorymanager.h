@@ -40,6 +40,10 @@ private:
     void compact();
 
     void release();
+
+    void shiftPointers(ManagedObject *object);
+    void forwardPointers(ManagedObject *object);
+    void mark(ManagedObject *object);
 };
 
 template <typename T>

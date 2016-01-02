@@ -35,34 +35,14 @@ void HashTable::HashNode::setNext(HashTable::HashNode *next) {
     HashNode::next = next;
 }
 
-void HashTable::HashNode::shiftPointers() {
-    Object::shiftPointers();
+void HashTable::HashNode::getReferences(References &references) {
+    Object::getReferences(references);
 
     if (next)
-        MemoryManager::shiftPointer(next);
+        references << (ManagedObject *&)next;
 
     if (value)
-        MemoryManager::shiftPointer(value);
-}
-
-void HashTable::HashNode::forwardPointers() {
-    Object::forwardPointers();
-
-    if (next)
-        next = (HashNode *)next->getForwardAddress();
-
-    if (value)
-        value = (Object *)value->getForwardAddress();
-}
-
-void HashTable::HashNode::mark() {
-    Object::mark();
-
-    if (next && !next->isMarked())
-        next->mark();
-
-    if (value && !value->isMarked())
-        value->mark();
+        references << (ManagedObject *&)value;
 }
 
 int HashTable::HashNode::getSize() {
@@ -210,28 +190,12 @@ bool HashTable::contains(const std::string &key) {
     return entry;
 }
 
-void HashTable::shiftPointers() {
-    Object::shiftPointers();
+void HashTable::getReferences(References &references) {
+    Object::getReferences(references);
 
     for (int i = 0; i < HashTableSize; i++)
         if (table[i])
-            MemoryManager::shiftPointer(table[i]);
-}
-
-void HashTable::forwardPointers() {
-    Object::forwardPointers();
-
-    for (int i = 0; i < HashTableSize; i++)
-        if (table[i])
-            table[i] = (HashNode *)table[i]->getForwardAddress();
-}
-
-void HashTable::mark() {
-    Object::mark();
-
-    for (int i = 0; i < HashTableSize; i++)
-        if (table[i] && !table[i]->isMarked())
-            table[i]->mark();
+            references << (ManagedObject *&)table[i];
 }
 
 int HashTable::getSize() {
