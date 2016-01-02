@@ -5,8 +5,8 @@
 
 template class Pointer<Object>;
 template class Pointer<ManagedObject>;
-template class Pointer<HashTable/*<std::string, Object *>*/>;
-template class Pointer<HashTable/*<std::string, Object *>*/::HashNode>;
+template class Pointer<HashTable>;
+template class Pointer<HashTable::HashNode>;
 
 template <class T>
 Pointer<T>::Pointer(T *p)

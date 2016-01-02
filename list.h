@@ -2,10 +2,9 @@
 
 #include "object.h"
 
-template <class T>
 class List : public Object {
     class ListNode : public Object {
-        T value;
+        Object *value;
         ListNode *next;
     };
 
