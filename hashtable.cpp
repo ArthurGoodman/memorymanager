@@ -11,6 +11,10 @@ HashTable::HashNode::HashNode(std::string key, const Pointer<Object> value)
     : key(key), value(value), next(0) {
 }
 
+HashTable::HashNode::~HashNode() {
+    std::cout << "HashTable::HashNode::~HashNode() //value=" << value << "\n";
+}
+
 std::string &HashTable::HashNode::getKey() {
     return key;
 }
@@ -116,8 +120,7 @@ HashTable::HashTable()
 }
 
 HashTable::~HashTable() {
-    for (int i = 0; i < HashTableSize; i++)
-        table[i] = 0;
+    std::cout << "HashTable::~HashTable()\n";
 }
 
 typename HashTable::iterator HashTable::begin() {
@@ -175,6 +178,8 @@ void HashTable::put(const std::string &key, const Pointer<Object> &value) {
 }
 
 void HashTable::remove(const std::string &key) {
+    std::cout << "HashTable::remove(key=" << key << ")\n";
+
     ulong hashValue = hashFunction(key) % HashTableSize;
 
     HashNode *prev = 0;

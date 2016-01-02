@@ -5,8 +5,14 @@
 #include "utility.h"
 #include "memorymanager.h"
 
+#include <iostream>
+
 Object::Object()
     : attributes(0) {
+}
+
+Object::~Object() {
+    std::cout << "Object::~Object()\n";
 }
 
 void Object::shiftPointers() {
@@ -30,21 +36,26 @@ int Object::getSize() {
     return sizeof *this;
 }
 
-bool Object::hasAttribute(std::string name) {
+bool Object::hasAttribute(const std::string &name) {
     return attributes && attributes->contains(name);
 }
 
-Object *Object::getAttribute(std::string name) {
+Object *Object::getAttribute(const std::string &name) {
     return attributes ? attributes->get(name) : 0;
 }
 
-void Object::setAttribute(std::string name, const Pointer<Object> &value) {
+void Object::setAttribute(const std::string &name, const Pointer<Object> &value) {
     Pointer<Object> _this = this;
 
     if (!attributes)
         _this->attributes = new HashTable;
 
     _this->attributes->put(name, value);
+}
+
+void Object::removeAttribute(const std::string &name) {
+    if (attributes)
+        attributes->remove(name);
 }
 
 std::string Object::toString() {

@@ -7,6 +7,7 @@ class String : public Object {
 
 public:
     String(std::string value);
+    ~String();
 
     std::string toString();
 

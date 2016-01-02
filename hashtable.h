@@ -10,6 +10,7 @@ class HashTable : public Object {
 
     public:
         HashNode(std::string key, const Pointer<Object> value);
+        ~HashNode();
 
         std::string &getKey();
         Object *&getValue();

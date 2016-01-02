@@ -14,6 +14,7 @@ class Object : public ManagedObject {
 
 public:
     Object();
+    ~Object();
 
     virtual void shiftPointers();
     virtual void forwardPointers();
@@ -21,9 +22,10 @@ public:
 
     virtual int getSize();
 
-    bool hasAttribute(std::string name);
-    Object *getAttribute(std::string name);
-    void setAttribute(std::string name, const Pointer<Object> &value);
+    bool hasAttribute(const std::string &name);
+    Object *getAttribute(const std::string &name);
+    void setAttribute(const std::string &name, const Pointer<Object> &value);
+    void removeAttribute(const std::string &name);
 
     virtual std::string toString();
 };

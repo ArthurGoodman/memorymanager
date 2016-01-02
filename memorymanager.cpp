@@ -51,7 +51,11 @@ void MemoryManager::removePointer(Pointer<ManagedObject> *p) {
 
 MemoryManager::MemoryManager()
     : delta(0), objectCount(0), pointers(0) {
-    Vector::setInitialCapacity(128);
+    Vector::setInitialCapacity(1024);
+}
+
+MemoryManager::~MemoryManager() {
+    release();
 }
 
 void MemoryManager::shiftPointers() {
@@ -68,14 +72,14 @@ void MemoryManager::shiftPointers() {
 }
 
 void MemoryManager::collectGarbage() {
-    std::cout << "MemoryManager::collectGarbage()";
+    std::cout << "\nMemoryManager::collectGarbage()\n";
 
     int oldSize = memory.getSize(), oldObjectCount = objectCount;
 
     mark();
     compact();
 
-    std::cout << " //freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", oldObjectCount=" << oldObjectCount << "\n";
+    std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", oldObjectCount=" << oldObjectCount << "\n\n";
 }
 
 void MemoryManager::mark() {
@@ -85,8 +89,6 @@ void MemoryManager::mark() {
 }
 
 void MemoryManager::compact() {
-    int freeCount = 0, freeSize = 0;
-
     byte *p, *free;
     p = free = memory.getData();
 
@@ -94,9 +96,6 @@ void MemoryManager::compact() {
         if (((ManagedObject *)p)->isMarked()) {
             ((ManagedObject *)p)->forwardAddress = free;
             free += ((ManagedObject *)p)->getSize();
-        } else {
-            freeSize += ((ManagedObject *)p)->getSize();
-            freeCount++;
         }
 
     p = memory.getData();
@@ -111,6 +110,8 @@ void MemoryManager::compact() {
 
     p = memory.getData();
 
+    int freeCount = 0, freeSize = 0;
+
     for (int i = 0, size = 0; i < objectCount; i++, p += size) {
         size = ((ManagedObject *)p)->getSize();
 
@@ -121,9 +122,25 @@ void MemoryManager::compact() {
 
             ((ManagedObject *)destination)->unmark();
             ((ManagedObject *)destination)->forwardAddress = 0;
+        } else {
+            freeSize += size;
+            freeCount++;
+
+            ((ManagedObject *)p)->~ManagedObject();
         }
     }
 
     memory.free(freeSize);
     objectCount -= freeCount;
+}
+
+void MemoryManager::release() {
+    std::cout << "\nMemoryManager::release()\n";
+
+    byte *p = memory.getData();
+
+    for (int i = 0, size = 0; i < objectCount; i++, p += size) {
+        size = ((ManagedObject *)p)->getSize();
+        ((ManagedObject *)p)->~ManagedObject();
+    }
 }

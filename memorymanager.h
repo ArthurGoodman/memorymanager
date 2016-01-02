@@ -30,12 +30,15 @@ public:
 
 private:
     MemoryManager();
+    ~MemoryManager();
 
     void shiftPointers();
 
     void collectGarbage();
     void mark();
     void compact();
+
+    void release();
 };
 
 template <typename T>

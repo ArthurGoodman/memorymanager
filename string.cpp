@@ -7,6 +7,10 @@ String::String(std::string value)
     std::cout << "String::String(value=" << value << ")\n";
 }
 
+String::~String() {
+    std::cout << "String::~String() //value=" << value << "\n";
+}
+
 std::string String::toString() {
     return value;
 }
