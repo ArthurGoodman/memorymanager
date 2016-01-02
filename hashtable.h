@@ -20,7 +20,8 @@ class HashTable : public Object {
         HashNode *getNext() const;
         void setNext(HashNode *next);
 
-        void shiftPointers(int delta);
+        void shiftPointers();
+        void forwardPointers();
         void mark();
 
         int getSize();
@@ -65,7 +66,8 @@ public:
     void remove(const K &key);
     bool contains(const K &key);
 
-    void shiftPointers(int delta);
+    void shiftPointers();
+    void forwardPointers();
     void mark();
 
     int getSize();

@@ -9,9 +9,14 @@ Object::Object()
     : attributes(0) {
 }
 
-void Object::shiftPointers(int delta) {
+void Object::shiftPointers() {
     if (attributes)
-        MemoryManager::shiftPointer(attributes, delta);
+        MemoryManager::shiftPointer(attributes);
+}
+
+void Object::forwardPointers() {
+    if (attributes)
+        attributes = (HashTable<std::string, Object *> *)attributes->forwardAddress;
 }
 
 void Object::mark() {

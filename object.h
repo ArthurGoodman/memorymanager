@@ -16,7 +16,8 @@ class Object : public ManagedObject {
 public:
     Object();
 
-    virtual void shiftPointers(int delta);
+    virtual void shiftPointers();
+    virtual void forwardPointers();
     virtual void mark();
 
     virtual int getSize();

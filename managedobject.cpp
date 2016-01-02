@@ -21,7 +21,10 @@ void ManagedObject::unmark() {
     setFlag(FlagMark, false);
 }
 
-void ManagedObject::shiftPointers(int) {
+void ManagedObject::shiftPointers() {
+}
+
+void ManagedObject::forwardPointers() {
 }
 
 void ManagedObject::mark() {

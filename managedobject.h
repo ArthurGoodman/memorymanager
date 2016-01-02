@@ -3,9 +3,9 @@
 #include "common.h"
 
 class ManagedObject {
-    friend class MemoryManager;
-
     uint flags;
+
+public:
     byte *forwardAddress;
 
 public:
@@ -17,7 +17,8 @@ public:
     bool isMarked();
     void unmark();
 
-    virtual void shiftPointers(int delta);
+    virtual void shiftPointers();
+    virtual void forwardPointers();
     virtual void mark();
 
     virtual int getSize() = 0;

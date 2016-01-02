@@ -40,22 +40,41 @@ void HashTable<K, V>::HashNode::setNext(HashTable<K, V>::HashNode *next) {
 }
 
 template <class K, class V>
-void HashTable<K, V>::HashNode::shiftPointers(int delta) {
-    Object::shiftPointers(delta);
+void HashTable<K, V>::HashNode::shiftPointers() {
+    Object::shiftPointers();
 
     if (next)
-        MemoryManager::shiftPointer(next, delta);
+        MemoryManager::shiftPointer(next);
 }
 
 template <>
-void HashTable<std::string, Object *>::HashNode::shiftPointers(int delta) {
-    Object::shiftPointers(delta);
+void HashTable<std::string, Object *>::HashNode::shiftPointers() {
+    Object::shiftPointers();
 
     if (next)
-        MemoryManager::shiftPointer(next, delta);
+        MemoryManager::shiftPointer(next);
 
     if (value)
-        MemoryManager::shiftPointer(value, delta);
+        MemoryManager::shiftPointer(value);
+}
+
+template <class K, class V>
+void HashTable<K, V>::HashNode::forwardPointers() {
+    Object::forwardPointers();
+
+    if (next)
+        next = next->forwardAddress;
+}
+
+template <>
+void HashTable<std::string, Object *>::HashNode::forwardPointers() {
+    Object::forwardPointers();
+
+    if (next)
+        next = (HashNode *)next->forwardAddress;
+
+    if (value)
+        value = (Object *)value->forwardAddress;
 }
 
 template <class K, class V>
@@ -207,7 +226,7 @@ void HashTable<K, V>::put(const K &key, const V &value) {
 
     entry = new HashNode(key, value);
 
-    entry->shiftPointers(MemoryManager::getDelta());
+    entry->shiftPointers();
 
     if (!prev)
         _this->table[hashValue] = entry;
@@ -249,12 +268,21 @@ bool HashTable<K, V>::contains(const K &key) {
 }
 
 template <class K, class V>
-void HashTable<K, V>::shiftPointers(int delta) {
-    Object::shiftPointers(delta);
+void HashTable<K, V>::shiftPointers() {
+    Object::shiftPointers();
 
     for (int i = 0; i < HashTableSize; i++)
         if (table[i])
-            MemoryManager::shiftPointer(table[i], delta);
+            MemoryManager::shiftPointer(table[i]);
+}
+
+template <class K, class V>
+void HashTable<K, V>::forwardPointers() {
+    Object::forwardPointers();
+
+    for (int i = 0; i < HashTableSize; i++)
+        if (table[i])
+            table[i] = (HashNode *)table[i]->forwardAddress;
 }
 
 template <class K, class V>

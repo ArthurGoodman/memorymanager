@@ -20,10 +20,8 @@ class MemoryManager {
 public:
     static MemoryManager *instance();
 
-    static int getDelta();
-
     template <typename T>
-    static void shiftPointer(T *&pointer, int delta);
+    static void shiftPointer(T *&pointer);
 
     ManagedObject *allocate(int size);
 
@@ -41,6 +39,6 @@ private:
 };
 
 template <typename T>
-void MemoryManager::shiftPointer(T *&pointer, int delta) {
-    pointer = (T *)((byte *)pointer + delta);
+void MemoryManager::shiftPointer(T *&pointer) {
+    pointer = (T *)((byte *)pointer + manager.delta);
 }

@@ -4,6 +4,8 @@
 #include "object.h"
 #include "string.h"
 
+#include "utility.h"
+
 int main() {
     Pointer<Object> obj = new Object;
 
@@ -21,6 +23,13 @@ int main() {
     obj->setAttribute("10", new String("ten"));
 
     std::cout << obj->getAttribute("2")->toString() << std::endl;
+
+    //    for (int i = 0; i < 100; i++) {
+    //        if (i % 10 == 0)
+    //            new String(Utility::toString(i));
+    //        else
+    //            obj->setAttribute(Utility::toString(i), new String(Utility::toString(i)));
+    //    }
 
     return 0;
 }

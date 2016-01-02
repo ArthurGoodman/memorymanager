@@ -3,6 +3,8 @@
 #include <memory>
 #include <cmath>
 
+#include <iostream>
+
 int Vector::initialCapacity = 2;
 
 void Vector::setInitialCapacity(int initialCapacity) {
@@ -22,6 +24,8 @@ byte *Vector::allocate(int count) {
         return 0;
 
     if (!enoughSpace(count)) {
+        std::cout << "//reallocating\n";
+
         int newCapacity = capacity;
 
         if (!newCapacity)

@@ -13,10 +13,6 @@ MemoryManager *MemoryManager::instance() {
     return &manager;
 }
 
-int MemoryManager::getDelta() {
-    return manager.delta;
-}
-
 ManagedObject *MemoryManager::allocate(int size) {
     if (!memory.enoughSpace(size))
         collectGarbage();
@@ -61,14 +57,14 @@ MemoryManager::MemoryManager()
 void MemoryManager::shiftPointers() {
     std::cout << "MemoryManager::shiftPointers() //delta=" << delta << "\n";
 
-    byte *objects = memory.getData();
+    byte *p = memory.getData();
 
-    for (int i = 0; i < objectCount; i++, objects += ((ManagedObject *)objects)->getSize())
-        ((ManagedObject *)objects)->shiftPointers(delta);
+    for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
+        ((ManagedObject *)p)->shiftPointers();
 
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p)
-            shiftPointer(**p, delta);
+            shiftPointer(**p);
 }
 
 void MemoryManager::collectGarbage() {
@@ -85,7 +81,7 @@ void MemoryManager::mark() {
 }
 
 void MemoryManager::compact() {
-    int liveCount = 0, freeSize = 0;
+    int freeCount = 0, freeSize = 0;
 
     byte *p, *free;
     p = free = memory.getData();
@@ -94,16 +90,20 @@ void MemoryManager::compact() {
         if (((ManagedObject *)p)->isMarked()) {
             ((ManagedObject *)p)->forwardAddress = free;
             free += ((ManagedObject *)p)->getSize();
-
-            liveCount++;
-        } else
+        } else {
             freeSize += ((ManagedObject *)p)->getSize();
+            freeCount++;
+        }
 
     p = memory.getData();
 
     for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
-        if (((ManagedObject *)p)->isMarked() && ((ManagedObject *)p)->forwardAddress != p)
-            ((ManagedObject *)p)->shiftPointers(((ManagedObject *)p)->forwardAddress - p);
+        if (((ManagedObject *)p)->isMarked())
+            ((ManagedObject *)p)->forwardPointers();
+
+    for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
+        if (*p && (*p)->isMarked())
+            **p = (ManagedObject *)(*p)->forwardAddress;
 
     p = memory.getData();
 
@@ -121,5 +121,5 @@ void MemoryManager::compact() {
     }
 
     memory.free(freeSize);
-    objectCount = liveCount;
+    objectCount -= freeCount;
 }
