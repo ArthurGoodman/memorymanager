@@ -11,10 +11,6 @@ HashTable::HashNode::HashNode(std::string key, const Pointer<Object> value)
     : key(key), value(value), next(0) {
 }
 
-HashTable::HashNode::~HashNode() {
-    std::cout << "HashTable::HashNode::~HashNode() //value=" << value << "\n";
-}
-
 std::string &HashTable::HashNode::getKey() {
     return key;
 }
@@ -27,7 +23,7 @@ void HashTable::HashNode::setValue(Object *value) {
     HashNode::value = value;
 }
 
-typename HashTable::HashNode *HashTable::HashNode::getNext() const {
+HashTable::HashNode *HashTable::HashNode::getNext() const {
     return next;
 }
 
@@ -49,7 +45,7 @@ int HashTable::HashNode::getSize() {
     return sizeof *this;
 }
 
-typename HashTable::iterator &HashTable::iterator::operator++() {
+HashTable::iterator &HashTable::iterator::operator++() {
     if (node->getNext())
         node = node->getNext();
     else {
@@ -71,7 +67,7 @@ typename HashTable::iterator &HashTable::iterator::operator++() {
     return *this;
 }
 
-typename HashTable::iterator &HashTable::iterator::operator*() {
+HashTable::iterator &HashTable::iterator::operator*() {
     return *this;
 }
 
@@ -99,11 +95,7 @@ HashTable::HashTable()
     : table{0} {
 }
 
-HashTable::~HashTable() {
-    std::cout << "HashTable::~HashTable()\n";
-}
-
-typename HashTable::iterator HashTable::begin() {
+HashTable::iterator HashTable::begin() {
     for (int i = 0; i < HashTableSize; i++)
         if (table[i])
             return iterator(table, i);
@@ -111,7 +103,7 @@ typename HashTable::iterator HashTable::begin() {
     return iterator(table);
 }
 
-typename HashTable::iterator HashTable::end() {
+HashTable::iterator HashTable::end() {
     return iterator(table);
 }
 
