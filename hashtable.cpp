@@ -35,14 +35,14 @@ void HashTable::HashNode::setNext(HashTable::HashNode *next) {
     HashNode::next = next;
 }
 
-void HashTable::HashNode::getReferences(References &references) {
-    Object::getReferences(references);
+void HashTable::HashNode::mapOnReferences(void (*f)(ManagedObject *&)) {
+    Object::mapOnReferences(f);
 
     if (next)
-        references << (ManagedObject *&)next;
+        f((ManagedObject *&)next);
 
     if (value)
-        references << (ManagedObject *&)value;
+        f((ManagedObject *&)value);
 }
 
 int HashTable::HashNode::getSize() {
@@ -190,12 +190,12 @@ bool HashTable::contains(const std::string &key) {
     return entry;
 }
 
-void HashTable::getReferences(References &references) {
-    Object::getReferences(references);
+void HashTable::mapOnReferences(void (*f)(ManagedObject *&)) {
+    Object::mapOnReferences(f);
 
     for (int i = 0; i < HashTableSize; i++)
         if (table[i])
-            references << (ManagedObject *&)table[i];
+            f((ManagedObject *&)table[i]);
 }
 
 int HashTable::getSize() {

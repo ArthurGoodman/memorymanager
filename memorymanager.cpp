@@ -9,10 +9,6 @@
 
 MemoryManager MemoryManager::manager;
 
-MemoryManager *MemoryManager::instance() {
-    return &manager;
-}
-
 ManagedObject *MemoryManager::allocate(int size) {
     if (!memory.enoughSpace(size))
         collectGarbage();
@@ -146,28 +142,22 @@ void MemoryManager::release() {
 }
 
 void MemoryManager::shiftPointers(ManagedObject *object) {
-    References references;
-    object->getReferences(references);
-
-    for (ManagedObject *&reference : references)
-        shiftPointer(reference);
+    object->mapOnReferences([](ManagedObject *&ref) {
+        shiftPointer(ref);
+    });
 }
 
 void MemoryManager::forwardPointers(ManagedObject *object) {
-    References references;
-    object->getReferences(references);
-
-    for (ManagedObject *&reference : references)
-        reference = (ManagedObject *)reference->getForwardAddress();
+    object->mapOnReferences([](ManagedObject *&ref) {
+        ref = (ManagedObject *)ref->getForwardAddress();
+    });
 }
 
 void MemoryManager::mark(ManagedObject *object) {
     object->mark();
 
-    References references;
-    object->getReferences(references);
-
-    for (ManagedObject *&reference : references)
-        if (!reference->isMarked())
-            mark(reference);
+    object->mapOnReferences([](ManagedObject *&ref) {
+        if (!ref->isMarked())
+            MemoryManager::instance()->mark(ref);
+    });
 }

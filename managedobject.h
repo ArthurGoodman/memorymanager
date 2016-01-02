@@ -1,13 +1,6 @@
 #pragma once
 
-#include <list>
-#include <functional>
-
 #include "common.h"
-
-class ManagedObject;
-
-typedef std::list<std::reference_wrapper<ManagedObject *>> References;
 
 class ManagedObject {
     friend class MemoryManager;
@@ -31,7 +24,6 @@ public:
 
     byte *getForwardAddress();
 
-    virtual void getReferences(References &references);
-
+    virtual void mapOnReferences(void (*f)(ManagedObject *&));
     virtual int getSize() = 0;
 };

@@ -33,5 +33,5 @@ byte *ManagedObject::getForwardAddress() {
     return forwardAddress;
 }
 
-void ManagedObject::getReferences(References &) {
+void ManagedObject::mapOnReferences(void (*)(ManagedObject *&)) {
 }

@@ -15,8 +15,7 @@ class Object : public ManagedObject {
 public:
     Object();
 
-    virtual void getReferences(References &references);
-
+    virtual void mapOnReferences(void (*f)(ManagedObject *&));
     virtual int getSize();
 
     bool hasAttribute(const std::string &name);

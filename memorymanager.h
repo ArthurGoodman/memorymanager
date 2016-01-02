@@ -46,7 +46,11 @@ private:
     void mark(ManagedObject *object);
 };
 
+inline MemoryManager *MemoryManager::instance() {
+    return &manager;
+}
+
 template <typename T>
-void MemoryManager::shiftPointer(T *&pointer) {
+inline void MemoryManager::shiftPointer(T *&pointer) {
     pointer = (T *)((byte *)pointer + manager.delta);
 }

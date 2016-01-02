@@ -9,9 +9,9 @@ Object::Object()
     : attributes(0) {
 }
 
-void Object::getReferences(References &references) {
+void Object::mapOnReferences(void (*f)(ManagedObject *&)) {
     if (attributes)
-        references << (ManagedObject *&)attributes;
+        f((ManagedObject *&)attributes);
 }
 
 int Object::getSize() {
