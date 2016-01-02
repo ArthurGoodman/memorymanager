@@ -15,10 +15,12 @@ class MemoryManager {
 
     int objectCount;
 
-    Pointer<ManagedObject> *firstPointer;
+    Pointer<ManagedObject> *pointers;
 
 public:
     static MemoryManager *instance();
+
+    static int getDelta();
 
     template <typename T>
     static void shiftPointer(T *&pointer, int delta);
@@ -28,8 +30,6 @@ public:
     void registerPointer(Pointer<ManagedObject> *pointer);
     void removePointer(Pointer<ManagedObject> *pointer);
 
-    int getDelta();
-
 private:
     MemoryManager();
 
@@ -37,8 +37,7 @@ private:
 
     void collectGarbage();
     void mark();
-    void sweep();
-    void defragment();
+    void compact();
 };
 
 template <typename T>

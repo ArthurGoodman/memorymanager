@@ -5,6 +5,8 @@
 #include "memorymanager.h"
 #include "pointer.h"
 
+#include <iostream>
+
 template class HashTable<std::string, Object *>;
 
 template <class K, class V>
@@ -58,10 +60,21 @@ void HashTable<std::string, Object *>::HashNode::shiftPointers(int delta) {
 
 template <class K, class V>
 void HashTable<K, V>::HashNode::mark() {
+    Object::mark();
+
+    if (next && !next->isMarked())
+        next->mark();
 }
 
 template <>
 void HashTable<std::string, Object *>::HashNode::mark() {
+    Object::mark();
+
+    if (next && !next->isMarked())
+        next->mark();
+
+    if (value && !value->isMarked())
+        value->mark();
 }
 
 template <class K, class V>
@@ -173,6 +186,8 @@ V HashTable<K, V>::get(const K &key) const {
 
 template <class K, class V>
 void HashTable<K, V>::put(const K &key, const V &value) {
+    std::cout << "HashTable<K, V>::put(key=" << key << ", value=" << value << ")\n";
+
     ulong hashValue = hashFunction(key) % HashTableSize;
 
     Pointer<HashNode> prev = 0;
@@ -192,7 +207,7 @@ void HashTable<K, V>::put(const K &key, const V &value) {
 
     entry = new HashNode(key, value);
 
-    entry->shiftPointers(MemoryManager::instance()->getDelta());
+    entry->shiftPointers(MemoryManager::getDelta());
 
     if (!prev)
         _this->table[hashValue] = entry;
@@ -244,6 +259,11 @@ void HashTable<K, V>::shiftPointers(int delta) {
 
 template <class K, class V>
 void HashTable<K, V>::mark() {
+    Object::mark();
+
+    for (int i = 0; i < HashTableSize; i++)
+        if (table[i] && !table[i]->isMarked())
+            table[i]->mark();
 }
 
 template <class K, class V>

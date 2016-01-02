@@ -7,18 +7,18 @@ void *ManagedObject::operator new(uint size) {
 }
 
 ManagedObject::ManagedObject()
-    : flags(0) {
+    : flags(0), forwardAddress(0) {
 }
 
 ManagedObject::~ManagedObject() {
 }
 
-void ManagedObject::setFlag(Flag flag, bool value) {
-    value ? flags |= flag : flags &= ~flag;
+bool ManagedObject::isMarked() {
+    return flags & FlagMark;
 }
 
-bool ManagedObject::isFree() {
-    return flags & FlagFree;
+void ManagedObject::unmark() {
+    setFlag(FlagMark, false);
 }
 
 void ManagedObject::shiftPointers(int) {
@@ -26,4 +26,8 @@ void ManagedObject::shiftPointers(int) {
 
 void ManagedObject::mark() {
     setFlag(FlagMark);
+}
+
+void ManagedObject::setFlag(Flag flag, bool value) {
+    value ? flags |= flag : flags &= ~flag;
 }

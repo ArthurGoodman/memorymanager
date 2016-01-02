@@ -32,7 +32,7 @@ Pointer<T> &Pointer<T>::operator=(const Pointer<T> &p) {
 }
 
 template <class T>
-T *Pointer<T>::operator*() const {
+T *&Pointer<T>::operator*() {
     return pointer;
 }
 

@@ -8,7 +8,8 @@ class String : public Object {
 public:
     String(std::string value);
 
-    int getSize();
-
     std::string toString();
+
+protected:
+    int getSize();
 };

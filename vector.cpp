@@ -18,7 +18,7 @@ Vector::~Vector() {
 }
 
 byte *Vector::allocate(int count) {
-    if (count <= 0)
+    if (count < 0)
         return 0;
 
     if (!enoughSpace(count)) {
@@ -44,7 +44,7 @@ byte *Vector::allocate(int count) {
 }
 
 bool Vector::free(int count) {
-    if (count <= 0 || size < count)
+    if (count < 0 || size < count)
         return false;
 
     size -= count;

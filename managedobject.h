@@ -3,25 +3,29 @@
 #include "common.h"
 
 class ManagedObject {
-    int flags;
+    friend class MemoryManager;
+
+    uint flags;
+    byte *forwardAddress;
 
 public:
-    enum Flag {
-        FlagFree = 1 << 0,
-        FlagMark = 1 << 1,
-    };
-
     static void *operator new(uint size);
 
     ManagedObject();
     virtual ~ManagedObject();
 
-    void setFlag(Flag flag, bool value = true);
-
-    bool isFree();
+    bool isMarked();
+    void unmark();
 
     virtual void shiftPointers(int delta);
     virtual void mark();
 
     virtual int getSize() = 0;
+
+private:
+    enum Flag {
+        FlagMark = 1 << 1,
+    };
+
+    void setFlag(Flag flag, bool value = true);
 };

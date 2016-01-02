@@ -15,7 +15,7 @@ public:
     Pointer<T> &operator=(T *p);
     Pointer<T> &operator=(const Pointer<T> &p);
 
-    T *operator*() const;
+    T *&operator*();
     T *operator->() const;
     operator T *() const;
 };

@@ -7,6 +7,7 @@
 int main() {
     Pointer<Object> obj = new Object;
 
+    new String("garbage");
     obj->setAttribute("1", new String("one"));
     obj->setAttribute("2", new String("two"));
     obj->setAttribute("3", new String("three"));

@@ -17,7 +17,7 @@ void Object::shiftPointers(int delta) {
 void Object::mark() {
     ManagedObject::mark();
 
-    if (attributes)
+    if (attributes && !attributes->isMarked())
         attributes->mark();
 }
 
