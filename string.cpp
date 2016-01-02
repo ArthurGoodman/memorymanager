@@ -1,7 +1,10 @@
 #include "string.h"
 
+#include <iostream>
+
 String::String(std::string value)
     : value(value) {
+    std::cout << "String::String(value=" << value << ")\n";
 }
 
 std::string String::toString() {

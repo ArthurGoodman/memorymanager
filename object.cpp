@@ -16,7 +16,7 @@ void Object::shiftPointers() {
 
 void Object::forwardPointers() {
     if (attributes)
-        attributes = (HashTable<std::string, Object *> *)attributes->forwardAddress;
+        attributes = (HashTable/*<std::string, Object *>*/ *)attributes->forwardAddress;
 }
 
 void Object::mark() {
@@ -39,10 +39,10 @@ Object *Object::getAttribute(std::string name) {
 }
 
 void Object::setAttribute(std::string name, const Pointer<Object> &value) {
-    Pointer<Object> _this = this;
+    Object *_this = this;
 
     if (!attributes)
-        _this->attributes = new HashTable<std::string, Object *>;
+        _this->attributes = new HashTable/*<std::string, Object *>*/;
 
     _this->attributes->put(name, value);
 }

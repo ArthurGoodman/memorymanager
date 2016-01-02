@@ -68,10 +68,14 @@ void MemoryManager::shiftPointers() {
 }
 
 void MemoryManager::collectGarbage() {
-    std::cout << "MemoryManager::collectGarbage()\n";
+    std::cout << "MemoryManager::collectGarbage()";
+
+    int oldSize = memory.getSize(), oldObjectCount = objectCount;
 
     mark();
     compact();
+
+    std::cout << " //freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", oldObjectCount=" << oldObjectCount << "\n";
 }
 
 void MemoryManager::mark() {

@@ -4,14 +4,14 @@
 
 #include "managedobject.h"
 
-template <class, class>
+//template <class, class>
 class HashTable;
 
 template <class>
 class Pointer;
 
 class Object : public ManagedObject {
-    HashTable<std::string, Object *> *attributes;
+    HashTable/*<std::string, Object *>*/ *attributes;
 
 public:
     Object();
