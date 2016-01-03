@@ -144,8 +144,8 @@ void LocalMemoryManager::release() {
 }
 
 void LocalMemoryManager::shiftPointers(ManagedObject *object) {
-    object->mapOnReferences([](ManagedObject *&ref) {
-        ((LocalMemoryManager *)IMemoryManager::instance())->shiftPointer(ref);
+    object->mapOnReferences([this](ManagedObject *&ref) {
+        shiftPointer(ref);
     });
 }
 
@@ -158,8 +158,8 @@ void LocalMemoryManager::forwardPointers(ManagedObject *object) {
 void LocalMemoryManager::mark(ManagedObject *object) {
     object->mark();
 
-    object->mapOnReferences([](ManagedObject *&ref) {
+    object->mapOnReferences([this](ManagedObject *&ref) {
         if (!ref->isMarked())
-            ((LocalMemoryManager *)IMemoryManager::instance())->mark(ref);
+            mark(ref);
     });
 }

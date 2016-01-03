@@ -35,7 +35,7 @@ std::string Object::toString() {
     return Utility::toString<void *>(this);
 }
 
-void Object::mapOnReferences(void (*f)(ManagedObject *&)) {
+void Object::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     if (attributes)
         f((ManagedObject *&)attributes);
 }

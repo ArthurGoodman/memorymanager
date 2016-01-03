@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "common.h"
 
 class ManagedObject {
@@ -18,7 +20,7 @@ public:
 
     void setFlag(int flag, bool value = true);
 
-    virtual void mapOnReferences(void (*f)(ManagedObject *&));
+    virtual void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     virtual int getSize() = 0;
 
 private:

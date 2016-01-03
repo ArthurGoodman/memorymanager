@@ -17,7 +17,7 @@ void ManagedObject::setFlag(int flag, bool value) {
     value ? flags |= flag : flags &= ~flag;
 }
 
-void ManagedObject::mapOnReferences(void (*)(ManagedObject *&)) {
+void ManagedObject::mapOnReferences(const std::function<void(ManagedObject *&)> &) {
 }
 
 bool ManagedObject::isMarked() {

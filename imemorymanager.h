@@ -1,12 +1,12 @@
 #pragma once
 
+#define MemoryManager LocalMemoryManager
+
+class MemoryManager;
 class ManagedObject;
 
 template <class>
 class Pointer;
-
-class LocalMemoryManager;
-#define MemoryManager LocalMemoryManager
 
 class IMemoryManager {
     static MemoryManager manager;

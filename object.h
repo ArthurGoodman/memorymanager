@@ -22,6 +22,6 @@ public:
 
     virtual std::string toString();
 
-    virtual void mapOnReferences(void (*f)(ManagedObject *&));
+    virtual void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     virtual int getSize();
 };

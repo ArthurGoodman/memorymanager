@@ -31,7 +31,7 @@ void HashTable::HashNode::setNext(HashTable::HashNode *next) {
     HashNode::next = next;
 }
 
-void HashTable::HashNode::mapOnReferences(void (*f)(ManagedObject *&)) {
+void HashTable::HashNode::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
     if (next)
@@ -182,7 +182,7 @@ bool HashTable::contains(const std::string &key) {
     return entry;
 }
 
-void HashTable::mapOnReferences(void (*f)(ManagedObject *&)) {
+void HashTable::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
     for (int i = 0; i < HashTableSize; i++)
