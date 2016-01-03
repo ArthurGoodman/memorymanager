@@ -58,7 +58,7 @@ public:
 
     Object *get(const std::string &key) const;
     void put(const std::string &key, const Pointer<Object> &value);
-    void remove(const std::string &key);
+    bool remove(const std::string &key);
     bool contains(const std::string &key);
 
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);

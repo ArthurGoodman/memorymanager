@@ -5,26 +5,47 @@
 #include "common.h"
 
 class ManagedObject {
-    friend class MemoryManager;
-
-    static const int FlagMark = 1;
-
     uint flags;
     ManagedObject *forwardAddress;
 
 public:
+    enum {
+        FlagMark = 1 << 0
+    };
+
     static void *operator new(uint size);
+    static void operator delete(void *p);
 
     ManagedObject();
     virtual ~ManagedObject();
 
-    void setFlag(int flag, bool value = true);
+    bool hasFlag(int flag);
+    void setFlag(int flag);
+    void removeFlag(int flag);
+
+    ManagedObject *getForwardAddress();
+    void setForwardAddress(ManagedObject *forwardAddress);
 
     virtual void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     virtual int getSize() = 0;
-
-private:
-    bool isMarked();
-    void mark();
-    void unmark();
 };
+
+inline bool ManagedObject::hasFlag(int flag) {
+    return flags & flag;
+}
+
+inline void ManagedObject::setFlag(int flag) {
+    flags |= flag;
+}
+
+inline void ManagedObject::removeFlag(int flag) {
+    flags &= ~flag;
+}
+
+inline ManagedObject *ManagedObject::getForwardAddress() {
+    return forwardAddress;
+}
+
+inline void ManagedObject::setForwardAddress(ManagedObject *forwardAddress) {
+    this->forwardAddress = forwardAddress;
+}

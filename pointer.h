@@ -2,8 +2,6 @@
 
 template <class T>
 class Pointer {
-    friend class MemoryManager;
-
     T *pointer;
     Pointer<T> *prev, *next;
 
@@ -18,4 +16,9 @@ public:
     T *&operator*();
     T *operator->() const;
     operator T *() const;
+
+    void link(Pointer<T> *&pointers);
+    void unlink(Pointer<T> *&pointers);
+
+    Pointer<T> *getNext();
 };

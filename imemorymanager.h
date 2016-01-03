@@ -1,20 +1,25 @@
 #pragma once
 
-#define MemoryManager LocalMemoryManager
+#include "common.h"
 
-class MemoryManager;
 class ManagedObject;
 
 template <class>
 class Pointer;
 
 class IMemoryManager {
-    static MemoryManager manager;
+    static IMemoryManager *manager;
 
 public:
     static IMemoryManager *instance();
 
-    virtual ManagedObject *allocate(int size) = 0;
+    static void initialize();
+    static void finalize();
+
+    virtual ~IMemoryManager();
+
+    virtual ManagedObject *allocate(uint size) = 0;
+    virtual void free(ManagedObject *p) = 0;
 
     virtual void collectGarbage() = 0;
 
@@ -23,5 +28,5 @@ public:
 };
 
 inline IMemoryManager *IMemoryManager::instance() {
-    return (IMemoryManager *)&manager;
+    return manager;
 }

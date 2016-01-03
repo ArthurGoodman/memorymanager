@@ -15,7 +15,8 @@ public:
     LocalMemoryManager();
     ~LocalMemoryManager();
 
-    ManagedObject *allocate(int size);
+    ManagedObject *allocate(uint size);
+    void free(ManagedObject *p);
 
     void collectGarbage();
 
@@ -29,7 +30,7 @@ private:
     void mark();
     void compact();
 
-    void release();
+    void finalize();
 
     void shiftPointers(ManagedObject *object);
     void forwardPointers(ManagedObject *object);

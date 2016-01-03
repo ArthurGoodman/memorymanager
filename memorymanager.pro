@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     utility.cpp \
     imemorymanager.cpp \
     bytearray.cpp \
-    localmemorymanager.cpp
+    localmemorymanager.cpp \
+    nomemorymanager.cpp
 
 HEADERS += \
     common.h \
@@ -29,4 +30,5 @@ HEADERS += \
     utility.h \
     imemorymanager.h \
     bytearray.h \
-    localmemorymanager.h
+    localmemorymanager.h \
+    nomemorymanager.h

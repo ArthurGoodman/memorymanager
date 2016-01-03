@@ -8,28 +8,34 @@
 #include "imemorymanager.h"
 
 int main() {
-    Pointer<Object> obj = new Object;
+    IMemoryManager::initialize();
 
-    srand(time(0));
+    {
+        Pointer<Object> obj = new Object;
 
-    for (int i = 0; i < 100; i++) {
-        if (rand() % 5 == 0)
-            new String(Utility::toString(i));
-        else
-            obj->setAttribute(Utility::toString(i), new String(Utility::toString(i)));
+        srand(time(0));
 
-        if (rand() % 2 == 0) {
-            std::string str = Utility::toString(rand() % (i + 1));
+        for (int i = 0; i < 100; i++) {
+            if (rand() % 5 == 0)
+                new String(Utility::toString(i));
+            else
+                obj->setAttribute(Utility::toString(i), new String(Utility::toString(i)));
 
-            if (obj->hasAttribute(str))
-                obj->removeAttribute(str);
-        }
+            if (rand() % 2 == 0) {
+                std::string str = Utility::toString(rand() % (i + 1));
 
-        if (rand() % 100 == 0) {
-            std::cout << "\n//random garbage collection";
-            IMemoryManager::instance()->collectGarbage();
+                if (obj->hasAttribute(str))
+                    obj->removeAttribute(str);
+            }
+
+            if (rand() % 100 == 0) {
+                std::cout << "\n//random garbage collection";
+                IMemoryManager::instance()->collectGarbage();
+            }
         }
     }
+
+    IMemoryManager::finalize();
 
     return 0;
 }

@@ -3,22 +3,22 @@
 #include "common.h"
 
 class ByteArray {
-    static int initialCapacity;
+    static uint initialCapacity;
 
-    int size, capacity;
+    uint size, capacity;
     byte *data;
 
 public:
-    static void setInitialCapacity(int initialCapacity);
+    static void setInitialCapacity(uint initialCapacity);
 
     ByteArray();
     ~ByteArray();
 
-    byte *allocate(int count);
-    bool free(int count);
+    byte *allocate(uint count);
+    bool free(uint count);
     void release();
 
-    bool enoughSpace(int count) const;
+    bool enoughSpace(uint count) const;
 
     byte *getData() const;
     int getSize() const;

@@ -5,9 +5,9 @@
 
 #include <iostream>
 
-int ByteArray::initialCapacity = 1;
+uint ByteArray::initialCapacity = 1;
 
-void ByteArray::setInitialCapacity(int initialCapacity) {
+void ByteArray::setInitialCapacity(uint initialCapacity) {
     ByteArray::initialCapacity = initialCapacity;
 }
 
@@ -19,10 +19,7 @@ ByteArray::~ByteArray() {
     release();
 }
 
-byte *ByteArray::allocate(int count) {
-    if (count < 0)
-        return 0;
-
+byte *ByteArray::allocate(uint count) {
     if (!enoughSpace(count)) {
         std::cout << "//reallocating\n\n";
 
@@ -47,8 +44,8 @@ byte *ByteArray::allocate(int count) {
     return data + size - count;
 }
 
-bool ByteArray::free(int count) {
-    if (count < 0 || size < count)
+bool ByteArray::free(uint count) {
+    if (size < count)
         return false;
 
     size -= count;
@@ -64,7 +61,7 @@ void ByteArray::release() {
     data = 0;
 }
 
-bool ByteArray::enoughSpace(int count) const {
+bool ByteArray::enoughSpace(uint count) const {
     return size + count <= capacity;
 }
 

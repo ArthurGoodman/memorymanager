@@ -149,7 +149,7 @@ void HashTable::put(const std::string &key, const Pointer<Object> &value) {
         prev->setNext(entry);
 }
 
-void HashTable::remove(const std::string &key) {
+bool HashTable::remove(const std::string &key) {
     std::cout << "HashTable::remove(key=" << key << ")\n";
 
     ulong hashValue = hashFunction(key) % HashTableSize;
@@ -163,12 +163,14 @@ void HashTable::remove(const std::string &key) {
     }
 
     if (!entry)
-        return;
+        return false;
 
     if (!prev)
         table[hashValue] = entry->getNext();
     else
         prev->setNext(entry->getNext());
+
+    return true;
 }
 
 bool HashTable::contains(const std::string &key) {

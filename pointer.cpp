@@ -50,3 +50,30 @@ Pointer<T> &Pointer<T>::operator=(T *p) {
     this->pointer = p;
     return *this;
 }
+
+template <class T>
+void Pointer<T>::link(Pointer<T> *&pointers) {
+    next = pointers;
+
+    if (pointers)
+        pointers->prev = this;
+
+    pointers = this;
+}
+
+template <class T>
+void Pointer<T>::unlink(Pointer<T> *&pointers) {
+    if (next)
+        next->prev = prev;
+
+    if (prev)
+        prev->next = next;
+
+    if (pointers == this)
+        pointers = pointers->next;
+}
+
+template <class T>
+Pointer<T> *Pointer<T>::getNext() {
+    return next;
+}

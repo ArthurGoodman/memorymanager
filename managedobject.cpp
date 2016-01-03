@@ -6,6 +6,10 @@ void *ManagedObject::operator new(uint size) {
     return (void *)IMemoryManager::instance()->allocate(size);
 }
 
+void ManagedObject::operator delete(void *p) {
+    IMemoryManager::instance()->free((ManagedObject *)p);
+}
+
 ManagedObject::ManagedObject()
     : flags(0), forwardAddress(0) {
 }
@@ -13,21 +17,5 @@ ManagedObject::ManagedObject()
 ManagedObject::~ManagedObject() {
 }
 
-void ManagedObject::setFlag(int flag, bool value) {
-    value ? flags |= flag : flags &= ~flag;
-}
-
 void ManagedObject::mapOnReferences(const std::function<void(ManagedObject *&)> &) {
-}
-
-bool ManagedObject::isMarked() {
-    return flags & FlagMark;
-}
-
-void ManagedObject::mark() {
-    setFlag(FlagMark);
-}
-
-void ManagedObject::unmark() {
-    setFlag(FlagMark, false);
 }

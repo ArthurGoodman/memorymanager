@@ -13,10 +13,10 @@ LocalMemoryManager::LocalMemoryManager()
 }
 
 LocalMemoryManager::~LocalMemoryManager() {
-    release();
+    finalize();
 }
 
-ManagedObject *LocalMemoryManager::allocate(int size) {
+ManagedObject *LocalMemoryManager::allocate(uint size) {
     if (!memory.enoughSpace(size))
         collectGarbage();
 
@@ -32,6 +32,9 @@ ManagedObject *LocalMemoryManager::allocate(int size) {
     return object;
 }
 
+void LocalMemoryManager::free(ManagedObject *) {
+}
+
 void LocalMemoryManager::collectGarbage() {
     std::cout << "\nMemoryManager::collectGarbage()\n";
 
@@ -44,34 +47,22 @@ void LocalMemoryManager::collectGarbage() {
 }
 
 void LocalMemoryManager::registerPointer(Pointer<ManagedObject> *p) {
-    p->next = pointers;
-
-    if (pointers)
-        pointers->prev = p;
-
-    pointers = p;
+    p->link(pointers);
 }
 
 void LocalMemoryManager::removePointer(Pointer<ManagedObject> *p) {
-    if (p->next)
-        p->next->prev = p->prev;
-
-    if (p->prev)
-        p->prev->next = p->next;
-
-    if (pointers == p)
-        pointers = pointers->next;
+    p->unlink(pointers);
 }
 
 void LocalMemoryManager::shiftPointers() {
     std::cout << "MemoryManager::shiftPointers() //delta=" << delta << "\n\n";
 
-    byte *p = memory.getData();
+    byte *object = memory.getData();
 
-    for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
-        shiftPointers((ManagedObject *)p);
+    for (int i = 0; i < objectCount; i++, object += ((ManagedObject *)object)->getSize())
+        shiftPointers((ManagedObject *)object);
 
-    for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
+    for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
         if (*p)
             shiftPointer(**p);
 }
@@ -81,50 +72,50 @@ void LocalMemoryManager::shiftPointer(ManagedObject *&pointer) {
 }
 
 void LocalMemoryManager::mark() {
-    for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
-        if (*p && !(*p)->isMarked())
+    for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
+        if (*p && !(*p)->hasFlag(ManagedObject::FlagMark))
             mark(*p);
 }
 
 void LocalMemoryManager::compact() {
-    byte *p, *free;
-    p = free = memory.getData();
+    byte *object, *free;
+    object = free = memory.getData();
 
-    for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
-        if (((ManagedObject *)p)->isMarked()) {
-            ((ManagedObject *)p)->forwardAddress = (ManagedObject *)free;
-            free += ((ManagedObject *)p)->getSize();
+    for (int i = 0; i < objectCount; i++, object += ((ManagedObject *)object)->getSize())
+        if (((ManagedObject *)object)->hasFlag(ManagedObject::FlagMark)) {
+            ((ManagedObject *)object)->setForwardAddress((ManagedObject *)free);
+            free += ((ManagedObject *)object)->getSize();
         }
 
-    p = memory.getData();
+    object = memory.getData();
 
-    for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
-        if (((ManagedObject *)p)->isMarked())
-            forwardPointers((ManagedObject *)p);
+    for (int i = 0; i < objectCount; i++, object += ((ManagedObject *)object)->getSize())
+        if (((ManagedObject *)object)->hasFlag(ManagedObject::FlagMark))
+            forwardPointers((ManagedObject *)object);
 
-    for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
-        if (*p && (*p)->isMarked())
-            **p = (*p)->forwardAddress;
+    for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
+        if (*p && (*p)->hasFlag(ManagedObject::FlagMark))
+            *p = (*p)->getForwardAddress();
 
-    p = memory.getData();
+    object = memory.getData();
 
     int freeCount = 0, freeSize = 0;
 
-    for (int i = 0, size = 0; i < objectCount; i++, p += size) {
-        size = ((ManagedObject *)p)->getSize();
+    for (int i = 0, size = 0; i < objectCount; i++, object += size) {
+        size = ((ManagedObject *)object)->getSize();
 
-        if (((ManagedObject *)p)->isMarked()) {
-            byte *dst = (byte *)((ManagedObject *)p)->forwardAddress;
+        if (((ManagedObject *)object)->hasFlag(ManagedObject::FlagMark)) {
+            byte *dst = (byte *)((ManagedObject *)object)->getForwardAddress();
 
-            memmove(dst, p, size);
+            memmove(dst, object, size);
 
-            ((ManagedObject *)dst)->unmark();
-            ((ManagedObject *)dst)->forwardAddress = 0;
+            ((ManagedObject *)dst)->removeFlag(ManagedObject::FlagMark);
+            ((ManagedObject *)dst)->setForwardAddress(0);
         } else {
             freeSize += size;
             freeCount++;
 
-            ((ManagedObject *)p)->~ManagedObject();
+            ((ManagedObject *)object)->~ManagedObject();
         }
     }
 
@@ -132,7 +123,7 @@ void LocalMemoryManager::compact() {
     objectCount -= freeCount;
 }
 
-void LocalMemoryManager::release() {
+void LocalMemoryManager::finalize() {
     std::cout << "\nMemoryManager::release()\n";
 
     byte *p = memory.getData();
@@ -151,15 +142,15 @@ void LocalMemoryManager::shiftPointers(ManagedObject *object) {
 
 void LocalMemoryManager::forwardPointers(ManagedObject *object) {
     object->mapOnReferences([](ManagedObject *&ref) {
-        ref = ref->forwardAddress;
+        ref = ref->getForwardAddress();
     });
 }
 
 void LocalMemoryManager::mark(ManagedObject *object) {
-    object->mark();
+    object->setFlag(ManagedObject::FlagMark);
 
     object->mapOnReferences([this](ManagedObject *&ref) {
-        if (!ref->isMarked())
+        if (!ref->hasFlag(ManagedObject::FlagMark))
             mark(ref);
     });
 }
