@@ -3,7 +3,7 @@
 #include "hashtable.h"
 #include "pointer.h"
 #include "utility.h"
-#include "memorymanager.h"
+#include "imemorymanager.h"
 
 Object::Object()
     : attributes(0) {

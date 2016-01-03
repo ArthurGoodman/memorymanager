@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-class Vector {
+class ByteArray {
     static int initialCapacity;
 
     int size, capacity;
@@ -11,8 +11,8 @@ class Vector {
 public:
     static void setInitialCapacity(int initialCapacity);
 
-    Vector();
-    ~Vector();
+    ByteArray();
+    ~ByteArray();
 
     byte *allocate(int count);
     bool free(int count);

@@ -5,7 +5,7 @@
 #include "string.h"
 
 #include "utility.h"
-#include "memorymanager.h"
+#include "imemorymanager.h"
 
 int main() {
     Pointer<Object> obj = new Object;
@@ -27,7 +27,7 @@ int main() {
 
         if (rand() % 100 == 0) {
             std::cout << "\n//random garbage collection";
-            MemoryManager::instance()->collectGarbage();
+            IMemoryManager::instance()->collectGarbage();
         }
     }
 

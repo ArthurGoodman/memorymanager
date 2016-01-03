@@ -1,9 +1,9 @@
 #include "managedobject.h"
 
-#include "memorymanager.h"
+#include "imemorymanager.h"
 
 void *ManagedObject::operator new(uint size) {
-    return (void *)MemoryManager::instance()->allocate(size);
+    return (void *)IMemoryManager::instance()->allocate(size);
 }
 
 ManagedObject::ManagedObject()

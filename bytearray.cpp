@@ -1,25 +1,25 @@
-#include "vector.h"
+#include "bytearray.h"
 
 #include <memory>
 #include <cmath>
 
 #include <iostream>
 
-int Vector::initialCapacity = 1;
+int ByteArray::initialCapacity = 1;
 
-void Vector::setInitialCapacity(int initialCapacity) {
-    Vector::initialCapacity = initialCapacity;
+void ByteArray::setInitialCapacity(int initialCapacity) {
+    ByteArray::initialCapacity = initialCapacity;
 }
 
-Vector::Vector()
+ByteArray::ByteArray()
     : size(0), capacity(0), data(0) {
 }
 
-Vector::~Vector() {
+ByteArray::~ByteArray() {
     release();
 }
 
-byte *Vector::allocate(int count) {
+byte *ByteArray::allocate(int count) {
     if (count < 0)
         return 0;
 
@@ -47,7 +47,7 @@ byte *Vector::allocate(int count) {
     return data + size - count;
 }
 
-bool Vector::free(int count) {
+bool ByteArray::free(int count) {
     if (count < 0 || size < count)
         return false;
 
@@ -55,7 +55,7 @@ bool Vector::free(int count) {
     return true;
 }
 
-void Vector::release() {
+void ByteArray::release() {
     if (data)
         ::free(data);
 
@@ -64,18 +64,18 @@ void Vector::release() {
     data = 0;
 }
 
-bool Vector::enoughSpace(int count) const {
+bool ByteArray::enoughSpace(int count) const {
     return size + count <= capacity;
 }
 
-byte *Vector::getData() const {
+byte *ByteArray::getData() const {
     return data;
 }
 
-int Vector::getSize() const {
+int ByteArray::getSize() const {
     return size;
 }
 
-int Vector::getCapacity() const {
+int ByteArray::getCapacity() const {
     return capacity;
 }

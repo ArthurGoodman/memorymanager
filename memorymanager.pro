@@ -6,8 +6,6 @@ CONFIG -= qt
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    vector.cpp \
-    memorymanager.cpp \
     common.cpp \
     object.cpp \
     list.cpp \
@@ -15,11 +13,12 @@ SOURCES += main.cpp \
     pointer.cpp \
     managedobject.cpp \
     string.cpp \
-    utility.cpp
+    utility.cpp \
+    imemorymanager.cpp \
+    memorymanager.cpp \
+    bytearray.cpp
 
 HEADERS += \
-    vector.h \
-    memorymanager.h \
     common.h \
     object.h \
     list.h \
@@ -27,4 +26,7 @@ HEADERS += \
     pointer.h \
     managedobject.h \
     string.h \
-    utility.h
+    utility.h \
+    imemorymanager.h \
+    memorymanager.h \
+    bytearray.h

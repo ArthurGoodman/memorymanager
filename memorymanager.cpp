@@ -7,7 +7,14 @@
 
 #include <iostream>
 
-MemoryManager MemoryManager::manager;
+MemoryManager::MemoryManager()
+    : delta(0), objectCount(0), pointers(0) {
+    ByteArray::setInitialCapacity(1024);
+}
+
+MemoryManager::~MemoryManager() {
+    release();
+}
 
 ManagedObject *MemoryManager::allocate(int size) {
     if (!memory.enoughSpace(size))
@@ -56,15 +63,6 @@ void MemoryManager::removePointer(Pointer<ManagedObject> *p) {
         pointers = pointers->next;
 }
 
-MemoryManager::MemoryManager()
-    : delta(0), objectCount(0), pointers(0) {
-    Vector::setInitialCapacity(1024);
-}
-
-MemoryManager::~MemoryManager() {
-    release();
-}
-
 void MemoryManager::shiftPointers() {
     std::cout << "MemoryManager::shiftPointers() //delta=" << delta << "\n\n";
 
@@ -76,6 +74,10 @@ void MemoryManager::shiftPointers() {
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p)
             shiftPointer(**p);
+}
+
+void MemoryManager::shiftPointer(ManagedObject *&pointer) {
+    pointer = (ManagedObject *)((byte *)pointer + delta);
 }
 
 void MemoryManager::mark() {
@@ -143,7 +145,7 @@ void MemoryManager::release() {
 
 void MemoryManager::shiftPointers(ManagedObject *object) {
     object->mapOnReferences([](ManagedObject *&ref) {
-        shiftPointer(ref);
+        ((MemoryManager *)IMemoryManager::instance())->shiftPointer(ref);
     });
 }
 
@@ -158,6 +160,6 @@ void MemoryManager::mark(ManagedObject *object) {
 
     object->mapOnReferences([](ManagedObject *&ref) {
         if (!ref->isMarked())
-            MemoryManager::instance()->mark(ref);
+            ((MemoryManager *)IMemoryManager::instance())->mark(ref);
     });
 }

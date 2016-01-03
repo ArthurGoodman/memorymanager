@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "memorymanager.h"
+#include "imemorymanager.h"
 #include "pointer.h"
 
 #include <iostream>

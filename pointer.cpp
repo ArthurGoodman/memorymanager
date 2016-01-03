@@ -1,6 +1,6 @@
 #include "pointer.h"
 
-#include "memorymanager.h"
+#include "imemorymanager.h"
 #include "hashtable.h"
 
 template class Pointer<Object>;
@@ -11,7 +11,7 @@ template class Pointer<HashTable::HashNode>;
 template <class T>
 Pointer<T>::Pointer(T *p)
     : pointer(p), prev(0), next(0) {
-    MemoryManager::instance()->registerPointer((Pointer<ManagedObject> *)this);
+    IMemoryManager::instance()->registerPointer((Pointer<ManagedObject> *)this);
 }
 
 template <class T>
@@ -21,7 +21,7 @@ Pointer<T>::Pointer(const Pointer<T> &p)
 
 template <class T>
 Pointer<T>::~Pointer() {
-    MemoryManager::instance()->removePointer((Pointer<ManagedObject> *)this);
+    IMemoryManager::instance()->removePointer((Pointer<ManagedObject> *)this);
 }
 
 template <class T>
