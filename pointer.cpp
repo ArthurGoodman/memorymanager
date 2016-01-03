@@ -16,8 +16,7 @@ Pointer<T>::Pointer(T *p)
 
 template <class T>
 Pointer<T>::Pointer(const Pointer<T> &p)
-    : pointer(p.pointer), prev(0), next(0) {
-    MemoryManager::instance()->registerPointer((Pointer<ManagedObject> *)this);
+    : Pointer(p.pointer) {
 }
 
 template <class T>

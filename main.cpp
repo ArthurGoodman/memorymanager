@@ -25,7 +25,7 @@ int main() {
                 obj->removeAttribute(str);
         }
 
-        if(rand() % 1000 == 0) {
+        if (rand() % 100 == 0) {
             std::cout << "\n//random garbage collection";
             MemoryManager::instance()->collectGarbage();
         }

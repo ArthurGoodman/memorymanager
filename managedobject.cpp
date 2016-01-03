@@ -17,6 +17,9 @@ void ManagedObject::setFlag(int flag, bool value) {
     value ? flags |= flag : flags &= ~flag;
 }
 
+void ManagedObject::mapOnReferences(void (*)(ManagedObject *&)) {
+}
+
 bool ManagedObject::isMarked() {
     return flags & FlagMark;
 }
@@ -27,11 +30,4 @@ void ManagedObject::mark() {
 
 void ManagedObject::unmark() {
     setFlag(FlagMark, false);
-}
-
-byte *ManagedObject::getForwardAddress() {
-    return forwardAddress;
-}
-
-void ManagedObject::mapOnReferences(void (*)(ManagedObject *&)) {
 }

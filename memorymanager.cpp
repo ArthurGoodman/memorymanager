@@ -33,7 +33,7 @@ void MemoryManager::collectGarbage() {
     mark();
     compact();
 
-    std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", oldObjectCount=" << oldObjectCount << "\n\n";
+    std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", objectCount=" << objectCount << "\n\n";
 }
 
 void MemoryManager::registerPointer(Pointer<ManagedObject> *p) {
@@ -90,7 +90,7 @@ void MemoryManager::compact() {
 
     for (int i = 0; i < objectCount; i++, p += ((ManagedObject *)p)->getSize())
         if (((ManagedObject *)p)->isMarked()) {
-            ((ManagedObject *)p)->forwardAddress = free;
+            ((ManagedObject *)p)->forwardAddress = (ManagedObject *)free;
             free += ((ManagedObject *)p)->getSize();
         }
 
@@ -102,7 +102,7 @@ void MemoryManager::compact() {
 
     for (Pointer<ManagedObject> *p = pointers; p; p = p->next)
         if (*p && (*p)->isMarked())
-            **p = (ManagedObject *)(*p)->getForwardAddress();
+            **p = (*p)->forwardAddress;
 
     p = memory.getData();
 
@@ -112,12 +112,12 @@ void MemoryManager::compact() {
         size = ((ManagedObject *)p)->getSize();
 
         if (((ManagedObject *)p)->isMarked()) {
-            byte *destination = ((ManagedObject *)p)->getForwardAddress();
+            byte *dst = (byte *)((ManagedObject *)p)->forwardAddress;
 
-            memmove(destination, p, ((ManagedObject *)p)->getSize());
+            memmove(dst, p, size);
 
-            ((ManagedObject *)destination)->unmark();
-            ((ManagedObject *)destination)->forwardAddress = 0;
+            ((ManagedObject *)dst)->unmark();
+            ((ManagedObject *)dst)->forwardAddress = 0;
         } else {
             freeSize += size;
             freeCount++;
@@ -149,7 +149,7 @@ void MemoryManager::shiftPointers(ManagedObject *object) {
 
 void MemoryManager::forwardPointers(ManagedObject *object) {
     object->mapOnReferences([](ManagedObject *&ref) {
-        ref = (ManagedObject *)ref->getForwardAddress();
+        ref = ref->forwardAddress;
     });
 }
 

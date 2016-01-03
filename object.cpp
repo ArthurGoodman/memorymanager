@@ -9,15 +9,6 @@ Object::Object()
     : attributes(0) {
 }
 
-void Object::mapOnReferences(void (*f)(ManagedObject *&)) {
-    if (attributes)
-        f((ManagedObject *&)attributes);
-}
-
-int Object::getSize() {
-    return sizeof *this;
-}
-
 bool Object::hasAttribute(const std::string &name) {
     return attributes && attributes->contains(name);
 }
@@ -42,4 +33,13 @@ void Object::removeAttribute(const std::string &name) {
 
 std::string Object::toString() {
     return Utility::toString<void *>(this);
+}
+
+void Object::mapOnReferences(void (*f)(ManagedObject *&)) {
+    if (attributes)
+        f((ManagedObject *&)attributes);
+}
+
+int Object::getSize() {
+    return sizeof *this;
 }

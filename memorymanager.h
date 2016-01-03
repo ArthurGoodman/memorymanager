@@ -20,7 +20,7 @@ class MemoryManager {
 public:
     static MemoryManager *instance();
 
-    template <typename T>
+    template <class T>
     static void shiftPointer(T *&pointer);
 
     ManagedObject *allocate(int size);
@@ -50,7 +50,7 @@ inline MemoryManager *MemoryManager::instance() {
     return &manager;
 }
 
-template <typename T>
+template <class T>
 inline void MemoryManager::shiftPointer(T *&pointer) {
     pointer = (T *)((byte *)pointer + manager.delta);
 }

@@ -126,7 +126,7 @@ void HashTable::put(const std::string &key, const Pointer<Object> &value) {
 
     ulong hashValue = hashFunction(key) % HashTableSize;
 
-    Pointer<HashNode> prev = 0;
+    Pointer<HashNode> prev;
     Pointer<HashNode> entry = table[hashValue];
 
     while (entry && entry->getKey() != key) {
