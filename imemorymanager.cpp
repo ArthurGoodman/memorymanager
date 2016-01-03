@@ -1,11 +1,11 @@
 #include "imemorymanager.h"
 
-#include "nomemorymanager.h"
+#include "localmemorymanager.h"
 
 IMemoryManager *IMemoryManager::manager;
 
 void IMemoryManager::initialize() {
-    manager = new NoMemoryManager;
+    manager = new LocalMemoryManager;
 }
 
 void IMemoryManager::finalize() {
