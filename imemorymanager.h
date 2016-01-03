@@ -1,13 +1,12 @@
 #pragma once
 
-#include "bytearray.h"
-
 class ManagedObject;
 
 template <class>
 class Pointer;
 
-class MemoryManager;
+class LocalMemoryManager;
+#define MemoryManager LocalMemoryManager
 
 class IMemoryManager {
     static MemoryManager manager;

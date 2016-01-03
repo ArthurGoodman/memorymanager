@@ -1,8 +1,9 @@
 #pragma once
 
 #include "imemorymanager.h"
+#include "bytearray.h"
 
-class MemoryManager : public IMemoryManager {
+class LocalMemoryManager : public IMemoryManager {
     ByteArray memory;
     int delta;
 
@@ -11,8 +12,8 @@ class MemoryManager : public IMemoryManager {
     Pointer<ManagedObject> *pointers;
 
 public:
-    MemoryManager();
-    ~MemoryManager();
+    LocalMemoryManager();
+    ~LocalMemoryManager();
 
     ManagedObject *allocate(int size);
 

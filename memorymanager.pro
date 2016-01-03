@@ -15,8 +15,8 @@ SOURCES += main.cpp \
     string.cpp \
     utility.cpp \
     imemorymanager.cpp \
-    memorymanager.cpp \
-    bytearray.cpp
+    bytearray.cpp \
+    localmemorymanager.cpp
 
 HEADERS += \
     common.h \
@@ -28,5 +28,5 @@ HEADERS += \
     string.h \
     utility.h \
     imemorymanager.h \
-    memorymanager.h \
-    bytearray.h
+    bytearray.h \
+    localmemorymanager.h

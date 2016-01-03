@@ -1,5 +1,5 @@
 #include "imemorymanager.h"
 
-#include "memorymanager.h"
+#include "localmemorymanager.h"
 
 MemoryManager IMemoryManager::manager;
