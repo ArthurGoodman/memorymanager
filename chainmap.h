@@ -25,10 +25,10 @@ class ChainMap : public HashMap<K, V> {
         int getSize();
     };
 
-    static const int HashTableSize = 10;
+    static const int TableSize = 10;
 
     std::hash<K> hashFunction;
-    Entry *table[HashTableSize];
+    Entry *table[TableSize];
 
 public:
     class iterator {

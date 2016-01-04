@@ -94,13 +94,13 @@ typename ChainMap<K, V>::iterator &ChainMap<K, V>::iterator::operator++() {
     if (entry->getNext())
         entry = entry->getNext();
     else {
-        while (++i < HashTableSize)
+        while (++i < TableSize)
             if (table[i]) {
                 entry = table[i];
                 break;
             }
 
-        if (i == HashTableSize)
+        if (i == TableSize)
             entry = 0;
     }
 
@@ -144,7 +144,7 @@ ChainMap<K, V>::ChainMap()
 
 template <class K, class V>
 typename ChainMap<K, V>::iterator ChainMap<K, V>::begin() {
-    for (int i = 0; i < HashTableSize; i++)
+    for (int i = 0; i < TableSize; i++)
         if (table[i])
             return iterator(table, i);
 
@@ -158,9 +158,9 @@ typename ChainMap<K, V>::iterator ChainMap<K, V>::end() {
 
 template <class K, class V>
 V ChainMap<K, V>::get(const K &key) const {
-    std::cout << "HashTable<K, V>::get(key=" << key << ")\n";
+    std::cout << "ChainMap<K, V>::get(key=" << key << ")\n";
 
-    ulong hashValue = hash(key) % HashTableSize;
+    ulong hashValue = hash(key) % TableSize;
     Entry *entry = table[hashValue];
 
     while (entry) {
@@ -170,14 +170,14 @@ V ChainMap<K, V>::get(const K &key) const {
         entry = entry->getNext();
     }
 
-    throw std::out_of_range("HashTable<K, V>::get");
+    throw std::out_of_range("ChainMap<K, V>::get");
 }
 
 template <class K, class V>
 void ChainMap<K, V>::put(const K &key, const V &value) {
-    std::cout << "HashTable<K, V>::put(key=" << key << ", value=" << value << ")\n";
+    std::cout << "ChainMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    ulong hashValue = hash(key) % HashTableSize;
+    ulong hashValue = hash(key) % TableSize;
 
     Pointer<typename HashMap<K, V>::Entry> prev;
     Pointer<typename HashMap<K, V>::Entry> entry = table[hashValue];
@@ -204,9 +204,9 @@ void ChainMap<K, V>::put(const K &key, const V &value) {
 
 template <class K, class V>
 bool ChainMap<K, V>::remove(const K &key) {
-    std::cout << "HashTable<K, V>::remove(key=" << key << ")\n";
+    std::cout << "ChainMap<K, V>::remove(key=" << key << ")\n";
 
-    ulong hashValue = hash(key) % HashTableSize;
+    ulong hashValue = hash(key) % TableSize;
 
     Entry *prev = 0;
     Entry *entry = table[hashValue];
@@ -229,9 +229,9 @@ bool ChainMap<K, V>::remove(const K &key) {
 
 template <class K, class V>
 bool ChainMap<K, V>::contains(const K &key) const {
-    std::cout << "HashTable<K, V>::contains(key=" << key << ")\n";
+    std::cout << "ChainMap<K, V>::contains(key=" << key << ")\n";
 
-    ulong hashValue = hash(key) % HashTableSize;
+    ulong hashValue = hash(key) % TableSize;
 
     Entry *entry = table[hashValue];
 
@@ -245,7 +245,7 @@ template <class K, class V>
 void ChainMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
-    for (int i = 0; i < HashTableSize; i++)
+    for (int i = 0; i < TableSize; i++)
         if (table[i])
             f((ManagedObject *&)table[i]);
 }
