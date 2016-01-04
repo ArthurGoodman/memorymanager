@@ -1,11 +1,11 @@
 #include <iostream>
 
+#include "imemorymanager.h"
 #include "pointer.h"
 #include "object.h"
 #include "string.h"
 
 #include "utility.h"
-#include "imemorymanager.h"
 #include "hashtable.h"
 
 void run() {
@@ -15,9 +15,9 @@ void run() {
 
     for (int i = 0; i < 100; i++) {
         if (rand() % 5 == 0)
-            new String(Utility::toString(i));
+            new String("garbage");
         else
-            obj->setAttribute(Utility::toString(i), new String(Utility::toString(i)));
+            obj->setAttribute(Utility::toString(i), String::idToString(String::stringToId(Utility::toString(i))));
 
         if (rand() % 2 == 0) {
             std::string str = Utility::toString(rand() % (i + 1));
@@ -34,11 +34,18 @@ void run() {
 }
 
 int main() {
+    FILE *file = freopen("out.txt", "w", stdout);
+
     IMemoryManager::initialize();
+    String::initialize();
 
     run();
 
+    String::finalize();
     IMemoryManager::finalize();
+
+    fclose(file);
+    system("start out.txt");
 
     return 0;
 }

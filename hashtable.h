@@ -21,7 +21,7 @@ class HashTable : public Object {
         Entry *getNext() const;
         void setNext(Entry *next);
 
-        bool equals(const K &key);
+        bool equals(const K &key) const;
 
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
         int getSize();
@@ -63,7 +63,7 @@ public:
     V get(const K &key) const;
     void put(const K &key, const V &value);
     bool remove(const K &key);
-    bool contains(const K &key);
+    bool contains(const K &key) const;
 
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize();

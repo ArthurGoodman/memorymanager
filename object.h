@@ -11,7 +11,7 @@ template <class>
 class Pointer;
 
 class Object : public ManagedObject {
-    HashTable<std::string, Object *> *attributes;
+    HashTable<uint, Object *> *attributes;
 
 public:
     Object();

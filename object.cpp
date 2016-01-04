@@ -4,31 +4,32 @@
 #include "pointer.h"
 #include "utility.h"
 #include "imemorymanager.h"
+#include "string.h"
 
 Object::Object()
     : attributes(0) {
 }
 
 bool Object::hasAttribute(const std::string &name) {
-    return attributes && attributes->contains(name);
+    return attributes && attributes->contains(String::stringToId(name));
 }
 
 Object *Object::getAttribute(const std::string &name) {
-    return attributes ? attributes->get(name) : 0;
+    return attributes ? attributes->get(String::stringToId(name)) : 0;
 }
 
 void Object::setAttribute(const std::string &name, const Pointer<Object> &value) {
     Pointer<Object> _this = this;
 
     if (!attributes)
-        _this->attributes = new HashTable<std::string, Object *>;
+        _this->attributes = new HashTable<uint, Object *>;
 
-    _this->attributes->put(name, value);
+    _this->attributes->put(String::stringToId(name), value);
 }
 
 void Object::removeAttribute(const std::string &name) {
     if (attributes)
-        attributes->remove(name);
+        attributes->remove(String::stringToId(name));
 }
 
 bool Object::equals(Object *object) {
