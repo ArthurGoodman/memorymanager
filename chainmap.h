@@ -1,12 +1,10 @@
 #pragma once
 
-#include "object.h"
+#include "hashmap.h"
 
 template <class K, class V>
-class HashTable : public Object {
-    class Entry : public Object {
-        K key;
-        V value;
+class ChainMap : public HashMap<K, V> {
+    class Entry : public HashMap<K, V>::Entry {
         Entry *next;
 
     public:
@@ -34,7 +32,7 @@ class HashTable : public Object {
 
 public:
     class iterator {
-        friend class HashTable;
+        friend class ChainMap;
 
         Entry **table;
 
@@ -55,7 +53,7 @@ public:
         iterator(Entry **table, int i);
     };
 
-    HashTable();
+    ChainMap();
 
     iterator begin();
     iterator end();

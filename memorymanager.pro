@@ -9,7 +9,6 @@ SOURCES += main.cpp \
     common.cpp \
     object.cpp \
     list.cpp \
-    hashtable.cpp \
     pointer.cpp \
     managedobject.cpp \
     string.cpp \
@@ -17,13 +16,14 @@ SOURCES += main.cpp \
     bytearray.cpp \
     nomemorymanager.cpp \
     memorymanager.cpp \
-    markcompactmemorymanager.cpp
+    markcompactmemorymanager.cpp \
+    hashmap.cpp \
+    chainmap.cpp
 
 HEADERS += \
     common.h \
     object.h \
     list.h \
-    hashtable.h \
     pointer.h \
     managedobject.h \
     string.h \
@@ -31,4 +31,6 @@ HEADERS += \
     bytearray.h \
     nomemorymanager.h \
     memorymanager.h \
-    markcompactmemorymanager.h
+    markcompactmemorymanager.h \
+    hashmap.h \
+    chainmap.h

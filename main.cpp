@@ -6,7 +6,7 @@
 #include "string.h"
 
 #include "utility.h"
-#include "hashtable.h"
+#include "chainmap.h"
 
 void run() {
     Pointer<Object> obj = new Object;

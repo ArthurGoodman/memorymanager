@@ -1,14 +1,14 @@
 #include "pointer.h"
 
 #include "memorymanager.h"
-#include "hashtable.h"
+#include "chainmap.h"
 
 template class Pointer<Object>;
 template class Pointer<ManagedObject>;
-template class Pointer<HashTable<uint, Object *>>;
-template class Pointer<HashTable<uint, Object *>::Entry>;
-template class Pointer<HashTable<Object *, uint>>;
-template class Pointer<HashTable<Object *, uint>::Entry>;
+template class Pointer<HashMap<uint, Object *>>;
+template class Pointer<HashMap<uint, Object *>::Entry>;
+template class Pointer<HashMap<Object *, uint>>;
+template class Pointer<HashMap<Object *, uint>::Entry>;
 
 template <class T>
 Pointer<T>::Pointer(T *p)

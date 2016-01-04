@@ -1,17 +1,17 @@
 #include "string.h"
 
-#include "hashtable.h"
+#include "chainmap.h"
 #include "pointer.h"
 
 #include <iostream>
 
-Pointer<HashTable<Object *, uint>> *String::stringId;
-Pointer<HashTable<uint, Object *>> *String::idString;
+Pointer<HashMap<Object *, uint>> *String::stringId;
+Pointer<HashMap<uint, Object *>> *String::idString;
 uint String::lastId = 0;
 
 void String::initialize() {
-    stringId = new Pointer<HashTable<Object *, uint>>(new HashTable<Object *, uint>);
-    idString = new Pointer<HashTable<uint, Object *>>(new HashTable<uint, Object *>);
+    stringId = new Pointer<HashMap<Object *, uint>>(new ChainMap<Object *, uint>);
+    idString = new Pointer<HashMap<uint, Object *>>(new ChainMap<uint, Object *>);
 }
 
 void String::finalize() {

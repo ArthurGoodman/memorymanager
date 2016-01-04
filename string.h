@@ -3,8 +3,8 @@
 #include "object.h"
 
 class String : public Object {
-    static Pointer<HashTable<Object *, uint>> *stringId;
-    static Pointer<HashTable<uint, Object *>> *idString;
+    static Pointer<HashMap<Object *, uint>> *stringId;
+    static Pointer<HashMap<uint, Object *>> *idString;
     static uint lastId;
 
     std::string value;

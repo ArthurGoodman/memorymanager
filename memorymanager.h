@@ -32,8 +32,7 @@ public:
 
 template <class T>
 T *MemoryManager::allocateArray(uint size) {
-    T *array = (T *)instance()->allocate(size * sizeof(T), size);
-    return new (array) T[size];
+    return new (instance()->allocate(size * sizeof(T), size)) T[size];
 }
 
 inline MemoryManager *MemoryManager::instance() {
