@@ -1,27 +1,72 @@
 #pragma once
 
-#include "object.h"
+#include "map.h"
 
 template <class K, class V>
-class HashMap : public Object {
-protected:
-    class Entry : public Object {
-    protected:
-        K key;
-        V value;
+class HashMap : public Map<K, V> {
+    class Entry : public Map<K, V>::Entry {
+        Entry *next;
 
     public:
         Entry(const K &key, const V &value);
+
+        K &getKey();
+        V &getValue();
+
+        void setKey(const K &key);
+        void setValue(const V &value);
+
+        Entry *getNext() const;
+        void setNext(Entry *next);
+
+        bool equals(const K &key) const;
+
+        void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
+        int getSize();
     };
 
-public:
-    virtual V get(const K &key) const = 0;
-    virtual void put(const K &key, const V &value) = 0;
-    virtual bool remove(const K &key) = 0;
-    virtual bool contains(const K &key) const = 0;
-};
+    static const int TableSize = 10;
 
-template <class K, class V>
-HashMap<K, V>::Entry::Entry(const K &key, const V &value)
-    : key(key), value(value) {
-}
+    std::hash<K> hashFunction;
+    Entry *table[TableSize];
+
+public:
+    class iterator {
+        friend class HashMap;
+
+        Entry **table;
+
+        int i;
+        Entry *entry;
+
+    public:
+        iterator &operator++();
+        iterator &operator*();
+
+        bool operator!=(const iterator &other) const;
+
+        K &key();
+        V &value();
+
+    private:
+        iterator(Entry **table);
+        iterator(Entry **table, int i);
+    };
+
+    HashMap();
+
+    iterator begin();
+    iterator end();
+
+    V get(const K &key) const;
+    void put(const K &key, const V &value);
+    bool remove(const K &key);
+    bool contains(const K &key) const;
+
+    void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
+    int getSize();
+
+private:
+    Entry *createEntry(const K &key, const V &value) const;
+    ulong hash(const K &key) const;
+};

@@ -1,17 +1,17 @@
 #include "string.h"
 
-#include "chainmap.h"
+#include "sherwoodmap.h"
 #include "pointer.h"
 
 #include <iostream>
 
-Pointer<HashMap<Object *, uint>> *String::stringId;
-Pointer<HashMap<uint, Object *>> *String::idString;
+Pointer<Map<Object *, uint>> *String::stringId;
+Pointer<Map<uint, Object *>> *String::idString;
 uint String::lastId = 0;
 
 void String::initialize() {
-    stringId = new Pointer<HashMap<Object *, uint>>(new ChainMap<Object *, uint>);
-    idString = new Pointer<HashMap<uint, Object *>>(new ChainMap<uint, Object *>);
+    stringId = new Pointer<Map<Object *, uint>>(new SherwoodMap<Object *, uint>);
+    idString = new Pointer<Map<uint, Object *>>(new SherwoodMap<uint, Object *>);
 }
 
 void String::finalize() {

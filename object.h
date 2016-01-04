@@ -5,13 +5,13 @@
 #include "managedobject.h"
 
 template <class, class>
-class HashMap;
+class Map;
 
 template <class>
 class Pointer;
 
 class Object : public ManagedObject {
-    HashMap<uint, Object *> *attributes;
+    Map<uint, Object *> *attributes;
 
 public:
     Object();

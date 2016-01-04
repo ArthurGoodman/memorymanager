@@ -17,8 +17,9 @@ SOURCES += main.cpp \
     nomemorymanager.cpp \
     memorymanager.cpp \
     markcompactmemorymanager.cpp \
+    map.cpp \
     hashmap.cpp \
-    chainmap.cpp
+    sherwoodmap.cpp
 
 HEADERS += \
     common.h \
@@ -32,5 +33,6 @@ HEADERS += \
     nomemorymanager.h \
     memorymanager.h \
     markcompactmemorymanager.h \
+    map.h \
     hashmap.h \
-    chainmap.h
+    sherwoodmap.h
