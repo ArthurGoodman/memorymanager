@@ -14,10 +14,10 @@ SOURCES += main.cpp \
     managedobject.cpp \
     string.cpp \
     utility.cpp \
-    imemorymanager.cpp \
     bytearray.cpp \
-    localmemorymanager.cpp \
-    nomemorymanager.cpp
+    nomemorymanager.cpp \
+    memorymanager.cpp \
+    markcompactmemorymanager.cpp
 
 HEADERS += \
     common.h \
@@ -28,7 +28,7 @@ HEADERS += \
     managedobject.h \
     string.h \
     utility.h \
-    imemorymanager.h \
     bytearray.h \
-    localmemorymanager.h \
-    nomemorymanager.h
+    nomemorymanager.h \
+    memorymanager.h \
+    markcompactmemorymanager.h

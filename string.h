@@ -16,7 +16,7 @@ public:
     static uint stringToId(const std::string &str);
     static String *idToString(uint id);
 
-    String(const std::string &value);
+    String(const std::string &value = "");
 
     bool equals(Object *object);
     ulong hash();

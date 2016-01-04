@@ -13,8 +13,9 @@ public:
         FlagMark = 1 << 0
     };
 
-    static void *operator new(uint size);
-    static void operator delete(void *p);
+    static void *operator new(uint size) noexcept;
+    static void *operator new(uint size, void *&p) noexcept;
+    static void operator delete(void *p) noexcept;
 
     ManagedObject();
     virtual ~ManagedObject();

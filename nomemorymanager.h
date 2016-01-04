@@ -1,10 +1,10 @@
 #pragma once
 
-#include "imemorymanager.h"
+#include "memorymanager.h"
 
-class NoMemoryManager : public IMemoryManager {
+class NoMemoryManager : public MemoryManager {
 public:
-    ManagedObject *allocate(uint size);
+    ManagedObject *allocate(uint size, int count);
     void free(ManagedObject *p);
 
     void collectGarbage();

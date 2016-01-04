@@ -2,7 +2,7 @@
 
 #include <memory>
 
-ManagedObject *NoMemoryManager::allocate(uint size) {
+ManagedObject *NoMemoryManager::allocate(uint size, int) {
     return (ManagedObject *)malloc(size);
 }
 

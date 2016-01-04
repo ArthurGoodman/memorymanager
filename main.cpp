@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "imemorymanager.h"
+#include "memorymanager.h"
 #include "pointer.h"
 #include "object.h"
 #include "string.h"
@@ -32,7 +32,7 @@ void run() {
 
         if (rand() % 100 == 0) {
             std::cout << "\n//random garbage collection";
-            IMemoryManager::instance()->collectGarbage();
+            MemoryManager::instance()->collectGarbage();
         }
     }
 }
@@ -40,13 +40,13 @@ void run() {
 int main() {
     FILE *file = freopen("out.txt", "w", stdout);
 
-    IMemoryManager::initialize();
+    MemoryManager::initialize();
     String::initialize();
 
     run();
 
     String::finalize();
-    IMemoryManager::finalize();
+    MemoryManager::finalize();
 
     fclose(file);
     system("start out.txt");

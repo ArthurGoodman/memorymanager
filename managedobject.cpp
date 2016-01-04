@@ -1,13 +1,17 @@
 #include "managedobject.h"
 
-#include "imemorymanager.h"
+#include "memorymanager.h"
 
-void *ManagedObject::operator new(uint size) {
-    return (void *)IMemoryManager::instance()->allocate(size);
+void *ManagedObject::operator new(uint size) noexcept {
+    return (void *)MemoryManager::instance()->allocate(size);
 }
 
-void ManagedObject::operator delete(void *p) {
-    IMemoryManager::instance()->free((ManagedObject *)p);
+void *ManagedObject::operator new(uint, void *&p) noexcept {
+    return p;
+}
+
+void ManagedObject::operator delete(void *p) noexcept {
+    MemoryManager::instance()->free((ManagedObject *)p);
 }
 
 ManagedObject::ManagedObject()

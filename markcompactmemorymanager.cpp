@@ -1,4 +1,4 @@
-#include "localmemorymanager.h"
+#include "markcompactmemorymanager.h"
 
 #include <memory>
 
@@ -7,16 +7,16 @@
 
 #include <iostream>
 
-LocalMemoryManager::LocalMemoryManager()
+MarkCompactMemoryManager::MarkCompactMemoryManager()
     : delta(0), objectCount(0), pointers(0) {
     ByteArray::setInitialCapacity(1024);
 }
 
-LocalMemoryManager::~LocalMemoryManager() {
+MarkCompactMemoryManager::~MarkCompactMemoryManager() {
     finalize();
 }
 
-ManagedObject *LocalMemoryManager::allocate(uint size) {
+ManagedObject *MarkCompactMemoryManager::allocate(uint size, int count) {
     if (!memory.enoughSpace(size))
         collectGarbage();
 
@@ -27,16 +27,16 @@ ManagedObject *LocalMemoryManager::allocate(uint size) {
     if ((delta = memory.getData() - oldAddress) != 0)
         shiftPointers();
 
-    objectCount++;
+    objectCount += count;
 
     return object;
 }
 
-void LocalMemoryManager::free(ManagedObject *) {
+void MarkCompactMemoryManager::free(ManagedObject *) {
 }
 
-void LocalMemoryManager::collectGarbage() {
-    std::cout << "\nMemoryManager::collectGarbage()\n";
+void MarkCompactMemoryManager::collectGarbage() {
+    std::cout << "\nMarkCompactMemoryManager::collectGarbage()\n";
 
     int oldSize = memory.getSize(), oldObjectCount = objectCount;
 
@@ -46,16 +46,16 @@ void LocalMemoryManager::collectGarbage() {
     std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", objectCount=" << objectCount << "\n\n";
 }
 
-void LocalMemoryManager::registerPointer(Pointer<ManagedObject> *p) {
+void MarkCompactMemoryManager::registerPointer(Pointer<ManagedObject> *p) {
     p->link(pointers);
 }
 
-void LocalMemoryManager::removePointer(Pointer<ManagedObject> *p) {
+void MarkCompactMemoryManager::removePointer(Pointer<ManagedObject> *p) {
     p->unlink(pointers);
 }
 
-void LocalMemoryManager::shiftPointers() {
-    std::cout << "MemoryManager::shiftPointers() //delta=" << delta << "\n\n";
+void MarkCompactMemoryManager::shiftPointers() {
+    std::cout << "MarkCompactMemoryManager::shiftPointers() //delta=" << delta << "\n\n";
 
     byte *object = memory.getData();
 
@@ -67,17 +67,17 @@ void LocalMemoryManager::shiftPointers() {
             shiftPointer(**p);
 }
 
-void LocalMemoryManager::shiftPointer(ManagedObject *&pointer) {
+void MarkCompactMemoryManager::shiftPointer(ManagedObject *&pointer) {
     pointer = (ManagedObject *)((byte *)pointer + delta);
 }
 
-void LocalMemoryManager::mark() {
+void MarkCompactMemoryManager::mark() {
     for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
         if (*p && !(*p)->hasFlag(ManagedObject::FlagMark))
             mark(*p);
 }
 
-void LocalMemoryManager::compact() {
+void MarkCompactMemoryManager::compact() {
     byte *object, *free;
     object = free = memory.getData();
 
@@ -123,8 +123,8 @@ void LocalMemoryManager::compact() {
     objectCount -= freeCount;
 }
 
-void LocalMemoryManager::finalize() {
-    std::cout << "\nMemoryManager::release()\n";
+void MarkCompactMemoryManager::finalize() {
+    std::cout << "\nMarkCompactMemoryManager::finalize()\n";
 
     byte *p = memory.getData();
 
@@ -134,19 +134,19 @@ void LocalMemoryManager::finalize() {
     }
 }
 
-void LocalMemoryManager::shiftPointers(ManagedObject *object) {
+void MarkCompactMemoryManager::shiftPointers(ManagedObject *object) {
     object->mapOnReferences([this](ManagedObject *&ref) {
         shiftPointer(ref);
     });
 }
 
-void LocalMemoryManager::forwardPointers(ManagedObject *object) {
+void MarkCompactMemoryManager::forwardPointers(ManagedObject *object) {
     object->mapOnReferences([](ManagedObject *&ref) {
         ref = ref->getForwardAddress();
     });
 }
 
-void LocalMemoryManager::mark(ManagedObject *object) {
+void MarkCompactMemoryManager::mark(ManagedObject *object) {
     object->setFlag(ManagedObject::FlagMark);
 
     object->mapOnReferences([this](ManagedObject *&ref) {
