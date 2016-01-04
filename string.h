@@ -8,6 +8,9 @@ class String : public Object {
 public:
     String(std::string value);
 
+    bool equals(Object *object);
+    ulong hash();
+
     std::string toString();
 
 protected:

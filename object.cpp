@@ -31,6 +31,14 @@ void Object::removeAttribute(const std::string &name) {
         attributes->remove(name);
 }
 
+bool Object::equals(Object *object) {
+    return this == object;
+}
+
+ulong Object::hash() {
+    return (ulong) this;
+}
+
 std::string Object::toString() {
     return Utility::toString<void *>(this);
 }

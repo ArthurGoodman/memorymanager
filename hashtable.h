@@ -15,10 +15,13 @@ class HashTable : public Object {
         K &getKey();
         V &getValue();
 
+        void setKey(const K &key);
         void setValue(const V &value);
 
         Entry *getNext() const;
         void setNext(Entry *next);
+
+        bool equals(const K &key);
 
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
         int getSize();
@@ -26,7 +29,7 @@ class HashTable : public Object {
 
     static const int HashTableSize = 10;
 
-    std::hash<std::string> hashFunction;
+    std::hash<K> hashFunction;
     Entry *table[HashTableSize];
 
 public:
@@ -66,5 +69,6 @@ public:
     int getSize();
 
 private:
-    Entry *createEntry(const K &key, const V &value);
+    Entry *createEntry(const K &key, const V &value) const;
+    ulong hash(const K &key) const;
 };

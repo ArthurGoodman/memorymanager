@@ -6,34 +6,37 @@
 
 #include "utility.h"
 #include "imemorymanager.h"
+#include "hashtable.h"
+
+void run() {
+    Pointer<Object> obj = new Object;
+
+    srand(time(0));
+
+    for (int i = 0; i < 100; i++) {
+        if (rand() % 5 == 0)
+            new String(Utility::toString(i));
+        else
+            obj->setAttribute(Utility::toString(i), new String(Utility::toString(i)));
+
+        if (rand() % 2 == 0) {
+            std::string str = Utility::toString(rand() % (i + 1));
+
+            if (obj->hasAttribute(str))
+                obj->removeAttribute(str);
+        }
+
+        if (rand() % 100 == 0) {
+            std::cout << "\n//random garbage collection";
+            IMemoryManager::instance()->collectGarbage();
+        }
+    }
+}
 
 int main() {
     IMemoryManager::initialize();
 
-    {
-        Pointer<Object> obj = new Object;
-
-        srand(time(0));
-
-        for (int i = 0; i < 100; i++) {
-            if (rand() % 5 == 0)
-                new String(Utility::toString(i));
-            else
-                obj->setAttribute(Utility::toString(i), new String(Utility::toString(i)));
-
-            if (rand() % 2 == 0) {
-                std::string str = Utility::toString(rand() % (i + 1));
-
-                if (obj->hasAttribute(str))
-                    obj->removeAttribute(str);
-            }
-
-            if (rand() % 100 == 0) {
-                std::cout << "\n//random garbage collection";
-                IMemoryManager::instance()->collectGarbage();
-            }
-        }
-    }
+    run();
 
     IMemoryManager::finalize();
 

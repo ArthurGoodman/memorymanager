@@ -21,6 +21,9 @@ public:
     void setAttribute(const std::string &name, const Pointer<Object> &value);
     void removeAttribute(const std::string &name);
 
+    virtual bool equals(Object *object);
+    virtual ulong hash();
+
     virtual std::string toString();
 
     virtual void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
