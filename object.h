@@ -18,8 +18,13 @@ public:
 
     bool hasAttribute(const std::string &name);
     Object *getAttribute(const std::string &name);
-    void setAttribute(const std::string &name, const Pointer<Object> &value);
+    void setAttribute(const std::string &name, Object *value);
     void removeAttribute(const std::string &name);
+
+    bool hasAttribute(uint id);
+    Object *getAttribute(uint id);
+    void setAttribute(uint id, const Pointer<Object> &value);
+    void removeAttribute(uint id);
 
     virtual bool equals(Object *object);
     virtual ulong hash();

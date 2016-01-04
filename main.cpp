@@ -14,16 +14,20 @@ void run() {
     srand(time(0));
 
     for (int i = 0; i < 100; i++) {
+        std::cout << "> ";
+
         if (rand() % 5 == 0)
             new String("garbage");
-        else
-            obj->setAttribute(Utility::toString(i), String::idToString(String::stringToId(Utility::toString(i))));
+        else {
+            uint id = String::stringToId(Utility::toString(i));
+            obj->setAttribute(id, String::idToString(id));
+        }
 
         if (rand() % 2 == 0) {
-            std::string str = Utility::toString(rand() % (i + 1));
+            uint id = String::stringToId(Utility::toString(rand() % (i + 1)));
 
-            if (obj->hasAttribute(str))
-                obj->removeAttribute(str);
+            if (obj->hasAttribute(id))
+                obj->removeAttribute(id);
         }
 
         if (rand() % 100 == 0) {

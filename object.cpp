@@ -11,25 +11,41 @@ Object::Object()
 }
 
 bool Object::hasAttribute(const std::string &name) {
-    return attributes && attributes->contains(String::stringToId(name));
+    return hasAttribute(String::stringToId(name));
 }
 
 Object *Object::getAttribute(const std::string &name) {
-    return attributes ? attributes->get(String::stringToId(name)) : 0;
+    return getAttribute(String::stringToId(name));
 }
 
-void Object::setAttribute(const std::string &name, const Pointer<Object> &value) {
+void Object::setAttribute(const std::string &name, Object *value) {
+    setAttribute(String::stringToId(name), value);
+}
+
+void Object::removeAttribute(const std::string &name) {
+    removeAttribute(String::stringToId(name));
+}
+
+bool Object::hasAttribute(uint id) {
+    return attributes && attributes->contains(id);
+}
+
+Object *Object::getAttribute(uint id) {
+    return attributes ? attributes->get(id) : 0;
+}
+
+void Object::setAttribute(uint id, const Pointer<Object> &value) {
     Pointer<Object> _this = this;
 
     if (!attributes)
         _this->attributes = new HashTable<uint, Object *>;
 
-    _this->attributes->put(String::stringToId(name), value);
+    _this->attributes->put(id, value);
 }
 
-void Object::removeAttribute(const std::string &name) {
+void Object::removeAttribute(uint id) {
     if (attributes)
-        attributes->remove(String::stringToId(name));
+        attributes->remove(id);
 }
 
 bool Object::equals(Object *object) {

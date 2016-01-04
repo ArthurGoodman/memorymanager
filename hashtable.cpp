@@ -159,6 +159,8 @@ typename HashTable<K, V>::iterator HashTable<K, V>::end() {
 
 template <class K, class V>
 V HashTable<K, V>::get(const K &key) const {
+    std::cout << "HashTable<K, V>::get(key=" << key << ")\n";
+
     ulong hashValue = hash(key) % HashTableSize;
     Entry *entry = table[hashValue];
 
@@ -228,6 +230,8 @@ bool HashTable<K, V>::remove(const K &key) {
 
 template <class K, class V>
 bool HashTable<K, V>::contains(const K &key) const {
+    std::cout << "HashTable<K, V>::contains(key=" << key << ")\n";
+
     ulong hashValue = hash(key) % HashTableSize;
 
     Entry *entry = table[hashValue];
