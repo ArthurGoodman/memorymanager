@@ -2,22 +2,23 @@
 
 #include "object.h"
 
+template <class K, class V>
 class HashTable : public Object {
-    class HashNode : public Object {
-        std::string key;
-        Object *value;
-        HashNode *next;
+    class Entry : public Object {
+        K key;
+        V value;
+        Entry *next;
 
     public:
-        HashNode(std::string key, const Pointer<Object> value);
+        Entry(const K &key, const V &value);
 
-        std::string &getKey();
-        Object *&getValue();
+        K &getKey();
+        V &getValue();
 
-        void setValue(Object *value);
+        void setValue(const V &value);
 
-        HashNode *getNext() const;
-        void setNext(HashNode *next);
+        Entry *getNext() const;
+        void setNext(Entry *next);
 
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
         int getSize();
@@ -26,16 +27,16 @@ class HashTable : public Object {
     static const int HashTableSize = 10;
 
     std::hash<std::string> hashFunction;
-    HashNode *table[HashTableSize];
+    Entry *table[HashTableSize];
 
 public:
     class iterator {
         friend class HashTable;
 
-        HashNode **table;
+        Entry **table;
 
         int i;
-        HashNode *node;
+        Entry *entry;
 
     public:
         iterator &operator++();
@@ -43,12 +44,12 @@ public:
 
         bool operator!=(const iterator &other) const;
 
-        std::string &key();
-        Object *&value();
+        K &key();
+        V &value();
 
     private:
-        iterator(HashNode **table);
-        iterator(HashNode **table, int i);
+        iterator(Entry **table);
+        iterator(Entry **table, int i);
     };
 
     HashTable();
@@ -56,11 +57,14 @@ public:
     iterator begin();
     iterator end();
 
-    Object *get(const std::string &key) const;
-    void put(const std::string &key, const Pointer<Object> &value);
-    bool remove(const std::string &key);
-    bool contains(const std::string &key);
+    V get(const K &key) const;
+    void put(const K &key, const V &value);
+    bool remove(const K &key);
+    bool contains(const K &key);
 
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize();
+
+private:
+    Entry *createEntry(const K &key, const V &value);
 };

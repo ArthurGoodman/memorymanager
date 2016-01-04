@@ -21,7 +21,7 @@ void Object::setAttribute(const std::string &name, const Pointer<Object> &value)
     Pointer<Object> _this = this;
 
     if (!attributes)
-        _this->attributes = new HashTable;
+        _this->attributes = new HashTable<std::string, Object *>;
 
     _this->attributes->put(name, value);
 }

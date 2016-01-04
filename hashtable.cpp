@@ -7,31 +7,40 @@
 
 #include <iostream>
 
-HashTable::HashNode::HashNode(std::string key, const Pointer<Object> value)
+template class HashTable<std::string, Object *>;
+
+template <class K, class V>
+HashTable<K, V>::Entry::Entry(const K &key, const V &value)
     : key(key), value(value), next(0) {
 }
 
-std::string &HashTable::HashNode::getKey() {
+template <class K, class V>
+K &HashTable<K, V>::Entry::getKey() {
     return key;
 }
 
-Object *&HashTable::HashNode::getValue() {
+template <class K, class V>
+V &HashTable<K, V>::Entry::getValue() {
     return value;
 }
 
-void HashTable::HashNode::setValue(Object *value) {
-    HashNode::value = value;
+template <class K, class V>
+void HashTable<K, V>::Entry::setValue(const V &value) {
+    Entry::value = value;
 }
 
-HashTable::HashNode *HashTable::HashNode::getNext() const {
+template <class K, class V>
+typename HashTable<K, V>::Entry *HashTable<K, V>::Entry::getNext() const {
     return next;
 }
 
-void HashTable::HashNode::setNext(HashTable::HashNode *next) {
-    HashNode::next = next;
+template <class K, class V>
+void HashTable<K, V>::Entry::setNext(HashTable<K, V>::Entry *next) {
+    Entry::next = next;
 }
 
-void HashTable::HashNode::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+template <class K, class V>
+void HashTable<K, V>::Entry::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
     if (next)
@@ -41,19 +50,21 @@ void HashTable::HashNode::mapOnReferences(const std::function<void(ManagedObject
         f((ManagedObject *&)value);
 }
 
-int HashTable::HashNode::getSize() {
+template <class K, class V>
+int HashTable<K, V>::Entry::getSize() {
     return sizeof *this;
 }
 
-HashTable::iterator &HashTable::iterator::operator++() {
-    if (node->getNext())
-        node = node->getNext();
+template <class K, class V>
+typename HashTable<K, V>::iterator &HashTable<K, V>::iterator::operator++() {
+    if (entry->getNext())
+        entry = entry->getNext();
     else {
         i++;
 
         while (i < HashTableSize) {
             if (table[i]) {
-                node = table[i];
+                entry = table[i];
                 break;
             }
 
@@ -61,41 +72,49 @@ HashTable::iterator &HashTable::iterator::operator++() {
         }
 
         if (i == HashTableSize)
-            node = 0;
+            entry = 0;
     }
 
     return *this;
 }
 
-HashTable::iterator &HashTable::iterator::operator*() {
+template <class K, class V>
+typename HashTable<K, V>::iterator &HashTable<K, V>::iterator::operator*() {
     return *this;
 }
 
-bool HashTable::iterator::operator!=(const HashTable::iterator &other) const {
-    return node != other.node;
+template <class K, class V>
+bool HashTable<K, V>::iterator::operator!=(const HashTable<K, V>::iterator &other) const {
+    return entry != other.entry;
 }
 
-std::string &HashTable::iterator::key() {
-    return node->getKey();
+template <class K, class V>
+K &HashTable<K, V>::iterator::key() {
+    return entry->getKey();
 }
 
-Object *&HashTable::iterator::value() {
-    return node->getValue();
+template <class K, class V>
+V &HashTable<K, V>::iterator::value() {
+    return entry->getValue();
 }
 
-HashTable::iterator::iterator(HashTable::HashNode **table)
-    : table(table), i(0), node(0) {
+template <class K, class V>
+HashTable<K, V>::iterator::iterator(HashTable<K, V>::Entry **table)
+    : table(table), i(0), entry(0) {
 }
 
-HashTable::iterator::iterator(HashTable::HashNode **table, int i)
-    : table(table), i(i), node(table[i]) {
+template <class K, class V>
+HashTable<K, V>::iterator::iterator(HashTable<K, V>::Entry **table, int i)
+    : table(table), i(i), entry(table[i]) {
 }
 
-HashTable::HashTable()
+template <class K, class V>
+HashTable<K, V>::HashTable()
     : table{0} {
 }
 
-HashTable::iterator HashTable::begin() {
+template <class K, class V>
+typename HashTable<K, V>::iterator HashTable<K, V>::begin() {
     for (int i = 0; i < HashTableSize; i++)
         if (table[i])
             return iterator(table, i);
@@ -103,13 +122,15 @@ HashTable::iterator HashTable::begin() {
     return iterator(table);
 }
 
-HashTable::iterator HashTable::end() {
+template <class K, class V>
+typename HashTable<K, V>::iterator HashTable<K, V>::end() {
     return iterator(table);
 }
 
-Object *HashTable::get(const std::string &key) const {
+template <class K, class V>
+V HashTable<K, V>::get(const K &key) const {
     ulong hashValue = hashFunction(key) % HashTableSize;
-    HashNode *entry = table[hashValue];
+    Entry *entry = table[hashValue];
 
     while (entry) {
         if (entry->getKey() == key)
@@ -118,16 +139,17 @@ Object *HashTable::get(const std::string &key) const {
         entry = entry->getNext();
     }
 
-    throw std::out_of_range("HashTable::get");
+    throw std::out_of_range("HashTable<K, V>::get");
 }
 
-void HashTable::put(const std::string &key, const Pointer<Object> &value) {
-    std::cout << "HashTable::put(key=" << key << ", value=" << value << ")\n";
+template <class K, class V>
+void HashTable<K, V>::put(const K &key, const V &value) {
+    std::cout << "HashTable<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
     ulong hashValue = hashFunction(key) % HashTableSize;
 
-    Pointer<HashNode> prev;
-    Pointer<HashNode> entry = table[hashValue];
+    Pointer<Entry> prev;
+    Pointer<Entry> entry = table[hashValue];
 
     while (entry && entry->getKey() != key) {
         prev = entry;
@@ -141,7 +163,7 @@ void HashTable::put(const std::string &key, const Pointer<Object> &value) {
 
     Pointer<HashTable> _this = this;
 
-    entry = new HashNode(key, value);
+    entry = createEntry(key, value);
 
     if (!prev)
         _this->table[hashValue] = entry;
@@ -149,13 +171,14 @@ void HashTable::put(const std::string &key, const Pointer<Object> &value) {
         prev->setNext(entry);
 }
 
-bool HashTable::remove(const std::string &key) {
-    std::cout << "HashTable::remove(key=" << key << ")\n";
+template <class K, class V>
+bool HashTable<K, V>::remove(const K &key) {
+    std::cout << "HashTable<K, V>::remove(key=" << key << ")\n";
 
     ulong hashValue = hashFunction(key) % HashTableSize;
 
-    HashNode *prev = 0;
-    HashNode *entry = table[hashValue];
+    Entry *prev = 0;
+    Entry *entry = table[hashValue];
 
     while (entry && entry->getKey() != key) {
         prev = entry;
@@ -173,10 +196,11 @@ bool HashTable::remove(const std::string &key) {
     return true;
 }
 
-bool HashTable::contains(const std::string &key) {
+template <class K, class V>
+bool HashTable<K, V>::contains(const K &key) {
     ulong hashValue = hashFunction(key) % HashTableSize;
 
-    HashNode *entry = table[hashValue];
+    Entry *entry = table[hashValue];
 
     while (entry && entry->getKey() != key)
         entry = entry->getNext();
@@ -184,7 +208,8 @@ bool HashTable::contains(const std::string &key) {
     return entry;
 }
 
-void HashTable::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+template <class K, class V>
+void HashTable<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
     for (int i = 0; i < HashTableSize; i++)
@@ -192,6 +217,22 @@ void HashTable::mapOnReferences(const std::function<void(ManagedObject *&)> &f) 
             f((ManagedObject *&)table[i]);
 }
 
-int HashTable::getSize() {
+template <class K, class V>
+int HashTable<K, V>::getSize() {
     return sizeof *this;
+}
+
+template <class K, class V>
+typename HashTable<K, V>::Entry *HashTable<K, V>::createEntry(const K &key, const V &value) {
+    return new Entry(key, value);
+}
+
+template <>
+typename HashTable<std::string, Object *>::Entry *HashTable<std::string, Object *>::createEntry(const std::string &key, Object *const &value) {
+    Pointer<Object> p = value;
+
+    Entry *entry = new Entry(key, 0);
+    entry->setValue(p);
+
+    return entry;
 }
