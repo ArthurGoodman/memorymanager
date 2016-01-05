@@ -114,38 +114,38 @@ template <class K, class V>
 void SherwoodMap<K, V>::put(const K &key, const V &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<Map<K, V>> _this = this;
+    Pointer<SherwoodMap> _this = this;
 
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    ((SherwoodMap *)*_this)->insert(hashKey(key), std::move(const_cast<K &>(key)), std::move(const_cast<V &>(value)));
+    _this->insert(hashKey(key), std::move(const_cast<K &>(key)), std::move(const_cast<V &>(value)));
 }
 
 template <>
 void SherwoodMap<uint, Object *>::put(const uint &key, Object *const &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<Map<uint, Object *>> _this = this;
+    Pointer<SherwoodMap<uint, Object *>> _this = this;
     Pointer<Object> pValue = value;
 
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    ((SherwoodMap *)*_this)->insert(hashKey(key), std::move(const_cast<uint &>(key)), std::move(const_cast<Object *&>(*pValue)));
+    _this->insert(hashKey(key), std::move(const_cast<uint &>(key)), std::move(const_cast<Object *&>(*pValue)));
 }
 
 template <>
 void SherwoodMap<Object *, uint>::put(Object *const &key, const uint &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<Map<Object *, uint>> _this = this;
+    Pointer<SherwoodMap<Object *, uint>> _this = this;
     Pointer<Object> pKey = key;
 
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    ((SherwoodMap *)*_this)->insert(hashKey(pKey), std::move(const_cast<Object *&>(*pKey)), std::move(const_cast<uint &>(value)));
+    _this->insert(hashKey(pKey), std::move(const_cast<Object *&>(*pKey)), std::move(const_cast<uint &>(value)));
 }
 
 template <class K, class V>
@@ -172,6 +172,8 @@ bool SherwoodMap<K, V>::contains(const K &key) const {
 
 template <class K, class V>
 void SherwoodMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+    Object::mapOnReferences(f);
+
     if (buffer) {
         f((ManagedObject *&)buffer);
 
@@ -211,15 +213,15 @@ template <class K, class V>
 void SherwoodMap<K, V>::allocate() {
     std::cout << "SherwoodMap<K, V>::allocate() //capacity=" << capacity << "\n";
 
-    Pointer<Map<K, V>> _this = this;
-    Pointer<typename Map<K, V>::Entry> oldEntries = this->buffer;
-    int oldCapacity = this->buffer ? capacity : 0;
+    Pointer<SherwoodMap> _this = this;
+    Pointer<Entry> oldEntries = buffer;
+    int oldCapacity = buffer ? capacity : 0;
 
-    Entry *buffer = MemoryManager::instance()->allocateArray<Entry>(capacity * 2);
-    ((SherwoodMap *)*_this)->buffer = buffer;
-    ((SherwoodMap *)*_this)->capacity *= 2;
+    Entry *newBuffer = MemoryManager::instance()->allocateArray<Entry>(capacity * 2);
+    _this->buffer = newBuffer;
+    _this->capacity *= 2;
 
-    ((SherwoodMap *)*_this)->resizeThreshold = (((SherwoodMap *)*_this)->capacity * LoadFactorPercent) / 100;
+    _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
 
     for (int i = 0; i < oldCapacity; i++) {
         Entry &e = ((Entry *)*oldEntries)[i];
@@ -227,7 +229,7 @@ void SherwoodMap<K, V>::allocate() {
         uint hash = e.getHash();
 
         if (hash && !(hash & Entry::deletedFlag()))
-            ((SherwoodMap *)*_this)->insert(hash, std::move(e.getKey()), std::move(e.getValue()));
+            _this->insert(hash, std::move(e.getKey()), std::move(e.getValue()));
     }
 }
 

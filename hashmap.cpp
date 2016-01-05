@@ -173,8 +173,8 @@ void HashMap<K, V>::put(const K &key, const V &value) {
 
     ulong hashValue = hashKey(key) % TableSize;
 
-    Pointer<typename Map<K, V>::Entry> prev;
-    Pointer<typename Map<K, V>::Entry> entry = table[hashValue];
+    Pointer<Entry> prev;
+    Pointer<Entry> entry = table[hashValue];
 
     while (entry && !((Entry *)*entry)->equals(key)) {
         prev = entry;
@@ -186,14 +186,14 @@ void HashMap<K, V>::put(const K &key, const V &value) {
         return;
     }
 
-    Pointer<Map<K, V>> _this = this;
+    Pointer<HashMap> _this = this;
 
     entry = createEntry(key, value);
 
     if (!prev)
-        ((HashMap *)*_this)->table[hashValue] = (Entry *)*entry;
+        _this->table[hashValue] = entry;
     else
-        ((Entry *)*prev)->setNext((Entry *)*entry);
+        prev->setNext(entry);
 }
 
 template <class K, class V>
