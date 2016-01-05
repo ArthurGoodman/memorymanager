@@ -1,7 +1,7 @@
 #include "pointer.h"
 
 #include "memorymanager.h"
-#include "hashmap.h"
+#include "map.h"
 
 template class Pointer<Object>;
 template class Pointer<ManagedObject>;

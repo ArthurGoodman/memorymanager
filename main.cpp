@@ -14,7 +14,7 @@ void run() {
 
     srand(time(0));
 
-    const int n = 30;
+    const int n = 100;
 
     for (int i = 0; i < n; i++) {
         std::cout << "> ";
@@ -41,7 +41,7 @@ void run() {
 }
 
 int main() {
-    //    FILE *file = freopen("out.txt", "w", stdout);
+    FILE *file = freopen("out.txt", "w", stdout);
 
     MemoryManager::initialize();
     String::initialize();
@@ -51,8 +51,8 @@ int main() {
     String::finalize();
     MemoryManager::finalize();
 
-    //    fclose(file);
-    //    system("start out.txt");
+    fclose(file);
+    system("start out.txt");
 
     return 0;
 }

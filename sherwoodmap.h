@@ -15,11 +15,13 @@ class SherwoodMap : public Map<K, V> {
         V &getValue();
         uint &getHash();
 
+        bool equals(const K &key);
+
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
         int getSize() const;
     };
 
-    static const int InitialCapacity = 8;
+    static const int InitialCapacity = 4;
     static const int LoadFactorPercent = 90;
 
     Entry *buffer;
@@ -44,6 +46,6 @@ private:
     static bool isDeleted(uint hash);
     int desiredPos(uint hash) const;
     int probeDistance(uint hash, uint slotIndex) const;
-    void construct(int index, uint hash, K key, V value);
-    int lookupIndex(const K& key) const;
+    void construct(int index, uint hash, const K &key, const V &value);
+    int lookupIndex(const K &key) const;
 };
