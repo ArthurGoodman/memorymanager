@@ -48,16 +48,16 @@ void Object::removeAttribute(uint id) {
         attributes->remove(id);
 }
 
-bool Object::equals(Object *object) {
+bool Object::equals(Object *object) const {
     return this == object;
 }
 
-ulong Object::hash() {
+ulong Object::hash() const {
     return (ulong) this;
 }
 
-std::string Object::toString() {
-    return Utility::toString<void *>(this);
+std::string Object::toString() const {
+    return Utility::toString((void *)this);
 }
 
 void Object::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
@@ -65,6 +65,6 @@ void Object::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
         f((ManagedObject *&)attributes);
 }
 
-int Object::getSize() {
+int Object::getSize() const {
     return sizeof *this;
 }

@@ -26,11 +26,11 @@ public:
     void setAttribute(uint id, const Pointer<Object> &value);
     void removeAttribute(uint id);
 
-    virtual bool equals(Object *object);
-    virtual ulong hash();
+    virtual bool equals(Object *object) const;
+    virtual ulong hash() const;
 
-    virtual std::string toString();
+    virtual std::string toString() const;
 
     virtual void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
-    virtual int getSize();
+    virtual int getSize() const;
 };

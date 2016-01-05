@@ -18,10 +18,10 @@ public:
 
     String(const std::string &value = "");
 
-    bool equals(Object *object);
-    ulong hash();
+    bool equals(Object *object) const;
+    ulong hash() const;
 
-    std::string toString();
+    std::string toString() const;
 
-    int getSize();
+    int getSize() const;
 };

@@ -22,7 +22,7 @@ class HashMap : public Map<K, V> {
         bool equals(const K &key) const;
 
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
-        int getSize();
+        int getSize() const;
     };
 
     static const int TableSize = 10;
@@ -34,10 +34,8 @@ public:
     class iterator {
         friend class HashMap;
 
-        Entry **table;
-
+        Entry **table, *entry;
         int i;
-        Entry *entry;
 
     public:
         iterator &operator++();
@@ -64,7 +62,7 @@ public:
     bool contains(const K &key) const;
 
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
-    int getSize();
+    int getSize() const;
 
 private:
     Entry *createEntry(const K &key, const V &value) const;

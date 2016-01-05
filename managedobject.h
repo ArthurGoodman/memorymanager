@@ -20,18 +20,18 @@ public:
     ManagedObject();
     virtual ~ManagedObject();
 
-    bool hasFlag(int flag);
+    bool hasFlag(int flag) const;
     void setFlag(int flag);
     void removeFlag(int flag);
 
-    ManagedObject *getForwardAddress();
+    ManagedObject *getForwardAddress() const;
     void setForwardAddress(ManagedObject *forwardAddress);
 
     virtual void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
-    virtual int getSize() = 0;
+    virtual int getSize() const = 0;
 };
 
-inline bool ManagedObject::hasFlag(int flag) {
+inline bool ManagedObject::hasFlag(int flag) const {
     return flags & flag;
 }
 
@@ -43,7 +43,7 @@ inline void ManagedObject::removeFlag(int flag) {
     flags &= ~flag;
 }
 
-inline ManagedObject *ManagedObject::getForwardAddress() {
+inline ManagedObject *ManagedObject::getForwardAddress() const {
     return forwardAddress;
 }
 

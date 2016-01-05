@@ -11,6 +11,7 @@ protected:
         V value;
 
     public:
+        Entry();
         Entry(const K &key, const V &value);
     };
 
@@ -20,6 +21,10 @@ public:
     virtual bool remove(const K &key) = 0;
     virtual bool contains(const K &key) const = 0;
 };
+
+template <class K, class V>
+Map<K, V>::Entry::Entry() {
+}
 
 template <class K, class V>
 Map<K, V>::Entry::Entry(const K &key, const V &value)

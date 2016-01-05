@@ -5,11 +5,8 @@
 
 class MarkCompactMemoryManager : public MemoryManager {
     ByteArray memory;
-    int delta;
-
-    int objectCount;
-
     Pointer<ManagedObject> *pointers;
+    int delta, objectCount;
 
 public:
     MarkCompactMemoryManager();

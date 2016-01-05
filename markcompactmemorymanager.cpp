@@ -8,7 +8,7 @@
 #include <iostream>
 
 MarkCompactMemoryManager::MarkCompactMemoryManager()
-    : delta(0), objectCount(0), pointers(0) {
+    : pointers(0), delta(0), objectCount(0) {
     ByteArray::setInitialCapacity(1024);
 }
 

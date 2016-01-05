@@ -56,16 +56,12 @@ bool HashMap<Object *, uint>::Entry::equals(Object *const &key) const {
 
 template <class K, class V>
 void HashMap<K, V>::Entry::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    Object::mapOnReferences(f);
-
     if (next)
         f((ManagedObject *&)next);
 }
 
 template <>
 void HashMap<uint, Object *>::Entry::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    Object::mapOnReferences(f);
-
     if (next)
         f((ManagedObject *&)next);
 
@@ -75,8 +71,6 @@ void HashMap<uint, Object *>::Entry::mapOnReferences(const std::function<void(Ma
 
 template <>
 void HashMap<Object *, uint>::Entry::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    Object::mapOnReferences(f);
-
     if (next)
         f((ManagedObject *&)next);
 
@@ -85,7 +79,7 @@ void HashMap<Object *, uint>::Entry::mapOnReferences(const std::function<void(Ma
 }
 
 template <class K, class V>
-int HashMap<K, V>::Entry::getSize() {
+int HashMap<K, V>::Entry::getSize() const {
     return sizeof *this;
 }
 
@@ -129,12 +123,12 @@ V &HashMap<K, V>::iterator::value() {
 
 template <class K, class V>
 HashMap<K, V>::iterator::iterator(HashMap<K, V>::Entry **table)
-    : table(table), i(0), entry(0) {
+    : table(table), entry(0), i(0) {
 }
 
 template <class K, class V>
 HashMap<K, V>::iterator::iterator(HashMap<K, V>::Entry **table, int i)
-    : table(table), i(i), entry(table[i]) {
+    : table(table), entry(table[i]), i(i) {
 }
 
 template <class K, class V>
@@ -192,7 +186,7 @@ void HashMap<K, V>::put(const K &key, const V &value) {
         return;
     }
 
-    Pointer<Map<K, V>> _this = (Map<K, V> *)this;
+    Pointer<Map<K, V>> _this = this;
 
     entry = createEntry(key, value);
 
@@ -251,7 +245,7 @@ void HashMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> 
 }
 
 template <class K, class V>
-int HashMap<K, V>::getSize() {
+int HashMap<K, V>::getSize() const {
     return sizeof *this;
 }
 

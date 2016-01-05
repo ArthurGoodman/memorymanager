@@ -43,18 +43,18 @@ String::String(const std::string &value)
     std::cout << "String::String(value=" << value << ")\n";
 }
 
-bool String::equals(Object *object) {
+bool String::equals(Object *object) const {
     return dynamic_cast<String *>(object) && ((String *)object)->value == value;
 }
 
-ulong String::hash() {
+ulong String::hash() const {
     return std::hash<std::string>()(value);
 }
 
-std::string String::toString() {
+std::string String::toString() const {
     return value;
 }
 
-int String::getSize() {
+int String::getSize() const {
     return sizeof *this;
 }
