@@ -128,7 +128,7 @@ SherwoodMap<K, V>::iterator::iterator(SherwoodMap::Entry *buffer, int capacity, 
 
 template <class K, class V>
 SherwoodMap<K, V>::SherwoodMap()
-    : buffer(0), numEntries(0), capacity(HalfOfInitialCapacity), resizeThreshold(0) {
+    : buffer(0), numEntries(0), capacity(HalfInitialCapacity), resizeThreshold(0) {
 }
 
 template <class K, class V>
@@ -176,7 +176,7 @@ template <>
 void SherwoodMap<uint, Object *>::put(const uint &key, Object *const &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<SherwoodMap<uint, Object *>> _this = this;
+    Pointer<SherwoodMap> _this = this;
     Pointer<Object> pValue = value;
 
     if (++numEntries >= resizeThreshold)
@@ -189,7 +189,7 @@ template <>
 void SherwoodMap<Object *, uint>::put(Object *const &key, const uint &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<SherwoodMap<Object *, uint>> _this = this;
+    Pointer<SherwoodMap> _this = this;
     Pointer<Object> pKey = key;
 
     if (++numEntries >= resizeThreshold)
@@ -270,16 +270,13 @@ void SherwoodMap<K, V>::allocate() {
     Entry *newBuffer = MemoryManager::instance()->allocateArray<Entry>(capacity * 2);
     _this->buffer = newBuffer;
     _this->capacity *= 2;
-
     _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
 
     for (int i = 0; i < oldCapacity; i++) {
         Entry &e = (*oldEntries)[i];
 
-        uint hash = e.getHash();
-
-        if (hash && !e.isDeleted())
-            _this->insert(hash, std::move(e.getKey()), std::move(e.getValue()));
+        if (e.getHash() && !e.isDeleted())
+            _this->insert(e.getHash(), std::move(e.getKey()), std::move(e.getValue()));
     }
 }
 

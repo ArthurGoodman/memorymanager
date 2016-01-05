@@ -7,8 +7,6 @@
 
 #include "utility.h"
 
-#include "sherwoodmap.h"
-
 void run() {
     Pointer<Object> obj = new Object;
 
