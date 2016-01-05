@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     markcompactmemorymanager.cpp \
     map.cpp \
     hashmap.cpp \
-    sherwoodmap.cpp
+    sherwoodmap.cpp \
+    staticobject.cpp
 
 HEADERS += \
     common.h \
@@ -35,4 +36,5 @@ HEADERS += \
     markcompactmemorymanager.h \
     map.h \
     hashmap.h \
-    sherwoodmap.h
+    sherwoodmap.h \
+    staticobject.h
