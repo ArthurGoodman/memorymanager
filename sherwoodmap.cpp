@@ -73,6 +73,8 @@ SherwoodMap<K, V>::SherwoodMap()
 
 template <class K, class V>
 V SherwoodMap<K, V>::get(const K &key) const {
+    std::cout << "SherwoodMap<K, V>::get(key=" << key << ")\n";
+
     const int index = lookupIndex(key);
 
     if (index == -1)
@@ -83,6 +85,8 @@ V SherwoodMap<K, V>::get(const K &key) const {
 
 template <class K, class V>
 void SherwoodMap<K, V>::put(const K &key, const V &value) {
+    std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
+
     Pointer<Map<K, V>> _this = this;
 
     if (!buffer)
@@ -91,11 +95,13 @@ void SherwoodMap<K, V>::put(const K &key, const V &value) {
     if (++numElems >= resizeThreshold)
         ((SherwoodMap *)*_this)->grow();
 
-    ((SherwoodMap *)*_this)->insertHelper(((SherwoodMap *)*_this)->hashKey(key), key, value);
+    ((SherwoodMap *)*_this)->insertHelper(hashKey(key), key, value);
 }
 
 template <class K, class V>
 bool SherwoodMap<K, V>::remove(const K &key) {
+    std::cout << "SherwoodMap<K, V>::remove(key=" << key << ")\n";
+
     const int index = lookupIndex(key);
 
     if (index == -1)
@@ -109,6 +115,8 @@ bool SherwoodMap<K, V>::remove(const K &key) {
 
 template <class K, class V>
 bool SherwoodMap<K, V>::contains(const K &key) const {
+    std::cout << "SherwoodMap<K, V>::contains(key=" << key << ")\n";
+
     return lookupIndex(key) != -1;
 }
 
@@ -142,20 +150,24 @@ void SherwoodMap<K, V>::allocate() {
 
 template <class K, class V>
 void SherwoodMap<K, V>::grow() {
-    Entry *oldEntries = buffer;
+    std::cout << "SherwoodMap<K, V>::grow() //capacity=" << capacity << "\n";
+
+    Pointer<typename Map<K, V>::Entry> oldEntries = buffer;
     int oldCapacity = capacity;
 
     capacity *= 2;
 
+    Pointer<Map<K, V>> _this = this;
+
     allocate();
 
     for (int i = 0; i < oldCapacity; i++) {
-        Entry &e = oldEntries[i];
+        Entry &e = ((Entry *)*oldEntries)[i];
 
         uint hash = e.getHash();
 
         if (hash && !isDeleted(hash))
-            insertHelper(hash, e.getKey(), e.getValue());
+            ((SherwoodMap *)*_this)->insertHelper(hash, e.getKey(), e.getValue());
     }
 }
 
@@ -192,6 +204,16 @@ void SherwoodMap<K, V>::insertHelper(uint hash, K key, V value) {
 template <class K, class V>
 uint SherwoodMap<K, V>::hashKey(const K &key) {
     uint h = static_cast<uint>(std::hash<K>()(key));
+
+    h &= 0x7fffffff;
+    h |= h == 0;
+
+    return h;
+}
+
+template <>
+uint SherwoodMap<Object *, uint>::hashKey(Object *const &key) {
+    uint h = key->hash();
 
     h &= 0x7fffffff;
     h |= h == 0;

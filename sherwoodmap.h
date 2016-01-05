@@ -19,7 +19,7 @@ class SherwoodMap : public Map<K, V> {
         int getSize() const;
     };
 
-    static const int InitialCapacity = 10;
+    static const int InitialCapacity = 8;
     static const int LoadFactorPercent = 90;
 
     Entry *buffer;
