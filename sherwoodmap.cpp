@@ -26,6 +26,21 @@ SherwoodMap<Object *, uint>::Entry::Entry()
 }
 
 template <class K, class V>
+SherwoodMap<K, V>::Entry::Entry(K key, V value)
+    : Map<K, V>::Entry(key, value) {
+}
+
+template <class K, class V>
+K &SherwoodMap<K, V>::Entry::getKey() {
+    return this->key;
+}
+
+template <class K, class V>
+V &SherwoodMap<K, V>::Entry::getValue() {
+    return this->value;
+}
+
+template <class K, class V>
 uint &SherwoodMap<K, V>::Entry::getHash() {
     return hash;
 }
@@ -57,24 +72,44 @@ SherwoodMap<K, V>::SherwoodMap()
 }
 
 template <class K, class V>
-V SherwoodMap<K, V>::get(const K & /*key*/) const {
-    return (V)0;
+V SherwoodMap<K, V>::get(const K &key) const {
+    const int index = lookupIndex(key);
+
+    if (index == -1)
+        throw std::out_of_range("SherwoodMap<K, V>::get");
+
+    return buffer[index].getValue();
 }
 
 template <class K, class V>
-void SherwoodMap<K, V>::put(const K & /*key*/, const V & /*value*/) {
+void SherwoodMap<K, V>::put(const K &key, const V &value) {
+    Pointer<Map<K, V>> _this = this;
+
     if (!buffer)
         allocate();
+
+    if (++numElems >= resizeThreshold)
+        ((SherwoodMap *)*_this)->grow();
+
+    ((SherwoodMap *)*_this)->insertHelper(((SherwoodMap *)*_this)->hashKey(key), key, value);
 }
 
 template <class K, class V>
-bool SherwoodMap<K, V>::remove(const K & /*key*/) {
-    return false;
+bool SherwoodMap<K, V>::remove(const K &key) {
+    const int index = lookupIndex(key);
+
+    if (index == -1)
+        return false;
+
+    buffer[index].getHash() |= 0x80000000;
+    numElems--;
+
+    return true;
 }
 
 template <class K, class V>
-bool SherwoodMap<K, V>::contains(const K & /*key*/) const {
-    return false;
+bool SherwoodMap<K, V>::contains(const K &key) const {
+    return lookupIndex(key) != -1;
 }
 
 template <class K, class V>
@@ -82,7 +117,7 @@ void SherwoodMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *
     if (buffer) {
         f((ManagedObject *&)buffer);
 
-        for (uint i = 1; i < capacity; i++) {
+        for (int i = 1; i < capacity; i++) {
             Entry *entry = buffer + i;
             f((ManagedObject *&)entry);
         }
@@ -103,4 +138,107 @@ void SherwoodMap<K, V>::allocate() {
 
     ((SherwoodMap *)*_this)->resizeThreshold = (((SherwoodMap *)*_this)->capacity * LoadFactorPercent) / 100;
     ((SherwoodMap *)*_this)->mask = ((SherwoodMap *)*_this)->capacity - 1;
+}
+
+template <class K, class V>
+void SherwoodMap<K, V>::grow() {
+    Entry *oldEntries = buffer;
+    int oldCapacity = capacity;
+
+    capacity *= 2;
+
+    allocate();
+
+    for (int i = 0; i < oldCapacity; i++) {
+        Entry &e = oldEntries[i];
+
+        uint hash = e.getHash();
+
+        if (hash && !isDeleted(hash))
+            insertHelper(hash, e.getKey(), e.getValue());
+    }
+}
+
+template <class K, class V>
+void SherwoodMap<K, V>::insertHelper(uint hash, K key, V value) {
+    int pos = desiredPos(hash);
+    int dist = 0;
+
+    while (true) {
+        if (buffer[pos].getHash() == 0) {
+            construct(pos, hash, key, value);
+            return;
+        }
+
+        int existingEntryProbeDist = probeDistance(buffer[pos].getHash(), pos);
+        if (existingEntryProbeDist < dist) {
+            if (isDeleted(buffer[pos].getHash())) {
+                construct(pos, hash, key, value);
+                return;
+            }
+
+            std::swap(key, buffer[pos].getKey());
+            std::swap(value, buffer[pos].getValue());
+            std::swap(hash, buffer[pos].getHash());
+
+            dist = existingEntryProbeDist;
+        }
+
+        pos = (pos + 1) & mask;
+        dist++;
+    }
+}
+
+template <class K, class V>
+uint SherwoodMap<K, V>::hashKey(const K &key) {
+    uint h = static_cast<uint>(std::hash<K>()(key));
+
+    h &= 0x7fffffff;
+    h |= h == 0;
+
+    return h;
+}
+
+template <class K, class V>
+bool SherwoodMap<K, V>::isDeleted(uint hash) {
+    return (hash >> 31) != 0;
+}
+
+template <class K, class V>
+int SherwoodMap<K, V>::desiredPos(uint hash) const {
+    return hash & mask;
+}
+
+template <class K, class V>
+int SherwoodMap<K, V>::probeDistance(uint hash, uint slotIndex) const {
+    return (slotIndex + capacity - desiredPos(hash)) & mask;
+}
+
+template <class K, class V>
+void SherwoodMap<K, V>::construct(int index, uint hash, K key, V value) {
+    new (buffer + index) Entry;
+
+    buffer[index].getKey() = key;
+    buffer[index].getValue() = value;
+    buffer[index].getHash() = hash;
+}
+
+template <class K, class V>
+int SherwoodMap<K, V>::lookupIndex(const K &key) const {
+    const uint hash = hashKey(key);
+
+    int pos = desiredPos(hash);
+    int dist = 0;
+
+    while (true) {
+        if (!buffer || !buffer[pos].getHash())
+            return -1;
+        else if (dist > probeDistance(buffer[pos].getHash(), pos))
+            return -1;
+        else if (buffer[pos].getHash() == hash && buffer[pos].getKey() == key)
+            return pos;
+
+        pos = (pos + 1) & mask;
+        dist++;
+    }
 }

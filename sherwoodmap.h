@@ -9,18 +9,21 @@ class SherwoodMap : public Map<K, V> {
 
     public:
         Entry();
+        Entry(K key, V value);
 
+        K &getKey();
+        V &getValue();
         uint &getHash();
 
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
         int getSize() const;
     };
 
-    static const int InitialCapacity = 11;
+    static const int InitialCapacity = 10;
     static const int LoadFactorPercent = 90;
 
     Entry *buffer;
-    uint numElems, capacity, mask, resizeThreshold;
+    int numElems, capacity, mask, resizeThreshold;
 
 public:
     SherwoodMap();
@@ -35,4 +38,12 @@ public:
 
 private:
     void allocate();
+    void grow();
+    void insertHelper(uint hash, K key, V value);
+    static uint hashKey(const K &key);
+    static bool isDeleted(uint hash);
+    int desiredPos(uint hash) const;
+    int probeDistance(uint hash, uint slotIndex) const;
+    void construct(int index, uint hash, K key, V value);
+    int lookupIndex(const K& key) const;
 };

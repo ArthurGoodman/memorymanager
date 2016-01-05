@@ -6,7 +6,7 @@ void *ManagedObject::operator new(uint size) noexcept {
     return (void *)MemoryManager::instance()->allocate(size);
 }
 
-void *ManagedObject::operator new(uint, void *&p) noexcept {
+void *ManagedObject::operator new(uint, void *p) noexcept {
     return p;
 }
 

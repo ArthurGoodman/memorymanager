@@ -14,7 +14,7 @@ public:
     };
 
     static void *operator new(uint size) noexcept;
-    static void *operator new(uint size, void *&p) noexcept;
+    static void *operator new(uint size, void *p) noexcept;
     static void operator delete(void *p) noexcept;
 
     ManagedObject();
