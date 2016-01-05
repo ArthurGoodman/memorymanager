@@ -94,8 +94,58 @@ int SherwoodMap<K, V>::Entry::getSize() const {
 }
 
 template <class K, class V>
+typename SherwoodMap<K, V>::iterator &SherwoodMap<K, V>::iterator::operator++() {
+    while (++index < capacity && (!buffer[index].getHash() || buffer[index].isDeleted())) {
+    }
+
+    return *this;
+}
+
+template <class K, class V>
+typename SherwoodMap<K, V>::iterator &SherwoodMap<K, V>::iterator::operator*() {
+    return *this;
+}
+
+template <class K, class V>
+bool SherwoodMap<K, V>::iterator::operator!=(const iterator &other) const {
+    return index != other.index;
+}
+
+template <class K, class V>
+K &SherwoodMap<K, V>::iterator::key() {
+    return buffer[index].getKey();
+}
+
+template <class K, class V>
+V &SherwoodMap<K, V>::iterator::value() {
+    return buffer[index].getValue();
+}
+
+template <class K, class V>
+SherwoodMap<K, V>::iterator::iterator(SherwoodMap::Entry *buffer, int capacity, int index)
+    : buffer(buffer), capacity(capacity), index(index) {
+}
+
+template <class K, class V>
 SherwoodMap<K, V>::SherwoodMap()
     : buffer(0), numEntries(0), capacity(HalfOfInitialCapacity), resizeThreshold(0) {
+}
+
+template <class K, class V>
+typename SherwoodMap<K, V>::iterator SherwoodMap<K, V>::begin() {
+    if (!numEntries)
+        return iterator(buffer, capacity, capacity);
+
+    for (int i = 0; i < capacity; i++)
+        if (buffer[i].getHash() && !buffer[i].isDeleted())
+            return iterator(buffer, capacity, i);
+
+    return iterator(buffer, capacity, capacity);
+}
+
+template <class K, class V>
+typename SherwoodMap<K, V>::iterator SherwoodMap<K, V>::end() {
+    return iterator(buffer, capacity, capacity);
 }
 
 template <class K, class V>
@@ -211,7 +261,7 @@ uint SherwoodMap<K, V>::hashKey(const K &key) {
 
 template <class K, class V>
 void SherwoodMap<K, V>::allocate() {
-    std::cout << "SherwoodMap<K, V>::allocate() //capacity=" << capacity << "\n";
+    std::cout << "SherwoodMap<K, V>::allocate() //capacity=" << capacity * 2 << "\n";
 
     Pointer<SherwoodMap> _this = this;
     Pointer<Entry> oldEntries = buffer;
@@ -224,11 +274,11 @@ void SherwoodMap<K, V>::allocate() {
     _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
 
     for (int i = 0; i < oldCapacity; i++) {
-        Entry &e = ((Entry *)*oldEntries)[i];
+        Entry &e = (*oldEntries)[i];
 
         uint hash = e.getHash();
 
-        if (hash && !(hash & Entry::deletedFlag()))
+        if (hash && !e.isDeleted())
             _this->insert(hash, std::move(e.getKey()), std::move(e.getValue()));
     }
 }
@@ -239,7 +289,7 @@ void SherwoodMap<K, V>::insert(uint hash, K &&key, V &&value) {
     int dist = 0;
 
     while (true) {
-        if (!buffer[pos].getHash()) {
+        if (!buffer[pos].getHash() || (buffer[pos].getHash() == hash && buffer[pos].equals(key))) {
             createEntry(pos, hash, key, value);
             return;
         }
@@ -247,7 +297,7 @@ void SherwoodMap<K, V>::insert(uint hash, K &&key, V &&value) {
         int existingEntryProbeDist = probeDistance(buffer[pos].getHash(), pos);
 
         if (existingEntryProbeDist < dist) {
-            if (buffer[pos].getHash() & Entry::deletedFlag()) {
+            if (buffer[pos].isDeleted()) {
                 createEntry(pos, hash, key, value);
                 return;
             }

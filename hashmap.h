@@ -46,7 +46,7 @@ public:
         V &value();
 
     private:
-        iterator(Entry **table);
+        iterator();
         iterator(Entry **table, int i);
     };
 

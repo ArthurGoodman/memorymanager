@@ -18,6 +18,7 @@ class SherwoodMap : public Map<K, V> {
         uint &getHash();
 
         void clear();
+        bool isDeleted();
 
         bool equals(const K &key);
 
@@ -32,7 +33,29 @@ class SherwoodMap : public Map<K, V> {
     int numEntries, capacity, resizeThreshold;
 
 public:
+    class iterator {
+        friend class SherwoodMap;
+
+        Entry *buffer;
+        int capacity, index;
+
+    public:
+        iterator &operator++();
+        iterator &operator*();
+
+        bool operator!=(const iterator &other) const;
+
+        K &key();
+        V &value();
+
+    private:
+        iterator(Entry *buffer, int capacity, int index);
+    };
+
     SherwoodMap();
+
+    iterator begin();
+    iterator end();
 
     V get(const K &key) const;
     void put(const K &key, const V &value);
@@ -56,6 +79,11 @@ private:
 template <class K, class V>
 inline uint SherwoodMap<K, V>::Entry::deletedFlag() {
     return 1 << (sizeof(hash) * 8 - 1);
+}
+
+template <class K, class V>
+inline bool SherwoodMap<K, V>::Entry::isDeleted() {
+    return hash & deletedFlag();
 }
 
 template <class K, class V>

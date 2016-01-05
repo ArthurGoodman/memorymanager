@@ -122,8 +122,8 @@ V &HashMap<K, V>::iterator::value() {
 }
 
 template <class K, class V>
-HashMap<K, V>::iterator::iterator(HashMap<K, V>::Entry **table)
-    : table(table), entry(0), i(0) {
+HashMap<K, V>::iterator::iterator()
+    : table(0), entry(0), i(0) {
 }
 
 template <class K, class V>
@@ -142,12 +142,12 @@ typename HashMap<K, V>::iterator HashMap<K, V>::begin() {
         if (table[i])
             return iterator(table, i);
 
-    return iterator(table);
+    return iterator();
 }
 
 template <class K, class V>
 typename HashMap<K, V>::iterator HashMap<K, V>::end() {
-    return iterator(table);
+    return iterator();
 }
 
 template <class K, class V>

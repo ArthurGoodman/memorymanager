@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "managedobject.h"
 
 template <class, class>
