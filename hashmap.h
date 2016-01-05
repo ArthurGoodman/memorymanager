@@ -27,7 +27,6 @@ class HashMap : public Map<K, V> {
 
     static const int TableSize = 10;
 
-    std::hash<K> hashFunction;
     Entry *table[TableSize];
 
 public:
@@ -65,6 +64,7 @@ public:
     int getSize() const;
 
 private:
+    static ulong hashKey(const K &key);
+
     Entry *createEntry(const K &key, const V &value) const;
-    ulong hash(const K &key) const;
 };

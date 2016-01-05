@@ -154,7 +154,7 @@ template <class K, class V>
 V HashMap<K, V>::get(const K &key) const {
     std::cout << "HashMap<K, V>::get(key=" << key << ")\n";
 
-    ulong hashValue = hash(key) % TableSize;
+    ulong hashValue = hashKey(key) % TableSize;
     Entry *entry = table[hashValue];
 
     while (entry) {
@@ -171,7 +171,7 @@ template <class K, class V>
 void HashMap<K, V>::put(const K &key, const V &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    ulong hashValue = hash(key) % TableSize;
+    ulong hashValue = hashKey(key) % TableSize;
 
     Pointer<typename Map<K, V>::Entry> prev;
     Pointer<typename Map<K, V>::Entry> entry = table[hashValue];
@@ -200,7 +200,7 @@ template <class K, class V>
 bool HashMap<K, V>::remove(const K &key) {
     std::cout << "HashMap<K, V>::remove(key=" << key << ")\n";
 
-    ulong hashValue = hash(key) % TableSize;
+    ulong hashValue = hashKey(key) % TableSize;
 
     Entry *prev = 0;
     Entry *entry = table[hashValue];
@@ -225,7 +225,7 @@ template <class K, class V>
 bool HashMap<K, V>::contains(const K &key) const {
     std::cout << "HashMap<K, V>::contains(key=" << key << ")\n";
 
-    ulong hashValue = hash(key) % TableSize;
+    ulong hashValue = hashKey(key) % TableSize;
 
     Entry *entry = table[hashValue];
 
@@ -247,6 +247,16 @@ void HashMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> 
 template <class K, class V>
 int HashMap<K, V>::getSize() const {
     return sizeof *this;
+}
+
+template <class K, class V>
+ulong HashMap<K, V>::hashKey(const K &key) {
+    return std::hash<K>()(key);
+}
+
+template <>
+ulong HashMap<Object *, uint>::hashKey(Object *const &key) {
+    return key->hash();
 }
 
 template <class K, class V>
@@ -272,14 +282,4 @@ typename HashMap<Object *, uint>::Entry *HashMap<Object *, uint>::createEntry(Ob
     entry->setKey(p);
 
     return entry;
-}
-
-template <class K, class V>
-ulong HashMap<K, V>::hash(const K &key) const {
-    return hashFunction(key);
-}
-
-template <>
-ulong HashMap<Object *, uint>::hash(Object *const &key) const {
-    return key->hash();
 }

@@ -33,10 +33,10 @@ void run() {
                 obj->removeAttribute(id);
         }
 
-        if (rand() % n == 0) {
-            std::cout << "\n//random garbage collection";
-            MemoryManager::instance()->collectGarbage();
-        }
+//        if (rand() % n == 0) {
+//            std::cout << "\n//random garbage collection";
+//            MemoryManager::instance()->collectGarbage();
+//        }
     }
 }
 

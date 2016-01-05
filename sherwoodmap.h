@@ -8,6 +8,8 @@ class SherwoodMap : public Map<K, V> {
         uint hash;
 
     public:
+        static uint deletedFlag();
+
         Entry();
         Entry(K key, V value);
 
@@ -15,17 +17,19 @@ class SherwoodMap : public Map<K, V> {
         V &getValue();
         uint &getHash();
 
+        void clear();
+
         bool equals(const K &key);
 
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
         int getSize() const;
     };
 
-    static const int InitialCapacity = 4;
+    static const int HalfOfInitialCapacity = 4;
     static const int LoadFactorPercent = 90;
 
     Entry *buffer;
-    int numElems, capacity, mask, resizeThreshold;
+    int numEntries, capacity, resizeThreshold;
 
 public:
     SherwoodMap();
@@ -39,13 +43,22 @@ public:
     int getSize() const;
 
 private:
-    void allocate();
-    void grow();
-    void insertHelper(uint hash, K key, V value);
+    static uint computeHash(const K &key);
     static uint hashKey(const K &key);
-    static bool isDeleted(uint hash);
-    int desiredPos(uint hash) const;
-    int probeDistance(uint hash, uint slotIndex) const;
-    void construct(int index, uint hash, const K &key, const V &value);
-    int lookupIndex(const K &key) const;
+
+    void allocate();
+    int probeDistance(uint hash, uint index) const;
+    void insert(uint hash, K &&key, V &&value);
+    void createEntry(int index, uint hash, const K &key, const V &value);
+    int lookup(const K &key) const;
 };
+
+template <class K, class V>
+inline uint SherwoodMap<K, V>::Entry::deletedFlag() {
+    return 1 << (sizeof(hash) * 8 - 1);
+}
+
+template <class K, class V>
+inline int SherwoodMap<K, V>::probeDistance(uint hash, uint index) const {
+    return (index + capacity - hash % capacity) % capacity;
+}
