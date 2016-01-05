@@ -38,19 +38,65 @@ void run() {
     }
 }
 
+class StaticObject : public ManagedObject {
+    int refCount;
+
+public:
+    static StaticObject *create(int refCount) {
+        ManagedObject *object = MemoryManager::instance()->allocate(sizeof(StaticObject) + refCount * sizeof(ManagedObject *));
+        new (object) StaticObject(refCount);
+        return (StaticObject *)object;
+    }
+
+    StaticObject(int refCount)
+        : refCount(refCount) {
+        for (int i = 0; i < refCount; i++)
+            field(i) = 0;
+    }
+
+    ManagedObject *&field(int index) {
+        return *(ManagedObject **)((byte *)this + sizeof(*this) + index * sizeof(ManagedObject *));
+    }
+
+    void mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+        for (int i = 0; i < refCount; i++)
+            if (field(i))
+                f(field(i));
+    }
+
+    int getSize() const {
+        return sizeof(*this) + refCount * sizeof(ManagedObject *);
+    }
+};
+
 int main() {
-    FILE *file = freopen("out.txt", "w", stdout);
+    //    FILE *file = freopen("out.txt", "w", stdout);
 
     MemoryManager::initialize();
-    String::initialize();
+    //    String::initialize();
 
-    run();
+    //    run();
 
-    String::finalize();
+    {
+        Pointer<ManagedObject> object = StaticObject::create(3);
+
+        ((StaticObject *)*object)->field(0) = new String("one");
+        ((StaticObject *)*object)->field(1) = new String("two");
+        ((StaticObject *)*object)->field(2) = new String("three");
+
+        for (int i = 0; i < 47; i++)
+            new String("garbage");
+
+        std::cout << ((Object *)((StaticObject *)*object)->field(1))->toString() << "\n";
+        std::cout << ((Object *)((StaticObject *)*object)->field(2))->toString() << "\n";
+        std::cout << ((Object *)((StaticObject *)*object)->field(0))->toString() << "\n";
+    }
+
+    //    String::finalize();
     MemoryManager::finalize();
 
-    fclose(file);
-    system("start out.txt");
+    //    fclose(file);
+    //    system("start out.txt");
 
     return 0;
 }
