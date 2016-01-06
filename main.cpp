@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "memorymanager.h"
 #include "pointer.h"
 #include "object.h"
 #include "string.h"

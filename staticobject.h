@@ -8,10 +8,11 @@ class StaticObject : public ManagedObject {
 public:
     static StaticObject *create(int refCount);
 
-    StaticObject(int refCount);
-
     ManagedObject *&field(int index);
 
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize() const;
+
+private:
+    StaticObject(int refCount);
 };

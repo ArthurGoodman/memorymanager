@@ -1,6 +1,5 @@
 #include "sherwoodmap.h"
 
-#include "memorymanager.h"
 #include "pointer.h"
 
 #include <iostream>

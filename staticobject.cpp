@@ -8,12 +8,6 @@ StaticObject *StaticObject::create(int refCount) {
     return (StaticObject *)object;
 }
 
-StaticObject::StaticObject(int refCount)
-    : refCount(refCount) {
-    for (int i = 0; i < refCount; i++)
-        field(i) = 0;
-}
-
 ManagedObject *&StaticObject::field(int index) {
     return *(ManagedObject **)((byte *)this + sizeof(*this) + index * sizeof(ManagedObject *));
 }
@@ -26,4 +20,10 @@ void StaticObject::mapOnReferences(const std::function<void(ManagedObject *&)> &
 
 int StaticObject::getSize() const {
     return sizeof(*this) + refCount * sizeof(ManagedObject *);
+}
+
+StaticObject::StaticObject(int refCount)
+    : refCount(refCount) {
+    for (int i = 0; i < refCount; i++)
+        field(i) = 0;
 }
