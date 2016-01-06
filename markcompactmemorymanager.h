@@ -6,7 +6,7 @@
 class MarkCompactMemoryManager : public MemoryManager {
     ByteArray memory;
     Pointer<ManagedObject> *pointers;
-    int delta, objectCount;
+    int objectCount;
 
 public:
     MarkCompactMemoryManager();
@@ -21,15 +21,19 @@ public:
     void removePointer(Pointer<ManagedObject> *pointer);
 
 private:
-    void shiftPointers();
-    void shiftPointer(ManagedObject *&pointer);
+    void updatePointers();
+    void updatePointer(ManagedObject *&pointer);
 
     void mark();
     void compact();
 
     void finalize();
 
-    void shiftPointers(ManagedObject *object);
+    void updatePointers(ManagedObject *object);
     void forwardPointers(ManagedObject *object);
     void mark(ManagedObject *object);
 };
+
+inline void MarkCompactMemoryManager::updatePointer(ManagedObject *&pointer) {
+    pointer = (ManagedObject *)((byte *)pointer + memory.getDelta());
+}

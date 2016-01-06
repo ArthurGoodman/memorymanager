@@ -8,7 +8,7 @@
 #include <iostream>
 
 MarkCompactMemoryManager::MarkCompactMemoryManager()
-    : pointers(0), delta(0), objectCount(0) {
+    : pointers(0), objectCount(0) {
     ByteArray::setInitialCapacity(1024);
 }
 
@@ -20,12 +20,10 @@ ManagedObject *MarkCompactMemoryManager::allocate(uint size, int count) {
     if (!memory.enoughSpace(size))
         collectGarbage();
 
-    byte *oldAddress = memory.getData();
-
     ManagedObject *object = (ManagedObject *)memory.allocate(size);
 
-    if ((delta = memory.getData() - oldAddress) != 0)
-        shiftPointers();
+    if (memory.getDelta() != 0)
+        updatePointers();
 
     objectCount += count;
 
@@ -54,21 +52,17 @@ void MarkCompactMemoryManager::removePointer(Pointer<ManagedObject> *p) {
     p->unlink(pointers);
 }
 
-void MarkCompactMemoryManager::shiftPointers() {
-    std::cout << "MarkCompactMemoryManager::shiftPointers() //delta=" << delta << "\n\n";
+void MarkCompactMemoryManager::updatePointers() {
+    std::cout << "MarkCompactMemoryManager::updatePointers() //delta=" << memory.getDelta() << "\n\n";
 
     byte *object = memory.getData();
 
     for (int i = 0; i < objectCount; i++, object += ((ManagedObject *)object)->getSize())
-        shiftPointers((ManagedObject *)object);
+        updatePointers((ManagedObject *)object);
 
     for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
         if (*p)
-            shiftPointer(**p);
-}
-
-void MarkCompactMemoryManager::shiftPointer(ManagedObject *&pointer) {
-    pointer = (ManagedObject *)((byte *)pointer + delta);
+            updatePointer(**p);
 }
 
 void MarkCompactMemoryManager::mark() {
@@ -134,9 +128,9 @@ void MarkCompactMemoryManager::finalize() {
     }
 }
 
-void MarkCompactMemoryManager::shiftPointers(ManagedObject *object) {
+void MarkCompactMemoryManager::updatePointers(ManagedObject *object) {
     object->mapOnReferences([this](ManagedObject *&ref) {
-        shiftPointer(ref);
+        updatePointer(ref);
     });
 }
 

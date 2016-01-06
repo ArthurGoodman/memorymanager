@@ -12,7 +12,7 @@ void ByteArray::setInitialCapacity(uint initialCapacity) {
 }
 
 ByteArray::ByteArray()
-    : size(0), capacity(0), data(0) {
+    : size(0), capacity(0), delta(0), data(0) {
 }
 
 ByteArray::~ByteArray() {
@@ -20,6 +20,8 @@ ByteArray::~ByteArray() {
 }
 
 byte *ByteArray::allocate(uint count) {
+    byte *oldData = data;
+
     if (!enoughSpace(count)) {
         std::cout << "//reallocating\n\n";
 
@@ -40,6 +42,7 @@ byte *ByteArray::allocate(uint count) {
     }
 
     size += count;
+    delta = data - oldData;
 
     return data + size - count;
 }
@@ -69,10 +72,14 @@ byte *ByteArray::getData() const {
     return data;
 }
 
-int ByteArray::getSize() const {
+uint ByteArray::getSize() const {
     return size;
 }
 
-int ByteArray::getCapacity() const {
+uint ByteArray::getCapacity() const {
     return capacity;
+}
+
+int ByteArray::getDelta() const {
+    return delta;
 }

@@ -6,6 +6,7 @@ class ByteArray {
     static uint initialCapacity;
 
     uint size, capacity;
+    int delta;
     byte *data;
 
 public:
@@ -21,6 +22,7 @@ public:
     bool enoughSpace(uint count) const;
 
     byte *getData() const;
-    int getSize() const;
-    int getCapacity() const;
+    uint getSize() const;
+    uint getCapacity() const;
+    int getDelta() const;
 };
