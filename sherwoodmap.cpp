@@ -127,7 +127,7 @@ SherwoodMap<K, V>::iterator::iterator(SherwoodMap::Entry *buffer, int capacity, 
 
 template <class K, class V>
 SherwoodMap<K, V>::SherwoodMap()
-    : buffer(0), numEntries(0), capacity(HalfInitialCapacity) {
+    : buffer(0), numEntries(0), capacity(HalfInitialCapacity), resizeThreshold(0) {
 }
 
 template <class K, class V>
