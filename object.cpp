@@ -1,6 +1,6 @@
 #include "object.h"
 
-#include "hashmap.h"
+#include "sherwoodmap.h"
 #include "pointer.h"
 #include "utility.h"
 #include "string.h"
@@ -37,7 +37,7 @@ void Object::setAttribute(uint id, const Pointer<Object> &value) {
     Pointer<Object> _this = this;
 
     if (!attributes)
-        _this->attributes = new HashMap<uint, Object *>;
+        _this->attributes = new SherwoodMap<uint, Object *>;
 
     _this->attributes->put(id, value);
 }

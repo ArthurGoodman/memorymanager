@@ -1,6 +1,6 @@
 #include "string.h"
 
-#include "hashmap.h"
+#include "sherwoodmap.h"
 #include "pointer.h"
 
 #include <iostream>
@@ -10,8 +10,8 @@ Pointer<Map<uint, Object *>> *String::idString;
 uint String::lastId = 0;
 
 void String::initialize() {
-    stringId = new Pointer<Map<Object *, uint>>(new HashMap<Object *, uint>);
-    idString = new Pointer<Map<uint, Object *>>(new HashMap<uint, Object *>);
+    stringId = new Pointer<Map<Object *, uint>>(new SherwoodMap<Object *, uint>);
+    idString = new Pointer<Map<uint, Object *>>(new SherwoodMap<uint, Object *>);
 }
 
 void String::finalize() {

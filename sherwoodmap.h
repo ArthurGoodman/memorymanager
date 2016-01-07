@@ -30,7 +30,7 @@ class SherwoodMap : public Map<K, V> {
     static const int LoadFactorPercent = 90;
 
     Entry *buffer;
-    int numEntries, capacity, resizeThreshold;
+    int numEntries, capacity, resizeThreshold, mask;
 
 public:
     class iterator {
@@ -73,7 +73,7 @@ private:
 
     void allocate();
     int probeDistance(uint hash, uint index) const;
-    void insert(uint hash, K &&key, V &&value);
+    void insert(uint hash, K key, V value);
     void createEntry(int index, uint hash, const K &key, const V &value);
     int lookup(const K &key) const;
 };
@@ -90,5 +90,5 @@ inline bool SherwoodMap<K, V>::Entry::isDeleted() {
 
 template <class K, class V>
 inline int SherwoodMap<K, V>::probeDistance(uint hash, uint index) const {
-    return (index + capacity - hash % capacity) % capacity;
+    return (index + capacity - (hash & mask)) & mask;
 }

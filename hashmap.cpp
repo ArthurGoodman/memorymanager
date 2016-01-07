@@ -268,12 +268,12 @@ void HashMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> 
     Object::mapOnReferences(f);
 
     if (buffer) {
+        f((ManagedObject *&)buffer);
+
         for (int i = 1; i < capacity; i++) {
             EntryReference *entry = buffer + i;
             f((ManagedObject *&)entry);
         }
-
-        f((ManagedObject *&)buffer);
     }
 }
 
@@ -312,18 +312,11 @@ void HashMap<K, V>::allocate() {
         while (entry) {
             uint hashValue = hashKey(entry->getKey()) % _this->capacity;
 
-            if (!_this->buffer[hashValue].getEntry())
-                _this->buffer[hashValue].getEntry() = entry;
-            else
-                _this->buffer[hashValue].getEntry()->setNext(entry);
-
-            if (prev)
-                prev->setNext(entry->getNext());
-
-            entry->setNext(0);
-
             prev = entry;
             entry = entry->getNext();
+
+            prev->setNext(_this->buffer[hashValue].getEntry());
+            _this->buffer[hashValue].getEntry() = prev;
         }
     }
 }
