@@ -94,7 +94,7 @@ int SherwoodMap<K, V>::Entry::getSize() const {
 
 template <class K, class V>
 typename SherwoodMap<K, V>::iterator &SherwoodMap<K, V>::iterator::operator++() {
-    while (++index < capacity && (!buffer[index].getHash() || buffer[index].isDeleted())) {
+    while (++index < capacity && (buffer[index].getHash() == 0 || buffer[index].isDeleted())) {
     }
 
     return *this;
@@ -132,7 +132,7 @@ SherwoodMap<K, V>::SherwoodMap()
 
 template <class K, class V>
 typename SherwoodMap<K, V>::iterator SherwoodMap<K, V>::begin() {
-    if (!numEntries)
+    if (numEntries == 0)
         return iterator(buffer, capacity, capacity);
 
     for (int i = 0; i < capacity; i++)
@@ -229,12 +229,12 @@ void SherwoodMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *
     Object::mapOnReferences(f);
 
     if (buffer) {
-        f((ManagedObject *&)buffer);
-
-        for (int i = 1; i < capacity; i++) {
+        for (int i = 0; i < capacity; i++) {
             Entry *entry = buffer + i;
             f((ManagedObject *&)entry);
         }
+
+        f((ManagedObject *&)buffer);
     }
 }
 
@@ -291,7 +291,7 @@ void SherwoodMap<K, V>::insert(uint hash, K key, V value) {
     int dist = 0;
 
     while (true) {
-        if (!buffer[pos].getHash()) {
+        if (buffer[pos].getHash() == 0) {
             createEntry(pos, hash, key, value);
             return;
         }
@@ -336,7 +336,7 @@ int SherwoodMap<K, V>::lookup(const K &key) const {
     int dist = 0;
 
     while (true) {
-        if (!buffer || !buffer[pos].getHash())
+        if (buffer == 0 || buffer[pos].getHash() == 0)
             return -1;
         else if (dist > probeDistance(buffer[pos].getHash(), pos))
             return -1;

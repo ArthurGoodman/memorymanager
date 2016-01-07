@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     map.cpp \
     hashmap.cpp \
     sherwoodmap.cpp \
-    staticobject.cpp
+    staticobject.cpp \
+    semispacememorymanager.cpp
 
 HEADERS += \
     common.h \
@@ -37,4 +38,5 @@ HEADERS += \
     map.h \
     hashmap.h \
     sherwoodmap.h \
-    staticobject.h
+    staticobject.h \
+    semispacememorymanager.h

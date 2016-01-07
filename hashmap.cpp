@@ -177,7 +177,7 @@ V HashMap<K, V>::get(const K &key) const {
 
     Entry *entry = lookup(key);
 
-    if (!entry)
+    if (entry == 0)
         throw std::out_of_range("HashMap<K, V>::get");
 
     return entry->getValue();
@@ -225,7 +225,7 @@ template <class K, class V>
 bool HashMap<K, V>::remove(const K &key) {
     std::cout << "HashMap<K, V>::remove(key=" << key << ")\n";
 
-    if (!buffer)
+    if (buffer == 0)
         return false;
 
     int hashValue = hashKey(key) % capacity;
@@ -238,10 +238,10 @@ bool HashMap<K, V>::remove(const K &key) {
         entry = entry->getNext();
     }
 
-    if (!entry)
+    if (entry == 0)
         return false;
 
-    if (!prev)
+    if (prev == 0)
         buffer[hashValue].getEntry() = entry->getNext();
     else
         prev->setNext(entry->getNext());
@@ -268,12 +268,12 @@ void HashMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> 
     Object::mapOnReferences(f);
 
     if (buffer) {
-        f((ManagedObject *&)buffer);
-
-        for (int i = 1; i < capacity; i++) {
+        for (int i = 0; i < capacity; i++) {
             EntryReference *entry = buffer + i;
             f((ManagedObject *&)entry);
         }
+
+        f((ManagedObject *&)buffer);
     }
 }
 
@@ -343,7 +343,7 @@ void HashMap<K, V>::insert(const K &key, const V &value) {
 
     entry = createEntry(key, value);
 
-    if (!prev)
+    if (prev == 0)
         _this->buffer[hashValue].getEntry() = entry;
     else
         prev->setNext(entry);
@@ -351,7 +351,7 @@ void HashMap<K, V>::insert(const K &key, const V &value) {
 
 template <class K, class V>
 typename HashMap<K, V>::Entry *HashMap<K, V>::lookup(const K &key) const {
-    if (!buffer)
+    if (buffer == 0)
         return 0;
 
     int hashValue = hashKey(key) % capacity;

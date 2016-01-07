@@ -36,7 +36,7 @@ Object *Object::getAttribute(uint id) {
 void Object::setAttribute(uint id, const Pointer<Object> &value) {
     Pointer<Object> _this = this;
 
-    if (!attributes)
+    if (attributes == 0)
         _this->attributes = new SherwoodMap<uint, Object *>;
 
     _this->attributes->put(id, value);

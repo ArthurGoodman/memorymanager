@@ -1,7 +1,5 @@
 #include "markcompactmemorymanager.h"
 
-#include <memory>
-
 #include "managedobject.h"
 #include "pointer.h"
 
@@ -44,12 +42,12 @@ void MarkCompactMemoryManager::collectGarbage() {
     std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", objectCount=" << objectCount << "\n\n";
 }
 
-void MarkCompactMemoryManager::registerPointer(Pointer<ManagedObject> *p) {
-    p->link(pointers);
+void MarkCompactMemoryManager::registerPointer(Pointer<ManagedObject> *pointer) {
+    pointer->link(pointers);
 }
 
-void MarkCompactMemoryManager::removePointer(Pointer<ManagedObject> *p) {
-    p->unlink(pointers);
+void MarkCompactMemoryManager::removePointer(Pointer<ManagedObject> *pointer) {
+    pointer->unlink(pointers);
 }
 
 void MarkCompactMemoryManager::updatePointers() {
