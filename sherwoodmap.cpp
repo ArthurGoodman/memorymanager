@@ -220,6 +220,11 @@ bool SherwoodMap<K, V>::contains(const K &key) const {
 }
 
 template <class K, class V>
+int SherwoodMap<K, V>::size() const {
+    return numEntries;
+}
+
+template <class K, class V>
 void SherwoodMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
@@ -272,10 +277,10 @@ void SherwoodMap<K, V>::allocate() {
     _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
 
     for (int i = 0; i < oldCapacity; i++) {
-        Entry &e = (*oldEntries)[i];
+        Entry &entry = (*oldEntries)[i];
 
-        if (e.getHash() && !e.isDeleted())
-            _this->insert(e.getHash(), std::move(e.getKey()), std::move(e.getValue()));
+        if (entry.getHash() && !entry.isDeleted())
+            _this->insert(entry.getHash(), std::move(entry.getKey()), std::move(entry.getValue()));
     }
 }
 

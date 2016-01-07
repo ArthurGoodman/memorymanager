@@ -25,16 +25,31 @@ class HashMap : public Map<K, V> {
         int getSize() const;
     };
 
-    static const int TableSize = 10;
+    class EntryReference : public ManagedObject {
+        Entry *entry;
 
-    Entry *table[TableSize];
+    public:
+        EntryReference();
+
+        Entry *&getEntry();
+
+        void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
+        int getSize() const;
+    };
+
+    static const int HalfInitialCapacity = 4;
+    static const int LoadFactorPercent = 1000;
+
+    EntryReference *buffer;
+    int numEntries, capacity, resizeThreshold;
 
 public:
     class iterator {
         friend class HashMap;
 
-        Entry **table, *entry;
-        int i;
+        EntryReference *buffer;
+        Entry *entry;
+        int capacity, i;
 
     public:
         iterator &operator++();
@@ -47,7 +62,7 @@ public:
 
     private:
         iterator();
-        iterator(Entry **table, int i);
+        iterator(EntryReference *buffer, int capacity, int i);
     };
 
     HashMap();
@@ -60,11 +75,16 @@ public:
     bool remove(const K &key);
     bool contains(const K &key) const;
 
+    int size() const;
+
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize() const;
 
 private:
     static ulong hashKey(const K &key);
 
+    void allocate();
+    void insert(const K &key, const V &value);
+    Entry *lookup(const K &key) const;
     Entry *createEntry(const K &key, const V &value) const;
 };

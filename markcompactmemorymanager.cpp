@@ -118,7 +118,7 @@ void MarkCompactMemoryManager::compact() {
 }
 
 void MarkCompactMemoryManager::finalize() {
-    std::cout << "\nMarkCompactMemoryManager::finalize()\n";
+    std::cout << "Memory used: " << memory.getSize() << "\n\nMarkCompactMemoryManager::finalize()\n";
 
     byte *p = memory.getData();
 

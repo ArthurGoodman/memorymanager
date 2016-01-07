@@ -31,4 +31,6 @@ public:
 
     virtual void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     virtual int getSize() const;
+
+    int attributesCount() const;
 };

@@ -23,14 +23,14 @@ byte *ByteArray::allocate(uint count) {
     byte *oldData = data;
 
     if (!enoughSpace(count)) {
-        std::cout << "//reallocating\n\n";
-
         int newCapacity = capacity;
 
         if (!newCapacity)
             newCapacity = initialCapacity;
 
         newCapacity *= pow(2, std::max(0.0, ceil(log2(double(size + count) / newCapacity))));
+
+        std::cout << "//reallocating -> " << newCapacity << "\n\n";
 
         byte *newData = (byte *)realloc(data, newCapacity);
 

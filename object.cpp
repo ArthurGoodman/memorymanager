@@ -1,6 +1,6 @@
 #include "object.h"
 
-#include "sherwoodmap.h"
+#include "hashmap.h"
 #include "pointer.h"
 #include "utility.h"
 #include "string.h"
@@ -37,7 +37,7 @@ void Object::setAttribute(uint id, const Pointer<Object> &value) {
     Pointer<Object> _this = this;
 
     if (!attributes)
-        _this->attributes = new SherwoodMap<uint, Object *>;
+        _this->attributes = new HashMap<uint, Object *>;
 
     _this->attributes->put(id, value);
 }
@@ -66,4 +66,8 @@ void Object::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
 
 int Object::getSize() const {
     return sizeof *this;
+}
+
+int Object::attributesCount() const {
+    return attributes->size();
 }

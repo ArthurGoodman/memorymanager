@@ -62,6 +62,8 @@ public:
     bool remove(const K &key);
     bool contains(const K &key) const;
 
+    int size() const;
+
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize() const;
 

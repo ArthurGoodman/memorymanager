@@ -40,7 +40,7 @@ typename HashMap<K, V>::Entry *HashMap<K, V>::Entry::getNext() const {
 }
 
 template <class K, class V>
-void HashMap<K, V>::Entry::setNext(HashMap<K, V>::Entry *next) {
+void HashMap<K, V>::Entry::setNext(Entry *next) {
     this->next = next;
 }
 
@@ -84,17 +84,38 @@ int HashMap<K, V>::Entry::getSize() const {
 }
 
 template <class K, class V>
+HashMap<K, V>::EntryReference::EntryReference()
+    : entry(0) {
+}
+
+template <class K, class V>
+typename HashMap<K, V>::Entry *&HashMap<K, V>::EntryReference::getEntry() {
+    return entry;
+}
+
+template <class K, class V>
+void HashMap<K, V>::EntryReference::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+    if (entry)
+        f((ManagedObject *&)entry);
+}
+
+template <class K, class V>
+int HashMap<K, V>::EntryReference::getSize() const {
+    return sizeof *this;
+}
+
+template <class K, class V>
 typename HashMap<K, V>::iterator &HashMap<K, V>::iterator::operator++() {
     if (entry->getNext())
         entry = entry->getNext();
     else {
-        while (++i < TableSize)
-            if (table[i]) {
-                entry = table[i];
+        while (++i < capacity)
+            if (buffer[i].getEntry()) {
+                entry = buffer[i].getEntry();
                 break;
             }
 
-        if (i == TableSize)
+        if (i == capacity)
             entry = 0;
     }
 
@@ -123,24 +144,24 @@ V &HashMap<K, V>::iterator::value() {
 
 template <class K, class V>
 HashMap<K, V>::iterator::iterator()
-    : table(0), entry(0), i(0) {
+    : buffer(0), entry(0), capacity(0), i(0) {
 }
 
 template <class K, class V>
-HashMap<K, V>::iterator::iterator(HashMap<K, V>::Entry **table, int i)
-    : table(table), entry(table[i]), i(i) {
+HashMap<K, V>::iterator::iterator(EntryReference *buffer, int capacity, int i)
+    : buffer(buffer), entry(buffer[i].getEntry()), capacity(capacity), i(i) {
 }
 
 template <class K, class V>
 HashMap<K, V>::HashMap()
-    : table{0} {
+    : buffer(0), numEntries(0), capacity(HalfInitialCapacity), resizeThreshold(0) {
 }
 
 template <class K, class V>
 typename HashMap<K, V>::iterator HashMap<K, V>::begin() {
-    for (int i = 0; i < TableSize; i++)
-        if (table[i])
-            return iterator(table, i);
+    for (int i = 0; i < capacity; i++)
+        if (buffer[i].getEntry())
+            return iterator(buffer, capacity, i);
 
     return iterator();
 }
@@ -154,56 +175,63 @@ template <class K, class V>
 V HashMap<K, V>::get(const K &key) const {
     std::cout << "HashMap<K, V>::get(key=" << key << ")\n";
 
-    ulong hashValue = hashKey(key) % TableSize;
-    Entry *entry = table[hashValue];
+    Entry *entry = lookup(key);
 
-    while (entry) {
-        if (entry->equals(key))
-            return entry->getValue();
+    if (!entry)
+        throw std::out_of_range("HashMap<K, V>::get");
 
-        entry = entry->getNext();
-    }
-
-    throw std::out_of_range("HashMap<K, V>::get");
+    return entry->getValue();
 }
 
 template <class K, class V>
 void HashMap<K, V>::put(const K &key, const V &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    ulong hashValue = hashKey(key) % TableSize;
-
-    Pointer<Entry> prev;
-    Pointer<Entry> entry = table[hashValue];
-
-    while (entry && !((Entry *)*entry)->equals(key)) {
-        prev = entry;
-        entry = ((Entry *)*entry)->getNext();
-    }
-
-    if (entry) {
-        ((Entry *)*entry)->setValue(value);
-        return;
-    }
-
     Pointer<HashMap> _this = this;
 
-    entry = createEntry(key, value);
+    if (++numEntries >= resizeThreshold)
+        allocate();
 
-    if (!prev)
-        _this->table[hashValue] = entry;
-    else
-        prev->setNext(entry);
+    _this->insert(key, value);
+}
+
+template <>
+void HashMap<uint, Object *>::put(const uint &key, Object *const &value) {
+    std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
+
+    Pointer<HashMap> _this = this;
+    Pointer<Object> pValue = value;
+
+    if (++numEntries >= resizeThreshold)
+        allocate();
+
+    _this->insert(key, pValue);
+}
+
+template <>
+void HashMap<Object *, uint>::put(Object *const &key, const uint &value) {
+    std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
+
+    Pointer<HashMap> _this = this;
+    Pointer<Object> pKey = key;
+
+    if (++numEntries >= resizeThreshold)
+        allocate();
+
+    _this->insert(pKey, value);
 }
 
 template <class K, class V>
 bool HashMap<K, V>::remove(const K &key) {
     std::cout << "HashMap<K, V>::remove(key=" << key << ")\n";
 
-    ulong hashValue = hashKey(key) % TableSize;
+    if (!buffer)
+        return false;
+
+    int hashValue = hashKey(key) % capacity;
 
     Entry *prev = 0;
-    Entry *entry = table[hashValue];
+    Entry *entry = buffer[hashValue].getEntry();
 
     while (entry && !entry->equals(key)) {
         prev = entry;
@@ -214,9 +242,11 @@ bool HashMap<K, V>::remove(const K &key) {
         return false;
 
     if (!prev)
-        table[hashValue] = entry->getNext();
+        buffer[hashValue].getEntry() = entry->getNext();
     else
         prev->setNext(entry->getNext());
+
+    numEntries--;
 
     return true;
 }
@@ -225,23 +255,26 @@ template <class K, class V>
 bool HashMap<K, V>::contains(const K &key) const {
     std::cout << "HashMap<K, V>::contains(key=" << key << ")\n";
 
-    ulong hashValue = hashKey(key) % TableSize;
+    return lookup(key);
+}
 
-    Entry *entry = table[hashValue];
-
-    while (entry && !entry->equals(key))
-        entry = entry->getNext();
-
-    return entry;
+template <class K, class V>
+int HashMap<K, V>::size() const {
+    return numEntries;
 }
 
 template <class K, class V>
 void HashMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
-    for (int i = 0; i < TableSize; i++)
-        if (table[i])
-            f((ManagedObject *&)table[i]);
+    if (buffer) {
+        for (int i = 1; i < capacity; i++) {
+            EntryReference *entry = buffer + i;
+            f((ManagedObject *&)entry);
+        }
+
+        f((ManagedObject *&)buffer);
+    }
 }
 
 template <class K, class V>
@@ -260,26 +293,105 @@ ulong HashMap<Object *, uint>::hashKey(Object *const &key) {
 }
 
 template <class K, class V>
+void HashMap<K, V>::allocate() {
+    std::cout << "HashMap<K, V>::allocate() //capacity=" << capacity * 2 << "\n";
+
+    Pointer<HashMap> _this = this;
+    Pointer<EntryReference> oldEntries = buffer;
+    int oldCapacity = buffer ? capacity : 0;
+
+    EntryReference *newBuffer = MemoryManager::instance()->allocateArray<EntryReference>(capacity * 2);
+    _this->buffer = newBuffer;
+    _this->capacity *= 2;
+    _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
+
+    for (int i = 0; i < oldCapacity; i++) {
+        Entry *prev = 0;
+        Entry *entry = (*oldEntries)[i].getEntry();
+
+        while (entry) {
+            uint hashValue = hashKey(entry->getKey()) % _this->capacity;
+
+            if (!_this->buffer[hashValue].getEntry())
+                _this->buffer[hashValue].getEntry() = entry;
+            else
+                _this->buffer[hashValue].getEntry()->setNext(entry);
+
+            if (prev)
+                prev->setNext(entry->getNext());
+
+            entry->setNext(0);
+
+            prev = entry;
+            entry = entry->getNext();
+        }
+    }
+}
+
+template <class K, class V>
+void HashMap<K, V>::insert(const K &key, const V &value) {
+    int hashValue = hashKey(key) % capacity;
+
+    Pointer<Entry> prev;
+    Pointer<Entry> entry = buffer[hashValue].getEntry();
+
+    while (entry && !entry->equals(key)) {
+        prev = entry;
+        entry = entry->getNext();
+    }
+
+    if (entry) {
+        entry->setValue(value);
+        numEntries--;
+        return;
+    }
+
+    Pointer<HashMap> _this = this;
+
+    entry = createEntry(key, value);
+
+    if (!prev)
+        _this->buffer[hashValue].getEntry() = entry;
+    else
+        prev->setNext(entry);
+}
+
+template <class K, class V>
+typename HashMap<K, V>::Entry *HashMap<K, V>::lookup(const K &key) const {
+    if (!buffer)
+        return 0;
+
+    int hashValue = hashKey(key) % capacity;
+
+    Entry *entry = buffer[hashValue].getEntry();
+
+    while (entry && !entry->equals(key))
+        entry = entry->getNext();
+
+    return entry;
+}
+
+template <class K, class V>
 typename HashMap<K, V>::Entry *HashMap<K, V>::createEntry(const K &key, const V &value) const {
     return new Entry(key, value);
 }
 
 template <>
 typename HashMap<uint, Object *>::Entry *HashMap<uint, Object *>::createEntry(const uint &key, Object *const &value) const {
-    Pointer<Object> p = value;
+    Pointer<Object> pValue = value;
 
     Entry *entry = new Entry(key, 0);
-    entry->setValue(p);
+    entry->setValue(pValue);
 
     return entry;
 }
 
 template <>
 typename HashMap<Object *, uint>::Entry *HashMap<Object *, uint>::createEntry(Object *const &key, const uint &value) const {
-    Pointer<Object> p = key;
+    Pointer<Object> pKey = key;
 
     Entry *entry = new Entry(0, value);
-    entry->setKey(p);
+    entry->setKey(pKey);
 
     return entry;
 }
