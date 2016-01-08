@@ -203,17 +203,17 @@ int SherwoodMap<K, V>::size() const {
 }
 
 template <>
-void Array<typename SherwoodMap<Object *, uint>::Entry>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    for (int i = 0; i < size; i++)
-        if (data()[i].getKey())
-            f((ManagedObject *&)data()[i].getKey());
-}
-
-template <>
 void Array<typename SherwoodMap<uint, Object *>::Entry>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     for (int i = 0; i < size; i++)
         if (data()[i].getValue())
             f((ManagedObject *&)data()[i].getValue());
+}
+
+template <>
+void Array<typename SherwoodMap<Object *, uint>::Entry>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+    for (int i = 0; i < size; i++)
+        if (data()[i].getKey())
+            f((ManagedObject *&)data()[i].getKey());
 }
 
 template <class K, class V>

@@ -2,9 +2,15 @@
 
 #include "map.h"
 
+template <class>
+class Array;
+
 template <class K, class V>
 class HashMap : public Map<K, V> {
-    class Entry : public Map<K, V>::Entry {
+    class Entry : public ManagedObject {
+        K key;
+        V value;
+
         Entry *next;
 
     public:
@@ -25,29 +31,19 @@ class HashMap : public Map<K, V> {
         int getSize() const;
     };
 
-    class EntryReference : public ManagedObject {
-        Entry *entry;
-
-    public:
-        EntryReference();
-
-        Entry *&getEntry();
-
-        void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
-        int getSize() const;
-    };
+    friend class Array<Entry *>;
 
     static const int HalfInitialCapacity = 4;
     static const int LoadFactorPercent = 1000;
 
-    EntryReference *buffer;
+    Array<Entry *> *buffer;
     int numEntries, capacity, resizeThreshold;
 
 public:
     class iterator {
         friend class HashMap;
 
-        EntryReference *buffer;
+        Array<Entry *> *buffer;
         Entry *entry;
         int capacity, i;
 
@@ -62,7 +58,7 @@ public:
 
     private:
         iterator();
-        iterator(EntryReference *buffer, int capacity, int i);
+        iterator(Array<Entry *> *buffer, int capacity, int i);
     };
 
     HashMap();

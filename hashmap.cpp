@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include "pointer.h"
+#include "array.h"
 
 #include <iostream>
 
@@ -11,17 +12,17 @@ template class HashMap<Object *, uint>;
 
 template <class K, class V>
 HashMap<K, V>::Entry::Entry(const K &key, const V &value)
-    : Map<K, V>::Entry(key, value), next(0) {
+    : key(key), value(value), next(0) {
 }
 
 template <class K, class V>
 K &HashMap<K, V>::Entry::getKey() {
-    return this->key;
+    return key;
 }
 
 template <class K, class V>
 V &HashMap<K, V>::Entry::getValue() {
-    return this->value;
+    return value;
 }
 
 template <class K, class V>
@@ -84,34 +85,13 @@ int HashMap<K, V>::Entry::getSize() const {
 }
 
 template <class K, class V>
-HashMap<K, V>::EntryReference::EntryReference()
-    : entry(0) {
-}
-
-template <class K, class V>
-typename HashMap<K, V>::Entry *&HashMap<K, V>::EntryReference::getEntry() {
-    return entry;
-}
-
-template <class K, class V>
-void HashMap<K, V>::EntryReference::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    if (entry)
-        f((ManagedObject *&)entry);
-}
-
-template <class K, class V>
-int HashMap<K, V>::EntryReference::getSize() const {
-    return sizeof *this;
-}
-
-template <class K, class V>
 typename HashMap<K, V>::iterator &HashMap<K, V>::iterator::operator++() {
     if (entry->getNext())
         entry = entry->getNext();
     else {
         while (++i < capacity)
-            if (buffer[i].getEntry()) {
-                entry = buffer[i].getEntry();
+            if ((*buffer)[i]) {
+                entry = (*buffer)[i];
                 break;
             }
 
@@ -148,8 +128,8 @@ HashMap<K, V>::iterator::iterator()
 }
 
 template <class K, class V>
-HashMap<K, V>::iterator::iterator(EntryReference *buffer, int capacity, int i)
-    : buffer(buffer), entry(buffer[i].getEntry()), capacity(capacity), i(i) {
+HashMap<K, V>::iterator::iterator(Array<Entry *> *buffer, int capacity, int i)
+    : buffer(buffer), entry((*buffer)[i]), capacity(capacity), i(i) {
 }
 
 template <class K, class V>
@@ -160,7 +140,7 @@ HashMap<K, V>::HashMap()
 template <class K, class V>
 typename HashMap<K, V>::iterator HashMap<K, V>::begin() {
     for (int i = 0; i < capacity; i++)
-        if (buffer[i].getEntry())
+        if ((*buffer)[i])
             return iterator(buffer, capacity, i);
 
     return iterator();
@@ -231,7 +211,7 @@ bool HashMap<K, V>::remove(const K &key) {
     int hashValue = hashKey(key) % capacity;
 
     Entry *prev = 0;
-    Entry *entry = buffer[hashValue].getEntry();
+    Entry *entry = (*buffer)[hashValue];
 
     while (entry && !entry->equals(key)) {
         prev = entry;
@@ -242,7 +222,7 @@ bool HashMap<K, V>::remove(const K &key) {
         return false;
 
     if (prev == 0)
-        buffer[hashValue].getEntry() = entry->getNext();
+        (*buffer)[hashValue] = entry->getNext();
     else
         prev->setNext(entry->getNext());
 
@@ -263,18 +243,26 @@ int HashMap<K, V>::size() const {
     return numEntries;
 }
 
+template <>
+void Array<typename HashMap<uint, Object *>::Entry *>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+    for (int i = 0; i < size; i++)
+        if (data()[i])
+            f((ManagedObject *&)data()[i]);
+}
+
+template <>
+void Array<typename HashMap<Object *, uint>::Entry *>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+    for (int i = 0; i < size; i++)
+        if (data()[i])
+            f((ManagedObject *&)data()[i]);
+}
+
 template <class K, class V>
 void HashMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
-    if (buffer) {
-        for (int i = 0; i < capacity; i++) {
-            EntryReference *entry = buffer + i;
-            f((ManagedObject *&)entry);
-        }
-
+    if (buffer)
         f((ManagedObject *&)buffer);
-    }
 }
 
 template <class K, class V>
@@ -297,17 +285,20 @@ void HashMap<K, V>::allocate() {
     std::cout << "HashMap<K, V>::allocate() //capacity=" << capacity * 2 << "\n";
 
     Pointer<HashMap> _this = this;
-    Pointer<EntryReference> oldEntries = buffer;
+    Pointer<Array<Entry *>> oldEntries = buffer;
     int oldCapacity = buffer ? capacity : 0;
 
-    EntryReference *newBuffer = MemoryManager::instance()->allocateArray<EntryReference>(capacity * 2);
+    Array<Entry *> *newBuffer = Array<Entry *>::create(capacity * 2);
     _this->buffer = newBuffer;
     _this->capacity *= 2;
     _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
 
+    for (int i = 0; i < _this->capacity; i++)
+        (*_this->buffer)[i] = 0;
+
     for (int i = 0; i < oldCapacity; i++) {
         Entry *prev = 0;
-        Entry *entry = (*oldEntries)[i].getEntry();
+        Entry *entry = (**oldEntries)[i];
 
         while (entry) {
             uint hashValue = hashKey(entry->getKey()) % _this->capacity;
@@ -315,8 +306,8 @@ void HashMap<K, V>::allocate() {
             prev = entry;
             entry = entry->getNext();
 
-            prev->setNext(_this->buffer[hashValue].getEntry());
-            _this->buffer[hashValue].getEntry() = prev;
+            prev->setNext((*_this->buffer)[hashValue]);
+            (*_this->buffer)[hashValue] = prev;
         }
     }
 }
@@ -326,7 +317,7 @@ void HashMap<K, V>::insert(const K &key, const V &value) {
     int hashValue = hashKey(key) % capacity;
 
     Pointer<Entry> prev;
-    Pointer<Entry> entry = buffer[hashValue].getEntry();
+    Pointer<Entry> entry = (*buffer)[hashValue];
 
     while (entry && !entry->equals(key)) {
         prev = entry;
@@ -344,7 +335,7 @@ void HashMap<K, V>::insert(const K &key, const V &value) {
     entry = createEntry(key, value);
 
     if (prev == 0)
-        _this->buffer[hashValue].getEntry() = entry;
+        (*_this->buffer)[hashValue] = entry;
     else
         prev->setNext(entry);
 }
@@ -356,7 +347,7 @@ typename HashMap<K, V>::Entry *HashMap<K, V>::lookup(const K &key) const {
 
     int hashValue = hashKey(key) % capacity;
 
-    Entry *entry = buffer[hashValue].getEntry();
+    Entry *entry = (*buffer)[hashValue];
 
     while (entry && !entry->equals(key))
         entry = entry->getNext();

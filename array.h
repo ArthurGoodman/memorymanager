@@ -46,6 +46,10 @@ T &Array<T>::operator[](int index) const {
 }
 
 template <class T>
+void Array<T>::mapOnReferences(const std::function<void(ManagedObject *&)> &) {
+}
+
+template <class T>
 int Array<T>::getSize() const {
     return sizeof(*this) + size * sizeof(T);
 }
