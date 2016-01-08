@@ -11,6 +11,7 @@ public:
     static Array *create(int size);
 
     T *data() const;
+
     T *operator*() const;
     T &operator[](int index) const;
 

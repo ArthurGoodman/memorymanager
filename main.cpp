@@ -55,7 +55,7 @@ int main() {
     //    run();
 
     {
-        Pointer<SherwoodMap<Object *, uint>> map = new SherwoodMap<Object *, uint>;
+        Pointer<Map<Object *, uint>> map = new SherwoodMap<Object *, uint>;
         String *str;
 
         for (int i = 0; i < 34; i++) {

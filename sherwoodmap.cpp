@@ -272,8 +272,10 @@ void SherwoodMap<K, V>::allocate() {
     for (int i = 0; i < oldCapacity; i++) {
         Entry &entry = (**oldEntries)[i];
 
-        if (entry.getHash() && !entry.isDeleted())
+        if (entry.getHash() && !entry.isDeleted()) {
             _this->insert(entry.getHash(), entry.getKey(), entry.getValue());
+            std::cout << ((Object *)entry.getKey())->toString() << "\n";
+        }
     }
 }
 
@@ -302,9 +304,9 @@ void SherwoodMap<K, V>::insert(uint hash, K key, V value) {
                 return;
             }
 
+            std::swap(hash, (*buffer)[index].getHash());
             std::swap(key, (*buffer)[index].getKey());
             std::swap(value, (*buffer)[index].getValue());
-            std::swap(hash, (*buffer)[index].getHash());
 
             dist = existingEntryProbeDist;
         }
