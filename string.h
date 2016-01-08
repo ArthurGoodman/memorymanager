@@ -13,8 +13,8 @@ public:
     static void initialize();
     static void finalize();
 
-    static uint stringToId(const std::string &str);
-    static String *idToString(uint id);
+    static uint id(const std::string &str);
+    static String *string(uint id);
 
     String(const std::string &value = "");
 

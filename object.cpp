@@ -10,19 +10,19 @@ Object::Object()
 }
 
 bool Object::hasAttribute(const std::string &name) {
-    return hasAttribute(String::stringToId(name));
+    return hasAttribute(String::id(name));
 }
 
 Object *Object::getAttribute(const std::string &name) {
-    return getAttribute(String::stringToId(name));
+    return getAttribute(String::id(name));
 }
 
 void Object::setAttribute(const std::string &name, Object *value) {
-    setAttribute(String::stringToId(name), value);
+    setAttribute(String::id(name), value);
 }
 
 void Object::removeAttribute(const std::string &name) {
-    removeAttribute(String::stringToId(name));
+    removeAttribute(String::id(name));
 }
 
 bool Object::hasAttribute(uint id) {

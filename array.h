@@ -8,7 +8,27 @@ class Array : public Object {
     int size;
 
 public:
+    class iterator {
+        friend class Array<T>;
+
+        T *data;
+        int size, i;
+
+    public:
+        iterator &operator++();
+        T &operator*();
+
+        bool operator!=(const iterator &other) const;
+
+    private:
+        iterator();
+        iterator(T *data, int size, int i);
+    };
+
     static Array *create(int size);
+
+    iterator begin();
+    iterator end();
 
     T *data() const;
 
@@ -23,11 +43,42 @@ private:
 };
 
 template <class T>
+typename Array<T>::iterator &Array<T>::iterator::operator++() {
+    i++;
+    return *this;
+}
+
+template <class T>
+T &Array<T>::iterator::operator*() {
+    return data[i];
+}
+
+template <class T>
+bool Array<T>::iterator::operator!=(const iterator &other) const {
+    return i != other.i;
+}
+
+template <class T>
+Array<T>::iterator::iterator(T *data, int size, int i)
+    : data(data), size(size), i(i) {
+}
+
+template <class T>
 Array<T> *Array<T>::create(int size) {
     Array<T> *array = (Array<T> *)MemoryManager::instance()->allocate(sizeof(Array) + size * sizeof(T));
     new (array) Array<T>(size);
     new (**array) T[size];
     return array;
+}
+
+template <class T>
+typename Array<T>::iterator Array<T>::begin() {
+    return iterator(data(), size, 0);
+}
+
+template <class T>
+typename Array<T>::iterator Array<T>::end() {
+    return iterator(data(), size, size);
 }
 
 template <class T>

@@ -19,7 +19,7 @@ void String::finalize() {
     delete idString;
 }
 
-uint String::stringToId(const std::string &str) {
+uint String::id(const std::string &str) {
     String fakeString(str);
 
     if ((*stringId)->contains(&fakeString))
@@ -34,7 +34,7 @@ uint String::stringToId(const std::string &str) {
     return id;
 }
 
-String *String::idToString(uint id) {
+String *String::string(uint id) {
     return (String *)(*idString)->get(id);
 }
 

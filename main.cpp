@@ -18,18 +18,18 @@ void run() {
         if (rand() % 5 == 0)
             new String("garbage");
         else {
-            uint id = String::stringToId(Utility::toString(i));
-            obj->setAttribute(id, String::idToString(id));
+            uint id = String::id(Utility::toString(i));
+            obj->setAttribute(id, String::string(id));
         }
 
         if (rand() % 2 == 0) {
-            uint id = String::stringToId(Utility::toString(rand() % (i + 1)));
+            uint id = String::id(Utility::toString(rand() % (i + 1)));
 
             if (obj->hasAttribute(id)) {
                 if (rand() % 2 == 0)
                     obj->removeAttribute(id);
                 else {
-                    String *str = String::idToString(id);
+                    String *str = String::string(id);
                     obj->setAttribute(id, str);
                 }
             }
