@@ -26,9 +26,9 @@ class SherwoodMap : public Map<K, V> {
         bool isDeleted();
 
         bool equals(const K &key);
-
-        void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     };
+
+    friend class Array<Entry>;
 
     static const int HalfInitialCapacity = 4;
     static const int LoadFactorPercent = 90;

@@ -71,22 +71,6 @@ bool SherwoodMap<Object *, uint>::Entry::equals(Object *const &key) {
 }
 
 template <class K, class V>
-void SherwoodMap<K, V>::Entry::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-}
-
-template <>
-void SherwoodMap<uint, Object *>::Entry::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    if (value)
-        f((ManagedObject *&)value);
-}
-
-template <>
-void SherwoodMap<Object *, uint>::Entry::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    if (key)
-        f((ManagedObject *&)key);
-}
-
-template <class K, class V>
 typename SherwoodMap<K, V>::iterator &SherwoodMap<K, V>::iterator::operator++() {
     while (++index < capacity && ((*buffer)[index].getHash() == 0 || (*buffer)[index].isDeleted())) {
     }
@@ -218,16 +202,26 @@ int SherwoodMap<K, V>::size() const {
     return numEntries;
 }
 
+template <>
+void Array<typename SherwoodMap<Object *, uint>::Entry>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+    for (int i = 0; i < size; i++)
+        if (data()[i].getKey())
+            f((ManagedObject *&)data()[i].getKey());
+}
+
+template <>
+void Array<typename SherwoodMap<uint, Object *>::Entry>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
+    for (int i = 0; i < size; i++)
+        if (data()[i].getValue())
+            f((ManagedObject *&)data()[i].getValue());
+}
+
 template <class K, class V>
 void SherwoodMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
     Object::mapOnReferences(f);
 
-    if (buffer) {
-        for (int i = 0; i < capacity; i++)
-            (*buffer)[i].mapOnReferences(f);
-
+    if (buffer)
         f((ManagedObject *&)buffer);
-    }
 }
 
 template <class K, class V>
@@ -272,10 +266,8 @@ void SherwoodMap<K, V>::allocate() {
     for (int i = 0; i < oldCapacity; i++) {
         Entry &entry = (**oldEntries)[i];
 
-        if (entry.getHash() && !entry.isDeleted()) {
+        if (entry.getHash() && !entry.isDeleted())
             _this->insert(entry.getHash(), entry.getKey(), entry.getValue());
-            std::cout << ((Object *)entry.getKey())->toString() << "\n";
-        }
     }
 }
 

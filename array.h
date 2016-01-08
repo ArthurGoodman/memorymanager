@@ -15,6 +15,7 @@ public:
     T *operator*() const;
     T &operator[](int index) const;
 
+    void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize() const;
 
 private:
@@ -24,7 +25,7 @@ private:
 template <class T>
 Array<T> *Array<T>::create(int size) {
     Array<T> *array = (Array<T> *)MemoryManager::instance()->allocate(sizeof(Array) + size * sizeof(T));
-    new (array) Array<T>(size * sizeof(T));
+    new (array) Array<T>(size);
     new (**array) T[size];
     return array;
 }
@@ -46,7 +47,7 @@ T &Array<T>::operator[](int index) const {
 
 template <class T>
 int Array<T>::getSize() const {
-    return sizeof(*this) + size;
+    return sizeof(*this) + size * sizeof(T);
 }
 
 template <class T>
