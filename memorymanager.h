@@ -9,12 +9,18 @@ class Pointer;
 
 class MemoryManager {
     static MemoryManager *manager;
+    static Pointer<ManagedObject> *pointers;
 
 public:
     static MemoryManager *instance();
 
     static void initialize();
     static void finalize();
+
+    static void registerPointer(Pointer<ManagedObject> *pointer);
+    static void removePointer(Pointer<ManagedObject> *pointer);
+
+    static Pointer<ManagedObject> *getPointers();
 
     template <class T>
     T *allocateArray(uint size);
@@ -25,9 +31,6 @@ public:
     virtual void free(ManagedObject *p) = 0;
 
     virtual void collectGarbage() = 0;
-
-    virtual void registerPointer(Pointer<ManagedObject> *pointer) = 0;
-    virtual void removePointer(Pointer<ManagedObject> *pointer) = 0;
 };
 
 template <class T>

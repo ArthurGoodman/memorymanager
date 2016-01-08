@@ -12,9 +12,3 @@ void NoMemoryManager::free(ManagedObject *p) {
 
 void NoMemoryManager::collectGarbage() {
 }
-
-void NoMemoryManager::registerPointer(Pointer<ManagedObject> *) {
-}
-
-void NoMemoryManager::removePointer(Pointer<ManagedObject> *) {
-}

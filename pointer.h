@@ -28,7 +28,7 @@ public:
 template <class T>
 Pointer<T>::Pointer(T *p)
     : pointer(p), prev(0), next(0) {
-    MemoryManager::instance()->registerPointer((Pointer<ManagedObject> *)this);
+    MemoryManager::registerPointer((Pointer<ManagedObject> *)this);
 }
 
 template <class T>
@@ -38,7 +38,7 @@ Pointer<T>::Pointer(const Pointer<T> &p)
 
 template <class T>
 Pointer<T>::~Pointer() {
-    MemoryManager::instance()->removePointer((Pointer<ManagedObject> *)this);
+    MemoryManager::removePointer((Pointer<ManagedObject> *)this);
 }
 
 template <class T>

@@ -8,7 +8,7 @@
 #include <iostream>
 
 SemispaceMemoryManager::SemispaceMemoryManager()
-    : pointers(0), objectCount(0), capacity(InitialCapacity) {
+    : objectCount(0), capacity(InitialCapacity) {
     toSpace = memory.allocate(capacity);
     fromSpace = toSpace + capacity / 2;
 
@@ -41,17 +41,9 @@ void SemispaceMemoryManager::collectGarbage() {
     std::swap(fromSpace, toSpace);
     allocPtr = toSpace;
 
-    for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
+    for (Pointer<ManagedObject> *p = getPointers(); p; p = p->getNext())
         if (*p)
             *p = copy(*p);
-}
-
-void SemispaceMemoryManager::registerPointer(Pointer<ManagedObject> *pointer) {
-    pointer->link(pointers);
-}
-
-void SemispaceMemoryManager::removePointer(Pointer<ManagedObject> *pointer) {
-    pointer->unlink(pointers);
 }
 
 bool SemispaceMemoryManager::enoughSpace(int size) const {
