@@ -22,9 +22,5 @@ void MemoryManager::removePointer(Pointer<ManagedObject> *pointer) {
     pointer->unlink(pointers);
 }
 
-Pointer<ManagedObject> *MemoryManager::getPointers() {
-    return pointers;
-}
-
 MemoryManager::~MemoryManager() {
 }

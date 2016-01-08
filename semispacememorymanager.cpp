@@ -41,7 +41,7 @@ void SemispaceMemoryManager::collectGarbage() {
     std::swap(fromSpace, toSpace);
     allocPtr = toSpace;
 
-    for (Pointer<ManagedObject> *p = getPointers(); p; p = p->getNext())
+    for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
         if (*p)
             *p = copy(*p);
 }

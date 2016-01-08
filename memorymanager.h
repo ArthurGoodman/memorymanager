@@ -9,6 +9,8 @@ class Pointer;
 
 class MemoryManager {
     static MemoryManager *manager;
+
+protected:
     static Pointer<ManagedObject> *pointers;
 
 public:
@@ -19,8 +21,6 @@ public:
 
     static void registerPointer(Pointer<ManagedObject> *pointer);
     static void removePointer(Pointer<ManagedObject> *pointer);
-
-    static Pointer<ManagedObject> *getPointers();
 
     template <class T>
     T *allocateArray(uint size);
