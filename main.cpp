@@ -42,6 +42,8 @@ void run() {
     }
 }
 
+#include "sherwoodmap.h"
+
 int main() {
     //    FILE *file = freopen("out.txt", "w", stdout);
 
@@ -50,7 +52,20 @@ int main() {
 
     double t = clock();
 
-    run();
+    //    run();
+
+    {
+        Pointer<SherwoodMap<Object *, uint>> map = new SherwoodMap<Object *, uint>;
+        String *str;
+
+        for (int i = 0; i < 34; i++) {
+            str = new String(Utility::toString(i));
+            map->put(str, i);
+        }
+
+        str = new String("4");
+        std::cout << "\n" << (map->contains(str) ? "true" : "false") << "\n";
+    }
 
     std::cout << "\nElapsed: " << (clock() - t) / CLOCKS_PER_SEC << " sec.\n";
 
