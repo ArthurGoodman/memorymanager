@@ -15,17 +15,17 @@ SherwoodMap<K, V>::Entry::Entry()
 
 template <>
 SherwoodMap<uint, Object *>::Entry::Entry()
-    : value(0), hash(0) {
+    : hash(0), value(0) {
 }
 
 template <>
 SherwoodMap<Object *, uint>::Entry::Entry()
-    : key(0), hash(0) {
+    : hash(0), key(0) {
 }
 
 template <class K, class V>
-SherwoodMap<K, V>::Entry::Entry(K key, V value)
-    : key(key), value(value) {
+SherwoodMap<K, V>::Entry::Entry(uint hash, K key, V value)
+    : hash(hash), key(key), value(value) {
 }
 
 template <class K, class V>
@@ -284,12 +284,12 @@ void SherwoodMap<K, V>::insert(uint hash, K key, V value) {
 
     while (true) {
         if ((*buffer)[index].getHash() == 0) {
-            createEntry(index, hash, key, value);
+            new (**buffer + index) Entry(hash, key, value);
             return;
         }
 
         if ((*buffer)[index].getHash() == hash && (*buffer)[index].equals(key)) {
-            createEntry(index, hash, key, value);
+            new (**buffer + index) Entry(hash, key, value);
             numEntries--;
             return;
         }
@@ -298,7 +298,7 @@ void SherwoodMap<K, V>::insert(uint hash, K key, V value) {
 
         if (dist > existingEntryProbeDist) {
             if ((*buffer)[index].isDeleted()) {
-                createEntry(index, hash, key, value);
+                new (**buffer + index) Entry(hash, key, value);
                 return;
             }
 
@@ -312,12 +312,6 @@ void SherwoodMap<K, V>::insert(uint hash, K key, V value) {
         index = (index + 1) & mask;
         dist++;
     }
-}
-
-template <class K, class V>
-void SherwoodMap<K, V>::createEntry(int index, uint hash, const K &key, const V &value) {
-    new (**buffer + index) Entry(key, value);
-    (*buffer)[index].getHash() = hash;
 }
 
 template <class K, class V>

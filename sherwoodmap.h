@@ -8,15 +8,15 @@ class Array;
 template <class K, class V>
 class SherwoodMap : public Map<K, V> {
     class Entry {
+        uint hash;
         K key;
         V value;
-        uint hash;
 
     public:
         static uint deletedFlag();
 
         Entry();
-        Entry(K key, V value);
+        Entry(uint hash, K key, V value);
 
         K &getKey();
         V &getValue();
@@ -78,7 +78,6 @@ private:
     void allocate();
     int probeDistance(uint hash, uint index) const;
     void insert(uint hash, K key, V value);
-    void createEntry(int index, uint hash, const K &key, const V &value);
     int lookup(const K &key) const;
 };
 
