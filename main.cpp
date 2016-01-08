@@ -43,7 +43,7 @@ void run() {
 }
 
 int main() {
-    FILE *file = freopen("out.txt", "w", stdout);
+//    FILE *file = freopen("out.txt", "w", stdout);
 
     MemoryManager::initialize();
     String::initialize();
@@ -57,8 +57,8 @@ int main() {
     String::finalize();
     MemoryManager::finalize();
 
-    fclose(file);
-    system("start out.txt");
+//    fclose(file);
+//    system("start out.txt");
 
     return 0;
 }

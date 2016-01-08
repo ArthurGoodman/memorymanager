@@ -2,9 +2,14 @@
 
 #include "map.h"
 
+template <class>
+class Array;
+
 template <class K, class V>
 class SherwoodMap : public Map<K, V> {
-    class Entry : public Map<K, V>::Entry {
+    class Entry {
+        K key;
+        V value;
         uint hash;
 
     public:
@@ -23,20 +28,19 @@ class SherwoodMap : public Map<K, V> {
         bool equals(const K &key);
 
         void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
-        int getSize() const;
     };
 
     static const int HalfInitialCapacity = 4;
     static const int LoadFactorPercent = 90;
 
-    Entry *buffer;
+    Array<Entry> *buffer;
     int numEntries, capacity, resizeThreshold, mask;
 
 public:
     class iterator {
         friend class SherwoodMap;
 
-        Entry *buffer;
+        Array<Entry> *buffer;
         int capacity, index;
 
     public:
@@ -49,7 +53,7 @@ public:
         V &value();
 
     private:
-        iterator(Entry *buffer, int capacity, int index);
+        iterator(Array<Entry> *buffer, int capacity, int index);
     };
 
     SherwoodMap();
