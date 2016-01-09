@@ -1,10 +1,11 @@
 #pragma once
 
-#include "object.h"
+#include "managedobject.h"
 
-class List : public Object {
-    class ListNode : public Object {
-        Object *value;
+template <class T>
+class List : public ManagedObject {
+    class ListNode : public ManagedObject {
+        T value;
         ListNode *next;
     };
 

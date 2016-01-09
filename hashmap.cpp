@@ -208,7 +208,7 @@ bool HashMap<K, V>::remove(const K &key) {
     if (buffer == 0)
         return false;
 
-    int hashValue = hashKey(key) % capacity;
+    int hashValue = hashKey(key) & mask;
 
     Entry *prev = 0;
     Entry *entry = (*buffer)[hashValue];
@@ -235,7 +235,7 @@ template <class K, class V>
 bool HashMap<K, V>::contains(const K &key) const {
     std::cout << "HashMap<K, V>::contains(key=" << key << ")\n";
 
-    return lookup(key);
+    return lookup(key) != 0;
 }
 
 template <class K, class V>
@@ -259,8 +259,6 @@ void Array<typename HashMap<Object *, uint>::Entry *>::mapOnReferences(const std
 
 template <class K, class V>
 void HashMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    Object::mapOnReferences(f);
-
     if (buffer)
         f((ManagedObject *&)buffer);
 }
@@ -292,6 +290,7 @@ void HashMap<K, V>::allocate() {
     _this->buffer = newBuffer;
     _this->capacity *= 2;
     _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
+    _this->mask = _this->capacity - 1;
 
     for (Entry *&entry : *_this->buffer)
         entry = 0;
@@ -301,7 +300,7 @@ void HashMap<K, V>::allocate() {
         Entry *entry = (**oldEntries)[i];
 
         while (entry) {
-            uint hashValue = hashKey(entry->getKey()) % _this->capacity;
+            uint hashValue = hashKey(entry->getKey()) & _this->mask;
 
             prev = entry;
             entry = entry->getNext();
@@ -314,7 +313,7 @@ void HashMap<K, V>::allocate() {
 
 template <class K, class V>
 void HashMap<K, V>::insert(const K &key, const V &value) {
-    int hashValue = hashKey(key) % capacity;
+    int hashValue = hashKey(key) & mask;
 
     Pointer<Entry> prev;
     Pointer<Entry> entry = (*buffer)[hashValue];
@@ -345,9 +344,7 @@ typename HashMap<K, V>::Entry *HashMap<K, V>::lookup(const K &key) const {
     if (buffer == 0)
         return 0;
 
-    int hashValue = hashKey(key) % capacity;
-
-    Entry *entry = (*buffer)[hashValue];
+    Entry *entry = (*buffer)[hashKey(key) & mask];
 
     while (entry && !entry->equals(key))
         entry = entry->getNext();

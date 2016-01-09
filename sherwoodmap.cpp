@@ -218,8 +218,6 @@ void Array<typename SherwoodMap<Object *, uint>::Entry>::mapOnReferences(const s
 
 template <class K, class V>
 void SherwoodMap<K, V>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    Object::mapOnReferences(f);
-
     if (buffer)
         f((ManagedObject *&)buffer);
 }

@@ -1,13 +1,13 @@
 #include "memorymanager.h"
 
 #include "pointer.h"
-#include "markcompactmemorymanager.h"
+#include "semispacememorymanager.h"
 
 MemoryManager *MemoryManager::manager;
 Pointer<ManagedObject> *MemoryManager::pointers = 0;
 
 void MemoryManager::initialize() {
-    manager = new MarkCompactMemoryManager;
+    manager = new SemispaceMemoryManager;
 }
 
 void MemoryManager::finalize() {

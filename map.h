@@ -1,9 +1,9 @@
 #pragma once
 
-#include "object.h"
+#include "managedobject.h"
 
 template <class K, class V>
-class Map : public Object {
+class Map : public ManagedObject {
 public:
     virtual V get(const K &key) const = 0;
     virtual void put(const K &key, const V &value) = 0;

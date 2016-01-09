@@ -37,7 +37,7 @@ class HashMap : public Map<K, V> {
     static const int LoadFactorPercent = 1000;
 
     Array<Entry *> *buffer;
-    int numEntries, capacity, resizeThreshold;
+    int numEntries, capacity, resizeThreshold, mask;
 
 public:
     class iterator {

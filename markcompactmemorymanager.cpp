@@ -7,7 +7,7 @@
 
 MarkCompactMemoryManager::MarkCompactMemoryManager()
     : objectCount(0) {
-    ByteArray::setInitialCapacity(1024);
+    initialize();
 }
 
 MarkCompactMemoryManager::~MarkCompactMemoryManager() {
@@ -18,9 +18,11 @@ ManagedObject *MarkCompactMemoryManager::allocate(uint size, int count) {
     if (!memory.enoughSpace(size))
         collectGarbage();
 
+    byte *oldData = memory.getData();
+
     ManagedObject *object = (ManagedObject *)memory.allocate(size);
 
-    if (memory.getDelta() != 0)
+    if ((delta = memory.getData() - oldData) != 0)
         updatePointers();
 
     objectCount += count;
@@ -42,8 +44,25 @@ void MarkCompactMemoryManager::collectGarbage() {
     std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", objectCount=" << objectCount << "\n\n";
 }
 
+void MarkCompactMemoryManager::initialize() {
+    ByteArray::setInitialCapacity(1024);
+}
+
+void MarkCompactMemoryManager::finalize() {
+    std::cout << "Memory used: " << memory.getSize() << "\n";
+    std::cout << "Total memory: " << memory.getCapacity() << "\n";
+    std::cout << "\nMarkCompactMemoryManager::finalize()\n";
+
+    byte *p = memory.getData();
+
+    for (int i = 0, size = 0; i < objectCount; i++, p += size) {
+        size = ((ManagedObject *)p)->getSize();
+        ((ManagedObject *)p)->~ManagedObject();
+    }
+}
+
 void MarkCompactMemoryManager::updatePointers() {
-    std::cout << "MarkCompactMemoryManager::updatePointers() //delta=" << memory.getDelta() << "\n\n";
+    std::cout << "MarkCompactMemoryManager::updatePointers() //delta=" << delta << "\n\n";
 
     byte *object = memory.getData();
 
@@ -105,17 +124,6 @@ void MarkCompactMemoryManager::compact() {
 
     memory.free(freeSize);
     objectCount -= freeCount;
-}
-
-void MarkCompactMemoryManager::finalize() {
-    std::cout << "Memory used: " << memory.getSize() << "\n\nMarkCompactMemoryManager::finalize()\n";
-
-    byte *p = memory.getData();
-
-    for (int i = 0, size = 0; i < objectCount; i++, p += size) {
-        size = ((ManagedObject *)p)->getSize();
-        ((ManagedObject *)p)->~ManagedObject();
-    }
 }
 
 void MarkCompactMemoryManager::updatePointers(ManagedObject *object) {
