@@ -245,14 +245,14 @@ int HashMap<K, V>::size() const {
 
 template <>
 void Array<typename HashMap<uint, Object *>::Entry *>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size(); i++)
         if (data()[i])
             f((ManagedObject *&)data()[i]);
 }
 
 template <>
 void Array<typename HashMap<Object *, uint>::Entry *>::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size(); i++)
         if (data()[i])
             f((ManagedObject *&)data()[i]);
 }
@@ -293,8 +293,8 @@ void HashMap<K, V>::allocate() {
     _this->capacity *= 2;
     _this->resizeThreshold = (_this->capacity * LoadFactorPercent) / 100;
 
-    for (int i = 0; i < _this->capacity; i++)
-        (*_this->buffer)[i] = 0;
+    for (Entry *&entry : *_this->buffer)
+        entry = 0;
 
     for (int i = 0; i < oldCapacity; i++) {
         Entry *prev = 0;
