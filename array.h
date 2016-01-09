@@ -12,6 +12,8 @@ public:
 
     static Array *create(int size);
 
+    ~Array();
+
     iterator begin();
     iterator end();
 
@@ -35,6 +37,11 @@ Array<T> *Array<T>::create(int size) {
     new (array) Array<T>(size);
     new (**array) T[size];
     return array;
+}
+
+template <class T>
+Array<T>::~Array() {
+    delete[] data();
 }
 
 template <class T>

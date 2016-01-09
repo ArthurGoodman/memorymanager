@@ -20,10 +20,11 @@ void String::finalize() {
 }
 
 uint String::id(const std::string &str) {
-    String fakeString(str);
+    byte data[sizeof(String)];
+    String *fakeString = new (data) String(str);
 
-    if ((*stringId)->contains(&fakeString))
-        return (*stringId)->get(&fakeString);
+    if ((*stringId)->contains(fakeString))
+        return (*stringId)->get(fakeString);
 
     Pointer<Object> string = new String(str);
     uint id = lastId++;
