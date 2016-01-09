@@ -28,7 +28,8 @@ HEADERS += \
     source/memory/semispacememorymanager.h \
     source/runtime/object.h \
     source/runtime/staticobject.h \
-    source/runtime/string.h
+    source/runtime/string.h \
+    source/runtime/class.h
 
 SOURCES += \
     source/main.cpp \
@@ -48,4 +49,5 @@ SOURCES += \
     source/memory/semispacememorymanager.cpp \
     source/runtime/object.cpp \
     source/runtime/staticobject.cpp \
+    source/runtime/class.cpp \
     source/runtime/string.cpp
