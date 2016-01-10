@@ -4,6 +4,8 @@
 #include "object.h"
 #include "string.h"
 #include "utility.h"
+#include "runtime.h"
+#include "class.h"
 
 void run() {
     Pointer<Object> obj = new Object;
@@ -43,22 +45,32 @@ void run() {
 }
 
 int main() {
-    FILE *file = freopen("out.txt", "w", stdout);
+    //    FILE *file = freopen("out.txt", "w", stdout);
 
     MemoryManager::initialize();
     String::initialize();
+    Runtime::initialize();
 
     double t = clock();
 
-    run();
+    //    run();
+
+    {
+        std::cout << "\n";
+
+        std::cout << Runtime::getObjectClass()->toString() << "\n";
+        std::cout << Runtime::getMainObject()->call("class")->toString() << "\n";
+        std::cout << Runtime::getObjectClass()->call("class")->toString() << "\n";
+    }
 
     std::cout << "\nElapsed: " << (clock() - t) / CLOCKS_PER_SEC << " sec\n";
 
+    Runtime::finalize();
     String::finalize();
     MemoryManager::finalize();
 
-    fclose(file);
-    system("start out.txt");
+    //    fclose(file);
+    //    system("start out.txt");
 
     return 0;
 }

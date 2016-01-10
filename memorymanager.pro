@@ -31,7 +31,11 @@ HEADERS += \
     source/runtime/string.h \
     source/runtime/class.h \
     source/runtime/runtime.h \
-    source/runtime/function.h
+    source/runtime/function.h \
+    source/runtime/true.h \
+    source/runtime/false.h \
+    source/runtime/null.h \
+    source/runtime/nativefunction.h
 
 SOURCES += \
     source/main.cpp \
@@ -54,4 +58,8 @@ SOURCES += \
     source/runtime/class.cpp \
     source/runtime/string.cpp \
     source/runtime/runtime.cpp \
-    source/runtime/function.cpp
+    source/runtime/function.cpp \
+    source/runtime/true.cpp \
+    source/runtime/false.cpp \
+    source/runtime/null.cpp \
+    source/runtime/nativefunction.cpp

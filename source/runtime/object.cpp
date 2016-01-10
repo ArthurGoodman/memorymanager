@@ -9,7 +9,7 @@
 #include "runtime.h"
 
 Object::Object()
-    : objectClass(0 /*Runtime::getObjectClass()*/), attributes(0) {
+    : objectClass(Runtime::getObjectClass()), attributes(0) {
 }
 
 Object::Object(Class *objectClass)
@@ -78,28 +78,28 @@ Object *Object::call(const std::string &name, const std::list<Object *> &args) {
     Function *function = dynamic_cast<Function *>(objectClass->lookup(name));
 
     if (!function)
-        throw "error";
+        Runtime::runtimeError("call error");
 
     return function->invoke(this, args);
 }
 
 Object *Object::call(const std::string &name, Object *arg) {
-    return call(name, {arg});
+    return call(name, std::list<Object *>(1, arg));
 }
 
 Object *Object::call(const std::string &name) {
-    return call(name, {});
+    return call(name, std::list<Object *>());
 }
 
-bool Object::isTrue() {
+bool Object::isTrue() const {
     return true;
 }
 
-bool Object::isFalse() {
+bool Object::isFalse() const {
     return false;
 }
 
-bool Object::isNull() {
+bool Object::isNull() const {
     return false;
 }
 
@@ -116,7 +116,8 @@ ulong Object::hash() const {
 }
 
 void Object::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    // f((ManagedObject *&)objectClass);
+    if (objectClass)
+        f((ManagedObject *&)objectClass);
 
     if (attributes)
         f((ManagedObject *&)attributes);

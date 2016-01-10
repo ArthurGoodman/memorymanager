@@ -42,9 +42,9 @@ public:
     virtual Object *call(const std::string &name, Object *arg);
     virtual Object *call(const std::string &name);
 
-    virtual bool isTrue();
-    virtual bool isFalse();
-    virtual bool isNull();
+    virtual bool isTrue() const;
+    virtual bool isFalse() const;
+    virtual bool isNull() const;
 
     virtual bool equals(Object *object) const;
     virtual std::string toString() const;

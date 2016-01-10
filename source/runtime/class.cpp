@@ -19,7 +19,7 @@ std::string Class::getName() {
 }
 
 Class *Class::getSuperclass() {
-    return superclass;
+    return superclass ? superclass : (Class *)Runtime::getNull();
 }
 
 void Class::setSuperclass(Class *superclass) {
@@ -44,12 +44,13 @@ Object *Class::lookup(std::string name) {
     return 0;
 }
 
-std::string Class::toString() {
+std::string Class::toString() const {
     return name.empty() ? "<anonymous class>" : name;
 }
 
 void Class::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    f((ManagedObject *&)superclass);
+    if (superclass)
+        f((ManagedObject *&)superclass);
 }
 
 int Class::getSize() const {

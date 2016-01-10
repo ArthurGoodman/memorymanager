@@ -8,7 +8,7 @@ class Function : public Object {
 public:
     Function(const std::string &name);
 
-    Object *invoke(Object *self, const std::list<Object *> &args);
+    virtual Object *invoke(Object *self, const std::list<Object *> &args) = 0;
 
-    virtual std::string toString();
+    virtual std::string toString() const;
 };

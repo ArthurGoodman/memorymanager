@@ -22,7 +22,7 @@ public:
 
     Object *lookup(std::string name);
 
-    virtual std::string toString();
+    virtual std::string toString() const;
 
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize() const;

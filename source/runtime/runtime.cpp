@@ -4,6 +4,10 @@
 #include "sherwoodmap.h"
 #include "pointer.h"
 #include "string.h"
+#include "true.h"
+#include "false.h"
+#include "null.h"
+#include "nativefunction.h"
 
 Pointer<Object> *Runtime::mainObject;
 Pointer<Class> *Runtime::objectClass;
@@ -22,22 +26,31 @@ void Runtime::initialize() {
     falseObject = new Pointer<Object>;
     nullObject = new Pointer<Object>;
 
-    rootClasses = new Pointer<SherwoodMap<uint, Object *>>;
+    rootClasses = new Pointer<SherwoodMap<uint, Object *>>(new SherwoodMap<uint, Object *>);
 
-    *objectClass = new Class("Object");
+    *objectClass = new Class("Object", 0);
     setRootClass(*objectClass);
 
     Pointer<Class> classClass = new Class("Class");
+    setRootClass(classClass);
+
     (*objectClass)->setClass(classClass);
     classClass->setClass(classClass);
 
-    // new FunctionClass;
+    Pointer<Class> functionClass = new Class("Function");
+    setRootClass(functionClass);
 
     *mainObject = new Object;
 
-    // trueObject = new True;
-    // falseObject = new False;
-    // nullObject = new Null;
+    *trueObject = new True;
+    *falseObject = new False;
+    *nullObject = new Null;
+
+    auto classFunction = [](Object * self, const std::list<Object *> &) -> Object * {
+        return self->getClass();
+    };
+
+    (*objectClass)->setAttribute("class", new NativeFunction("class", classFunction));
 }
 
 void Runtime::finalize() {
