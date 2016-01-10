@@ -48,7 +48,7 @@ void SemispaceMemoryManager::collectGarbage() {
     objectCount = 0;
     memoryUsed = 0;
 
-    for (Pointer<ManagedObject> *p = pointers; p; p = p->getNext())
+    for (Pointer<ManagedObject> *p = pointers(); p; p = p->getNext())
         if (*p)
             *p = copy((ManagedObject *)((byte *)**p + delta));
 

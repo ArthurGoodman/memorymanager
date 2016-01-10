@@ -5,38 +5,26 @@
 
 #include <iostream>
 
-Pointer<Map<Object *, uint>> *String::stringId;
-Pointer<Map<uint, Object *>> *String::idString;
-uint String::lastId = 0;
-
-void String::initialize() {
-    stringId = new Pointer<Map<Object *, uint>>(new SherwoodMap<Object *, uint>);
-    idString = new Pointer<Map<uint, Object *>>(new SherwoodMap<uint, Object *>);
-}
-
-void String::finalize() {
-    delete stringId;
-    delete idString;
-}
+uint String::nextId = 0;
 
 uint String::id(const std::string &str) {
     byte data[sizeof(String)];
     String *fakeString = new (data) String(str);
 
-    if ((*stringId)->contains(fakeString))
-        return (*stringId)->get(fakeString);
+    if (stringId()->contains(fakeString))
+        return stringId()->get(fakeString);
 
     Pointer<Object> string = new String(str);
-    uint id = lastId++;
+    uint id = nextId++;
 
-    (*stringId)->put(string, id);
-    (*idString)->put(id, string);
+    stringId()->put(string, id);
+    idString()->put(id, string);
 
     return id;
 }
 
 String *String::string(uint id) {
-    return (String *)(*idString)->get(id);
+    return (String *)idString()->get(id);
 }
 
 String::String(const std::string &value)
@@ -58,4 +46,14 @@ std::string String::toString() const {
 
 int String::getSize() const {
     return sizeof *this;
+}
+
+inline Pointer<Map<uint, Object *>> &String::idString() {
+    static Pointer<Map<uint, Object *>> idString = new SherwoodMap<uint, Object *>;
+    return idString;
+}
+
+inline Pointer<Map<Object *, uint>> &String::stringId() {
+    static Pointer<Map<Object *, uint>> stringId = new SherwoodMap<Object *, uint>;
+    return stringId;
 }

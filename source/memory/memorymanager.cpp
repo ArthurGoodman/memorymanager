@@ -3,23 +3,22 @@
 #include "pointer.h"
 #include "semispacememorymanager.h"
 
-MemoryManager *MemoryManager::manager;
-Pointer<ManagedObject> *MemoryManager::pointers = 0;
-
-void MemoryManager::initialize() {
-    manager = new SemispaceMemoryManager;
+Pointer<ManagedObject> *&MemoryManager::pointers() {
+    static Pointer<ManagedObject> *pointers = 0;
+    return pointers;
 }
 
-void MemoryManager::finalize() {
-    delete manager;
+MemoryManager *MemoryManager::instance() {
+    static SemispaceMemoryManager instance;
+    return &instance;
 }
 
 void MemoryManager::registerPointer(Pointer<ManagedObject> *pointer) {
-    pointer->link(pointers);
+    pointer->link(pointers());
 }
 
 void MemoryManager::removePointer(Pointer<ManagedObject> *pointer) {
-    pointer->unlink(pointers);
+    pointer->unlink(pointers());
 }
 
 MemoryManager::~MemoryManager() {

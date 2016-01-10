@@ -8,16 +8,11 @@ template <class>
 class Pointer;
 
 class MemoryManager {
-    static MemoryManager *manager;
-
 protected:
-    static Pointer<ManagedObject> *pointers;
+    static Pointer<ManagedObject> *&pointers();
 
 public:
     static MemoryManager *instance();
-
-    static void initialize();
-    static void finalize();
 
     static void registerPointer(Pointer<ManagedObject> *pointer);
     static void removePointer(Pointer<ManagedObject> *pointer);
@@ -36,8 +31,4 @@ public:
 template <class T>
 T *MemoryManager::allocateArray(uint size) {
     return new (instance()->allocate(size * sizeof(T), size)) T[size];
-}
-
-inline MemoryManager *MemoryManager::instance() {
-    return manager;
 }
