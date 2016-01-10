@@ -1,5 +1,6 @@
 #include "sherwoodmap.h"
 
+#include "object.h"
 #include "pointer.h"
 #include "array.h"
 
@@ -126,7 +127,7 @@ typename SherwoodMap<K, V>::iterator SherwoodMap<K, V>::end() {
 }
 
 template <class K, class V>
-V SherwoodMap<K, V>::get(const K &key) const {
+V &SherwoodMap<K, V>::get(const K &key) const {
     std::cout << "SherwoodMap<K, V>::get(key=" << key << ")\n";
 
     const int index = lookup(key);
@@ -138,7 +139,7 @@ V SherwoodMap<K, V>::get(const K &key) const {
 }
 
 template <class K, class V>
-void SherwoodMap<K, V>::put(const K &key, const V &value) {
+V &SherwoodMap<K, V>::put(const K &key, const V &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
     Pointer<SherwoodMap> _this = this;
@@ -146,11 +147,11 @@ void SherwoodMap<K, V>::put(const K &key, const V &value) {
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    _this->insert(hashKey(key), key, value);
+    return _this->insert(hashKey(key), key, value);
 }
 
 template <>
-void SherwoodMap<uint, Object *>::put(const uint &key, Object *const &value) {
+Object *&SherwoodMap<uint, Object *>::put(const uint &key, Object *const &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
     Pointer<SherwoodMap> _this = this;
@@ -159,11 +160,11 @@ void SherwoodMap<uint, Object *>::put(const uint &key, Object *const &value) {
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    _this->insert(hashKey(key), key, pValue);
+    return _this->insert(hashKey(key), key, pValue);
 }
 
 template <>
-void SherwoodMap<Object *, uint>::put(Object *const &key, const uint &value) {
+uint &SherwoodMap<Object *, uint>::put(Object *const &key, const uint &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
     Pointer<SherwoodMap> _this = this;
@@ -172,7 +173,7 @@ void SherwoodMap<Object *, uint>::put(Object *const &key, const uint &value) {
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    _this->insert(hashKey(pKey), pKey, value);
+    return _this->insert(hashKey(pKey), pKey, value);
 }
 
 template <class K, class V>
@@ -270,29 +271,33 @@ void SherwoodMap<K, V>::allocate() {
 }
 
 template <class K, class V>
-void SherwoodMap<K, V>::insert(uint hash, K key, V value) {
+V &SherwoodMap<K, V>::insert(uint hash, K key, V value) {
     int index = hash & mask;
     int dist = 0;
 
     while (true) {
         if ((*buffer)[index].getHash() == 0) {
             new (**buffer + index) Entry(hash, key, value);
-            return;
+            return (*buffer)[index].getValue();
         }
 
         if ((*buffer)[index].getHash() == hash && (*buffer)[index].equals(key)) {
             new (**buffer + index) Entry(hash, key, value);
             numEntries--;
-            return;
+            return (*buffer)[index].getValue();
         }
 
         int existingEntryProbeDist = probeDistance((*buffer)[index].getHash(), index);
+        int returnIndex = -1;
 
         if (dist > existingEntryProbeDist) {
             if ((*buffer)[index].isDeleted()) {
                 new (**buffer + index) Entry(hash, key, value);
-                return;
+                return (*buffer)[returnIndex].getValue();
             }
+
+            if (returnIndex == -1)
+                returnIndex = index;
 
             std::swap(hash, (*buffer)[index].getHash());
             std::swap(key, (*buffer)[index].getKey());

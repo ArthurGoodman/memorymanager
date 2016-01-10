@@ -1,10 +1,10 @@
 #pragma once
 
-#include "object.h"
+#include "managedobject.h"
 #include "memorymanager.h"
 
 template <class T>
-class Array : public Object {
+class Array : public ManagedObject {
     int arraySize;
 
 public:

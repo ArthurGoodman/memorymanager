@@ -9,7 +9,7 @@
 #include "runtime.h"
 
 Object::Object()
-    : objectClass(Runtime::getObjectClass()), attributes(0) {
+    : objectClass(0 /*Runtime::getObjectClass()*/), attributes(0) {
 }
 
 Object::Object(Class *objectClass)
@@ -116,7 +116,7 @@ ulong Object::hash() const {
 }
 
 void Object::mapOnReferences(const std::function<void(ManagedObject *&)> &f) {
-    f((ManagedObject *&)objectClass);
+    // f((ManagedObject *&)objectClass);
 
     if (attributes)
         f((ManagedObject *&)attributes);

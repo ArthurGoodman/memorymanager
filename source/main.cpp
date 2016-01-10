@@ -52,7 +52,7 @@ int main() {
 
     run();
 
-    std::cout << "\nElapsed: " << (clock() - t) / CLOCKS_PER_SEC << " sec.\n";
+    std::cout << "\nElapsed: " << (clock() - t) / CLOCKS_PER_SEC << " sec\n";
 
     String::finalize();
     MemoryManager::finalize();

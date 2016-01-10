@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "object.h"
 #include "pointer.h"
 #include "array.h"
 
@@ -152,7 +153,7 @@ typename HashMap<K, V>::iterator HashMap<K, V>::end() {
 }
 
 template <class K, class V>
-V HashMap<K, V>::get(const K &key) const {
+V &HashMap<K, V>::get(const K &key) const {
     std::cout << "HashMap<K, V>::get(key=" << key << ")\n";
 
     Entry *entry = lookup(key);
@@ -164,7 +165,7 @@ V HashMap<K, V>::get(const K &key) const {
 }
 
 template <class K, class V>
-void HashMap<K, V>::put(const K &key, const V &value) {
+V &HashMap<K, V>::put(const K &key, const V &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
     Pointer<HashMap> _this = this;
@@ -172,11 +173,11 @@ void HashMap<K, V>::put(const K &key, const V &value) {
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    _this->insert(key, value);
+    return _this->insert(key, value);
 }
 
 template <>
-void HashMap<uint, Object *>::put(const uint &key, Object *const &value) {
+Object *&HashMap<uint, Object *>::put(const uint &key, Object *const &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
     Pointer<HashMap> _this = this;
@@ -185,11 +186,11 @@ void HashMap<uint, Object *>::put(const uint &key, Object *const &value) {
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    _this->insert(key, pValue);
+    return _this->insert(key, pValue);
 }
 
 template <>
-void HashMap<Object *, uint>::put(Object *const &key, const uint &value) {
+uint &HashMap<Object *, uint>::put(Object *const &key, const uint &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
     Pointer<HashMap> _this = this;
@@ -198,7 +199,7 @@ void HashMap<Object *, uint>::put(Object *const &key, const uint &value) {
     if (++numEntries >= resizeThreshold)
         allocate();
 
-    _this->insert(pKey, value);
+    return _this->insert(pKey, value);
 }
 
 template <class K, class V>
@@ -312,7 +313,7 @@ void HashMap<K, V>::allocate() {
 }
 
 template <class K, class V>
-void HashMap<K, V>::insert(const K &key, const V &value) {
+V &HashMap<K, V>::insert(const K &key, const V &value) {
     int hashValue = hashKey(key) & mask;
 
     Pointer<Entry> prev;
@@ -326,7 +327,7 @@ void HashMap<K, V>::insert(const K &key, const V &value) {
     if (entry) {
         entry->setValue(value);
         numEntries--;
-        return;
+        return entry->getValue();
     }
 
     Pointer<HashMap> _this = this;
@@ -337,6 +338,8 @@ void HashMap<K, V>::insert(const K &key, const V &value) {
         (*_this->buffer)[hashValue] = entry;
     else
         prev->setNext(entry);
+
+    return entry->getValue();
 }
 
 template <class K, class V>
