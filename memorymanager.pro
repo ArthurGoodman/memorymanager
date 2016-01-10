@@ -29,7 +29,9 @@ HEADERS += \
     source/runtime/object.h \
     source/runtime/staticobject.h \
     source/runtime/string.h \
-    source/runtime/class.h
+    source/runtime/class.h \
+    source/runtime/runtime.h \
+    source/runtime/function.h
 
 SOURCES += \
     source/main.cpp \
@@ -50,4 +52,6 @@ SOURCES += \
     source/runtime/object.cpp \
     source/runtime/staticobject.cpp \
     source/runtime/class.cpp \
-    source/runtime/string.cpp
+    source/runtime/string.cpp \
+    source/runtime/runtime.cpp \
+    source/runtime/function.cpp
