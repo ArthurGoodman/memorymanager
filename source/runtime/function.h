@@ -11,4 +11,6 @@ public:
     virtual Object *invoke(Object *self, const std::list<Object *> &args) = 0;
 
     virtual std::string toString() const;
+
+    int getSize() const;
 };

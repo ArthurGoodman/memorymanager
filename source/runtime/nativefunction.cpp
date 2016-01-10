@@ -7,3 +7,7 @@ NativeFunction::NativeFunction(const std::string &name, const std::function<Obje
 Object *NativeFunction::invoke(Object *self, const std::list<Object *> &args) {
     return body(self, args);
 }
+
+int NativeFunction::getSize() const {
+    return sizeof *this;
+}

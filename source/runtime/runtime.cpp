@@ -28,11 +28,9 @@ void Runtime::initialize() {
     falseObject() = new False;
     nullObject() = new Null;
 
-    auto classFunction = [](Object *self, const std::list<Object *> &) -> Object * {
-        return self->getClass();
-    };
-
-    objectClass()->setAttribute("class", new NativeFunction("class", classFunction));
+    objectClass()->setAttribute("class", new NativeFunction("class", [](Object *self, const std::list<Object *> &) -> Object * {
+                                    return self->getClass();
+                                }));
 }
 
 Object *Runtime::getMainObject() {

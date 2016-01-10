@@ -9,4 +9,6 @@ public:
     NativeFunction(const std::string &name, const std::function<Object *(Object *, const std::list<Object *> &)> &body);
 
     Object *invoke(Object *self, const std::list<Object *> &args);
+
+    int getSize() const;
 };
