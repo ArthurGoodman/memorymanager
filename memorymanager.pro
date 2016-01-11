@@ -13,7 +13,6 @@ INCLUDEPATH += source \
 
 HEADERS += \
     source/collections/array.h \
-    source/collections/bytearray.h \
     source/collections/hashmap.h \
     source/collections/list.h \
     source/collections/map.h \
@@ -35,12 +34,12 @@ HEADERS += \
     source/runtime/true.h \
     source/runtime/false.h \
     source/runtime/null.h \
-    source/runtime/nativefunction.h
+    source/runtime/nativefunction.h \
+    source/common/bytearray.h
 
 SOURCES += \
     source/main.cpp \
     source/collections/array.cpp \
-    source/collections/bytearray.cpp \
     source/collections/hashmap.cpp \
     source/collections/list.cpp \
     source/collections/map.cpp \
@@ -62,4 +61,5 @@ SOURCES += \
     source/runtime/true.cpp \
     source/runtime/false.cpp \
     source/runtime/null.cpp \
-    source/runtime/nativefunction.cpp
+    source/runtime/nativefunction.cpp \
+    source/common/bytearray.cpp
