@@ -8,6 +8,11 @@ Pointer<ManagedObject> *&MemoryManager::pointers() {
     return pointers;
 }
 
+std::list<Frame *> &MemoryManager::frames() {
+    static std::list<Frame *> frames;
+    return frames;
+}
+
 MemoryManager *MemoryManager::instance() {
     static SemispaceMemoryManager instance;
     return &instance;
@@ -19,6 +24,14 @@ void MemoryManager::registerPointer(Pointer<ManagedObject> *pointer) {
 
 void MemoryManager::removePointer(Pointer<ManagedObject> *pointer) {
     pointer->unlink(pointers());
+}
+
+void MemoryManager::pushFrame(Frame *frame) {
+    frames().push_back(frame);
+}
+
+void MemoryManager::popFrame() {
+    frames().pop_back();
 }
 
 MemoryManager::~MemoryManager() {

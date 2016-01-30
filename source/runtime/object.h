@@ -31,7 +31,7 @@ public:
 
     virtual bool hasAttribute(uint id) const;
     virtual Object *getAttribute(uint id) const;
-    virtual void setAttribute(uint id, const Pointer<Object> &value);
+    virtual void setAttribute(uint id, Object *value);
     virtual void removeAttribute(uint id);
 
     int attributesCount() const;

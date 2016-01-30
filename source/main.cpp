@@ -47,7 +47,7 @@ void run() {
 int main() {
     FILE *file = freopen("out.txt", "w", stdout);
 
-    Runtime::initialize();
+    //    Runtime::initialize();
 
     double t = clock();
 

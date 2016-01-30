@@ -1,7 +1,6 @@
 #include "sherwoodmap.h"
 
 #include "object.h"
-#include "pointer.h"
 #include "array.h"
 
 #include <iostream>
@@ -154,8 +153,10 @@ template <>
 Object *&SherwoodMap<uint, Object *>::put(const uint &key, Object *const &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<SherwoodMap> _this = this;
-    Pointer<Object> pValue = value;
+    SherwoodMap *_this = this;
+    Object *pValue = value;
+
+    GC_FRAME(POINTER(_this) POINTER(pValue))
 
     if (++numEntries >= resizeThreshold)
         allocate();
@@ -167,8 +168,10 @@ template <>
 uint &SherwoodMap<Object *, uint>::put(Object *const &key, const uint &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<SherwoodMap> _this = this;
-    Pointer<Object> pKey = key;
+    SherwoodMap *_this = this;
+    Object *pKey = key;
+
+    GC_FRAME(POINTER(_this) POINTER(pKey))
 
     if (++numEntries >= resizeThreshold)
         allocate();
@@ -252,8 +255,11 @@ template <class K, class V>
 void SherwoodMap<K, V>::allocate() {
     std::cout << "SherwoodMap<K, V>::allocate() //capacity=" << capacity * 2 << "\n";
 
-    Pointer<SherwoodMap> _this = this;
-    Pointer<Array<Entry>> oldEntries = buffer;
+    SherwoodMap *_this = this;
+    Array<Entry> *oldEntries = buffer;
+
+    GC_FRAME(POINTER(_this) POINTER(oldEntries))
+
     int oldCapacity = buffer ? capacity : 0;
 
     Array<Entry> *newBuffer = Array<Entry>::create(capacity * 2);

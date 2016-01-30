@@ -3,7 +3,6 @@
 #include "class.h"
 #include "function.h"
 #include "hashmap.h"
-#include "pointer.h"
 #include "utility.h"
 #include "string.h"
 #include "runtime.h"
@@ -52,8 +51,10 @@ Object *Object::getAttribute(uint id) const {
     return attributes ? attributes->get(id) : 0;
 }
 
-void Object::setAttribute(uint id, const Pointer<Object> &value) {
-    Pointer<Object> _this = this;
+void Object::setAttribute(uint id, Object *value) {
+    Object *_this = this;
+
+    GC_FRAME(POINTER(value) POINTER(_this))
 
     if (attributes == 0)
         _this->attributes = new HashMap<uint, Object *>;

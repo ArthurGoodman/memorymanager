@@ -3,7 +3,6 @@
 #include <stdexcept>
 
 #include "object.h"
-#include "pointer.h"
 #include "array.h"
 
 #include <iostream>
@@ -180,8 +179,10 @@ template <>
 Object *&HashMap<uint, Object *>::put(const uint &key, Object *const &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<HashMap> _this = this;
-    Pointer<Object> pValue = value;
+    HashMap *_this = this;
+    Object *pValue = value;
+
+    GC_FRAME(POINTER(_this) POINTER(pValue))
 
     if (++numEntries >= resizeThreshold)
         allocate();
@@ -193,8 +194,10 @@ template <>
 uint &HashMap<Object *, uint>::put(Object *const &key, const uint &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<HashMap> _this = this;
-    Pointer<Object> pKey = key;
+    HashMap *_this = this;
+    Object *pKey = key;
+
+    GC_FRAME(POINTER(_this) POINTER(pKey))
 
     if (++numEntries >= resizeThreshold)
         allocate();
@@ -283,8 +286,11 @@ template <class K, class V>
 void HashMap<K, V>::allocate() {
     std::cout << "HashMap<K, V>::allocate() //capacity=" << capacity * 2 << "\n";
 
-    Pointer<HashMap> _this = this;
-    Pointer<Array<Entry *>> oldEntries = buffer;
+    HashMap *_this = this;
+    Array<Entry *> *oldEntries = buffer;
+
+    GC_FRAME(POINTER(_this) POINTER(oldEntries))
+
     int oldCapacity = buffer ? capacity : 0;
 
     Array<Entry *> *newBuffer = Array<Entry *>::create(capacity * 2);
@@ -316,8 +322,11 @@ template <class K, class V>
 V &HashMap<K, V>::insert(const K &key, const V &value) {
     int hashValue = hashKey(key) & mask;
 
-    Pointer<Entry> prev;
-    Pointer<Entry> entry = (*buffer)[hashValue];
+    Entry *prev = 0;
+    Entry *entry = (*buffer)[hashValue];
+    HashMap *_this = this;
+
+    GC_FRAME(POINTER(prev) POINTER(entry) POINTER(_this))
 
     while (entry && !entry->equals(key)) {
         prev = entry;
@@ -329,8 +338,6 @@ V &HashMap<K, V>::insert(const K &key, const V &value) {
         numEntries--;
         return entry->getValue();
     }
-
-    Pointer<HashMap> _this = this;
 
     entry = createEntry(key, value);
 
@@ -362,7 +369,9 @@ typename HashMap<K, V>::Entry *HashMap<K, V>::createEntry(const K &key, const V 
 
 template <>
 typename HashMap<uint, Object *>::Entry *HashMap<uint, Object *>::createEntry(const uint &key, Object *const &value) const {
-    Pointer<Object> pValue = value;
+    Object *pValue = value;
+
+    GC_FRAME(POINTER(pValue))
 
     Entry *entry = new Entry(key, 0);
     entry->setValue(pValue);
@@ -372,7 +381,9 @@ typename HashMap<uint, Object *>::Entry *HashMap<uint, Object *>::createEntry(co
 
 template <>
 typename HashMap<Object *, uint>::Entry *HashMap<Object *, uint>::createEntry(Object *const &key, const uint &value) const {
-    Pointer<Object> pKey = key;
+    Object *pKey = key;
+
+    GC_FRAME(POINTER(pKey))
 
     Entry *entry = new Entry(0, value);
     entry->setKey(pKey);

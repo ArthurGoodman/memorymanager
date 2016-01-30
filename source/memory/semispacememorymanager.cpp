@@ -52,6 +52,11 @@ void SemispaceMemoryManager::collectGarbage() {
         if (*p)
             *p = copy((ManagedObject *)((byte *)**p + delta));
 
+    for (Frame *frame : frames())
+        frame->mapOnLocals([this](ManagedObject *&p) {
+            p = copy((ManagedObject *)((byte *)p + delta));
+        });
+
     std::cout << "//freed=" << oldMemoryUsed - memoryUsed << ", freedObjects=" << oldObjectCount - objectCount << ", objectCount=" << objectCount << "\n\n";
 }
 

@@ -35,7 +35,8 @@ HEADERS += \
     source/runtime/false.h \
     source/runtime/null.h \
     source/runtime/nativefunction.h \
-    source/common/bytearray.h
+    source/common/bytearray.h \
+    source/memory/frame.h
 
 SOURCES += \
     source/main.cpp \
@@ -62,4 +63,5 @@ SOURCES += \
     source/runtime/false.cpp \
     source/runtime/null.cpp \
     source/runtime/nativefunction.cpp \
-    source/common/bytearray.cpp
+    source/common/bytearray.cpp \
+    source/memory/frame.cpp

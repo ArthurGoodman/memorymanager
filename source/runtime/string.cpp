@@ -8,13 +8,17 @@
 uint String::nextId = 0;
 
 uint String::id(const std::string &str) {
+    Object *string = 0;
+
+    GC_FRAME(POINTER(string))
+
     byte data[sizeof(String)];
     String *fakeString = new (data) String(str);
 
     if (stringId()->contains(fakeString))
         return stringId()->get(fakeString);
 
-    Pointer<Object> string = new String(str);
+    string = new String(str);
     uint id = nextId++;
 
     stringId()->put(string, id);
