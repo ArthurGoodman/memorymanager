@@ -141,7 +141,9 @@ template <class K, class V>
 V &SherwoodMap<K, V>::put(const K &key, const V &value) {
     std::cout << "SherwoodMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<SherwoodMap> _this = this;
+    SherwoodMap *_this = this;
+
+    GC_FRAME(POINTER(_this))
 
     if (++numEntries >= resizeThreshold)
         allocate();

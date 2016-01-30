@@ -167,7 +167,9 @@ template <class K, class V>
 V &HashMap<K, V>::put(const K &key, const V &value) {
     std::cout << "HashMap<K, V>::put(key=" << key << ", value=" << value << ")\n";
 
-    Pointer<HashMap> _this = this;
+    HashMap *_this = this;
+
+    GC_FRAME(POINTER(_this))
 
     if (++numEntries >= resizeThreshold)
         allocate();
