@@ -21,6 +21,6 @@ public:
     int getSize() const;
 
 private:
-    static Pointer<Map<uint, Object *>> &idString();
-    static Pointer<Map<Object *, uint>> &stringId();
+    static Map<uint, Object *> *idString();
+    static Map<Object *, uint> *stringId();
 };

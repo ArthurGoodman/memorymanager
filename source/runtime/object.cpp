@@ -6,6 +6,7 @@
 #include "utility.h"
 #include "string.h"
 #include "runtime.h"
+#include "memorymanager.h"
 
 Object::Object()
     : objectClass(Runtime::getObjectClass()), attributes(0) {

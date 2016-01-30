@@ -8,8 +8,8 @@ Pointer<ManagedObject> *&MemoryManager::pointers() {
     return pointers;
 }
 
-std::list<Frame *> &MemoryManager::frames() {
-    static std::list<Frame *> frames;
+Frame *&MemoryManager::frames() {
+    static Frame *frames = 0;
     return frames;
 }
 
@@ -26,12 +26,12 @@ void MemoryManager::removePointer(Pointer<ManagedObject> *pointer) {
     pointer->unlink(pointers());
 }
 
-void MemoryManager::pushFrame(Frame *frame) {
-    frames().push_back(frame);
+void MemoryManager::registerFrame(Frame *frame) {
+    frame->link(frames());
 }
 
-void MemoryManager::popFrame() {
-    frames().pop_back();
+void MemoryManager::removeFrame(Frame *frame) {
+    frame->unlink(frames());
 }
 
 MemoryManager::~MemoryManager() {

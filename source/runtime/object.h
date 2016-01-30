@@ -7,9 +7,6 @@
 template <class, class>
 class Map;
 
-template <class>
-class Pointer;
-
 class Class;
 
 class Object : public ManagedObject {

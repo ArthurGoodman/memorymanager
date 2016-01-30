@@ -3,12 +3,21 @@
 #include <string>
 
 #include "common.h"
-#include "pointer.h"
 #include "map.h"
 #include "object.h"
 #include "class.h"
 
 class Runtime {
+private:
+    static Object *mainObject;
+    static Class *objectClass;
+
+    static Object *trueObject;
+    static Object *falseObject;
+    static Object *nullObject;
+
+    static Map<uint, Object *> *rootClasses;
+
 public:
     static void initialize();
 
@@ -25,14 +34,4 @@ public:
     static Object *toBoolean(bool value);
 
     static void runtimeError(const std::string &message);
-
-protected:
-    static Pointer<Object> &mainObject();
-    static Pointer<Class> &objectClass();
-
-    static Pointer<Object> &trueObject();
-    static Pointer<Object> &falseObject();
-    static Pointer<Object> &nullObject();
-
-    static Pointer<Map<uint, Object *>> &rootClasses();
 };

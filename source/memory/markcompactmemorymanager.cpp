@@ -73,7 +73,7 @@ void MarkCompactMemoryManager::updatePointers() {
         if (*p)
             updatePointer(**p);
 
-    for (Frame *frame : frames())
+    for (Frame *frame = frames(); frame; frame = frame->getNext())
         frame->mapOnLocals([this](ManagedObject *&p) {
             updatePointer(p);
         });
@@ -84,7 +84,7 @@ void MarkCompactMemoryManager::mark() {
         if (*p && !(*p)->hasFlag(ManagedObject::FlagMark))
             mark(*p);
 
-    for (Frame *frame : frames())
+    for (Frame *frame = frames(); frame; frame = frame->getNext())
         frame->mapOnLocals([this](ManagedObject *&p) {
             if (!p->hasFlag(ManagedObject::FlagMark))
                 mark(p);
@@ -111,7 +111,7 @@ void MarkCompactMemoryManager::compact() {
         if (*p && (*p)->hasFlag(ManagedObject::FlagMark))
             *p = (*p)->getForwardAddress();
 
-    for (Frame *frame : frames())
+    for (Frame *frame = frames(); frame; frame = frame->getNext())
         frame->mapOnLocals([this](ManagedObject *&p) {
             if (p->hasFlag(ManagedObject::FlagMark))
                 p = p->getForwardAddress();

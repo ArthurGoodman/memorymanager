@@ -1,8 +1,7 @@
 #include "string.h"
 
 #include "sherwoodmap.h"
-#include "pointer.h"
-
+#include "memorymanager.h"
 #include <iostream>
 
 uint String::nextId = 0;
@@ -52,12 +51,14 @@ int String::getSize() const {
     return sizeof *this;
 }
 
-inline Pointer<Map<uint, Object *>> &String::idString() {
-    static Pointer<Map<uint, Object *>> idString = new SherwoodMap<uint, Object *>;
+inline Map<uint, Object *> *String::idString() {
+    static Map<uint, Object *> *idString = new SherwoodMap<uint, Object *>;
+    GC_STATIC_FRAME(POINTER(idString))
     return idString;
 }
 
-inline Pointer<Map<Object *, uint>> &String::stringId() {
-    static Pointer<Map<Object *, uint>> stringId = new SherwoodMap<Object *, uint>;
+inline Map<Object *, uint> *String::stringId() {
+    static Map<Object *, uint> *stringId = new SherwoodMap<Object *, uint>;
+    GC_STATIC_FRAME(POINTER(stringId))
     return stringId;
 }

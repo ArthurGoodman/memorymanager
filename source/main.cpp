@@ -1,14 +1,16 @@
 #include <iostream>
 
-#include "pointer.h"
 #include "object.h"
 #include "string.h"
 #include "utility.h"
 #include "runtime.h"
 #include "class.h"
+#include "memorymanager.h"
 
 void run() {
-    Pointer<Object> obj = new Object;
+    Object *obj = new Object;
+
+    GC_FRAME(POINTER(obj))
 
     srand(time(0));
 

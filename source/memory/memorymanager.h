@@ -1,7 +1,5 @@
 #pragma once
 
-#include <list>
-
 #include "common.h"
 #include "frame.h"
 
@@ -13,7 +11,7 @@ class Pointer;
 class MemoryManager {
 protected:
     static Pointer<ManagedObject> *&pointers();
-    static std::list<Frame *> &frames();
+    static Frame *&frames();
 
 public:
     static MemoryManager *instance();
@@ -21,8 +19,8 @@ public:
     static void registerPointer(Pointer<ManagedObject> *pointer);
     static void removePointer(Pointer<ManagedObject> *pointer);
 
-    static void pushFrame(Frame *frame);
-    static void popFrame();
+    static void registerFrame(Frame *frame);
+    static void removeFrame(Frame *frame);
 
     template <class T>
     T *allocateArray(uint size);
@@ -40,16 +38,26 @@ T *MemoryManager::allocateArray(uint size) {
     return new (instance()->allocate(size * sizeof(T), size)) T[size];
 }
 
-#define GC_FRAME(GC_ARGS)                                                         \
-    Frame __gc_frame__([&](std::function<void(ManagedObject *&)> __gc_update__) { \
-        GC_ARGS                                                                   \
+#define GC_OPEN_FRAME \
+    Frame __gc_frame__([&](std::function<void(ManagedObject *&)> __gc_f__) {
+
+#define GC_OPEN_STATIC_FRAME \
+    static GC_OPEN_FRAME
+
+#define GC_CLOSE_FRAME \
     });
 
-#define POINTER(pointer) \
-    if (pointer != 0)   \
-        __gc_update__((ManagedObject *&)pointer);
+#define GC_FRAME(args) \
+    GC_OPEN_FRAME args GC_CLOSE_FRAME
 
-#define LIST(list)                  \
+#define GC_STATIC_FRAME(args) \
+    static GC_FRAME(args)
+
+#define POINTER(pointer) \
+    if (pointer != 0)    \
+        __gc_f__((ManagedObject *&)pointer);
+
+#define LIST(list)                    \
     for (auto &__gc_pointer__ : list) \
         if (__gc_pointer__ != 0)      \
-            __gc_update__((ManagedObject *&)__gc_pointer__);
+            __gc_f__((ManagedObject *&)__gc_pointer__);

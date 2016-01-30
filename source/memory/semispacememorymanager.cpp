@@ -52,7 +52,7 @@ void SemispaceMemoryManager::collectGarbage() {
         if (*p)
             *p = copy((ManagedObject *)((byte *)**p + delta));
 
-    for (Frame *frame : frames())
+    for (Frame *frame = frames(); frame; frame = frame->getNext())
         frame->mapOnLocals([this](ManagedObject *&p) {
             p = copy((ManagedObject *)((byte *)p + delta));
         });
