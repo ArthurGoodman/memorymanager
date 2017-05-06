@@ -5,6 +5,7 @@
 StaticObject *StaticObject::create(int refCount) {
     ManagedObject *object = MemoryManager::instance()->allocate(sizeof(StaticObject) + refCount * sizeof(ManagedObject *));
     new (object) StaticObject(refCount);
+    new ((byte *)object + sizeof(StaticObject)) ManagedObject *[refCount] {0 };
     return (StaticObject *)object;
 }
 

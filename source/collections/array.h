@@ -1,31 +1,18 @@
 #pragma once
 
-#include "object.h"
+#include "managedobject.h"
 #include "memorymanager.h"
 
 template <class T>
-class Array : public Object {
-    int size;
+class Array : public ManagedObject {
+    int arraySize;
 
 public:
-    class iterator {
-        friend class Array<T>;
-
-        T *data;
-        int size, i;
-
-    public:
-        iterator &operator++();
-        T &operator*();
-
-        bool operator!=(const iterator &other) const;
-
-    private:
-        iterator();
-        iterator(T *data, int size, int i);
-    };
+    typedef T *iterator;
 
     static Array *create(int size);
+
+    ~Array();
 
     iterator begin();
     iterator end();
@@ -35,33 +22,14 @@ public:
     T *operator*() const;
     T &operator[](int index) const;
 
+    int size() const;
+
     void mapOnReferences(const std::function<void(ManagedObject *&)> &f);
     int getSize() const;
 
 private:
-    Array(int size);
+    Array(int arraySize);
 };
-
-template <class T>
-typename Array<T>::iterator &Array<T>::iterator::operator++() {
-    i++;
-    return *this;
-}
-
-template <class T>
-T &Array<T>::iterator::operator*() {
-    return data[i];
-}
-
-template <class T>
-bool Array<T>::iterator::operator!=(const iterator &other) const {
-    return i != other.i;
-}
-
-template <class T>
-Array<T>::iterator::iterator(T *data, int size, int i)
-    : data(data), size(size), i(i) {
-}
 
 template <class T>
 Array<T> *Array<T>::create(int size) {
@@ -72,13 +40,18 @@ Array<T> *Array<T>::create(int size) {
 }
 
 template <class T>
+Array<T>::~Array() {
+    delete[] data();
+}
+
+template <class T>
 typename Array<T>::iterator Array<T>::begin() {
-    return iterator(data(), size, 0);
+    return data();
 }
 
 template <class T>
 typename Array<T>::iterator Array<T>::end() {
-    return iterator(data(), size, size);
+    return data() + arraySize;
 }
 
 template <class T>
@@ -97,15 +70,20 @@ T &Array<T>::operator[](int index) const {
 }
 
 template <class T>
+int Array<T>::size() const {
+    return arraySize;
+}
+
+template <class T>
 void Array<T>::mapOnReferences(const std::function<void(ManagedObject *&)> &) {
 }
 
 template <class T>
 int Array<T>::getSize() const {
-    return sizeof(*this) + size * sizeof(T);
+    return sizeof(*this) + arraySize * sizeof(T);
 }
 
 template <class T>
 Array<T>::Array(int size)
-    : size(size) {
+    : arraySize(size) {
 }

@@ -6,7 +6,6 @@ class ByteArray {
     static uint initialCapacity;
 
     uint size, capacity;
-    int delta;
     byte *data;
 
 public:
@@ -24,5 +23,4 @@ public:
     byte *getData() const;
     uint getSize() const;
     uint getCapacity() const;
-    int getDelta() const;
 };

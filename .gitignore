@@ -1,0 +1,6 @@
+*.Debug
+*.Release
+Makefile
+*.o
+*.exe
+*.user

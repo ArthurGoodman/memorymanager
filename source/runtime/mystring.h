@@ -3,16 +3,11 @@
 #include "object.h"
 
 class String : public Object {
-    static Pointer<Map<Object *, uint>> *stringId;
-    static Pointer<Map<uint, Object *>> *idString;
-    static uint lastId;
+    static uint nextId;
 
     std::string value;
 
 public:
-    static void initialize();
-    static void finalize();
-
     static uint id(const std::string &str);
     static String *string(uint id);
 
@@ -24,4 +19,8 @@ public:
     std::string toString() const;
 
     int getSize() const;
+
+private:
+    static Map<uint, Object *> *idString();
+    static Map<Object *, uint> *stringId();
 };

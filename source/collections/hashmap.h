@@ -37,7 +37,7 @@ class HashMap : public Map<K, V> {
     static const int LoadFactorPercent = 1000;
 
     Array<Entry *> *buffer;
-    int numEntries, capacity, resizeThreshold;
+    int numEntries, capacity, resizeThreshold, mask;
 
 public:
     class iterator {
@@ -66,8 +66,8 @@ public:
     iterator begin();
     iterator end();
 
-    V get(const K &key) const;
-    void put(const K &key, const V &value);
+    V &get(const K &key) const;
+    V &put(const K &key, const V &value);
     bool remove(const K &key);
     bool contains(const K &key) const;
 
@@ -80,7 +80,7 @@ private:
     static ulong hashKey(const K &key);
 
     void allocate();
-    void insert(const K &key, const V &value);
+    V &insert(const K &key, const V &value);
     Entry *lookup(const K &key) const;
     Entry *createEntry(const K &key, const V &value) const;
 };

@@ -7,7 +7,7 @@
 
 MarkCompactMemoryManager::MarkCompactMemoryManager()
     : objectCount(0) {
-    ByteArray::setInitialCapacity(1024);
+    initialize();
 }
 
 MarkCompactMemoryManager::~MarkCompactMemoryManager() {
@@ -18,9 +18,11 @@ ManagedObject *MarkCompactMemoryManager::allocate(uint size, int count) {
     if (!memory.enoughSpace(size))
         collectGarbage();
 
+    byte *oldData = memory.getData();
+
     ManagedObject *object = (ManagedObject *)memory.allocate(size);
 
-    if (memory.getDelta() != 0)
+    if ((delta = memory.getData() - oldData) != 0)
         updatePointers();
 
     objectCount += count;
@@ -42,23 +44,51 @@ void MarkCompactMemoryManager::collectGarbage() {
     std::cout << "//freed=" << oldSize - memory.getSize() << ", freedObjects=" << oldObjectCount - objectCount << ", objectCount=" << objectCount << "\n\n";
 }
 
+void MarkCompactMemoryManager::initialize() {
+    ByteArray::setInitialCapacity(1024);
+}
+
+void MarkCompactMemoryManager::finalize() {
+    std::cout << "Memory used: " << memory.getSize() << "\n";
+    std::cout << "Total memory: " << memory.getCapacity() << "\n";
+    std::cout << "\nMarkCompactMemoryManager::finalize()\n";
+
+    byte *p = memory.getData();
+
+    for (int i = 0, size = 0; i < objectCount; i++, p += size) {
+        size = ((ManagedObject *)p)->getSize();
+        ((ManagedObject *)p)->~ManagedObject();
+    }
+}
+
 void MarkCompactMemoryManager::updatePointers() {
-    std::cout << "MarkCompactMemoryManager::updatePointers() //delta=" << memory.getDelta() << "\n\n";
+    std::cout << "MarkCompactMemoryManager::updatePointers() //delta=" << delta << "\n\n";
 
     byte *object = memory.getData();
 
     for (int i = 0; i < objectCount; i++, object += ((ManagedObject *)object)->getSize())
         updatePointers((ManagedObject *)object);
 
-    for (Pointer<ManagedObject> *p = getPointers(); p; p = p->getNext())
+    for (Pointer<ManagedObject> *p = pointers(); p; p = p->getNext())
         if (*p)
             updatePointer(**p);
+
+    for (Frame *frame = frames(); frame; frame = frame->getNext())
+        frame->mapOnLocals([this](ManagedObject *&p) {
+            updatePointer(p);
+        });
 }
 
 void MarkCompactMemoryManager::mark() {
-    for (Pointer<ManagedObject> *p = getPointers(); p; p = p->getNext())
+    for (Pointer<ManagedObject> *p = pointers(); p; p = p->getNext())
         if (*p && !(*p)->hasFlag(ManagedObject::FlagMark))
             mark(*p);
+
+    for (Frame *frame = frames(); frame; frame = frame->getNext())
+        frame->mapOnLocals([this](ManagedObject *&p) {
+            if (!p->hasFlag(ManagedObject::FlagMark))
+                mark(p);
+        });
 }
 
 void MarkCompactMemoryManager::compact() {
@@ -77,9 +107,15 @@ void MarkCompactMemoryManager::compact() {
         if (((ManagedObject *)object)->hasFlag(ManagedObject::FlagMark))
             forwardPointers((ManagedObject *)object);
 
-    for (Pointer<ManagedObject> *p = getPointers(); p; p = p->getNext())
+    for (Pointer<ManagedObject> *p = pointers(); p; p = p->getNext())
         if (*p && (*p)->hasFlag(ManagedObject::FlagMark))
             *p = (*p)->getForwardAddress();
+
+    for (Frame *frame = frames(); frame; frame = frame->getNext())
+        frame->mapOnLocals([this](ManagedObject *&p) {
+            if (p->hasFlag(ManagedObject::FlagMark))
+                p = p->getForwardAddress();
+        });
 
     object = memory.getData();
 
@@ -105,17 +141,6 @@ void MarkCompactMemoryManager::compact() {
 
     memory.free(freeSize);
     objectCount -= freeCount;
-}
-
-void MarkCompactMemoryManager::finalize() {
-    std::cout << "Memory used: " << memory.getSize() << "\n\nMarkCompactMemoryManager::finalize()\n";
-
-    byte *p = memory.getData();
-
-    for (int i = 0, size = 0; i < objectCount; i++, p += size) {
-        size = ((ManagedObject *)p)->getSize();
-        ((ManagedObject *)p)->~ManagedObject();
-    }
 }
 
 void MarkCompactMemoryManager::updatePointers(ManagedObject *object) {

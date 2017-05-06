@@ -61,8 +61,8 @@ public:
     iterator begin();
     iterator end();
 
-    V get(const K &key) const;
-    void put(const K &key, const V &value);
+    V &get(const K &key) const;
+    V &put(const K &key, const V &value);
     bool remove(const K &key);
     bool contains(const K &key) const;
 
@@ -77,7 +77,7 @@ private:
 
     void allocate();
     int probeDistance(uint hash, uint index) const;
-    void insert(uint hash, K key, V value);
+    V &insert(uint hash, K key, V value);
     int lookup(const K &key) const;
 };
 

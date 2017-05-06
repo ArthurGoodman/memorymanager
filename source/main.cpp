@@ -1,12 +1,16 @@
 #include <iostream>
 
-#include "pointer.h"
 #include "object.h"
-#include "string.h"
+#include "mystring.h"
 #include "utility.h"
+#include "runtime.h"
+#include "class.h"
+#include "memorymanager.h"
 
 void run() {
-    Pointer<Object> obj = new Object;
+    Object *obj = new Object;
+
+    GC_FRAME(POINTER(obj))
 
     srand(time(0));
 
@@ -45,20 +49,26 @@ void run() {
 int main() {
     FILE *file = freopen("out.txt", "w", stdout);
 
-    MemoryManager::initialize();
-    String::initialize();
+    //    Runtime::initialize();
 
     double t = clock();
 
     run();
 
-    std::cout << "\nElapsed: " << (clock() - t) / CLOCKS_PER_SEC << " sec.\n";
+    //    {
+    //        std::cout << "\n";
 
-    String::finalize();
-    MemoryManager::finalize();
+    //        std::cout << Runtime::getObjectClass()->toString() << "\n";
+    //        std::cout << Runtime::getMainObject()->call("class")->toString() << "\n";
+    //        std::cout << Runtime::getObjectClass()->call("class")->toString() << "\n";
+    //    }
+
+    std::cout << "\nElapsed: " << (clock() - t) / CLOCKS_PER_SEC << " sec\n";
 
     fclose(file);
     system("start out.txt");
+
+    freopen("con", "w", stdout);
 
     return 0;
 }
