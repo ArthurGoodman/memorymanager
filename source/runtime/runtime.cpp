@@ -2,7 +2,7 @@
 
 #include "class.h"
 #include "sherwoodmap.h"
-#include "string.h"
+#include "mystring.h"
 #include "true.h"
 #include "false.h"
 #include "null.h"

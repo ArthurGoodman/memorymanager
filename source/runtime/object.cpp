@@ -4,7 +4,7 @@
 #include "function.h"
 #include "hashmap.h"
 #include "utility.h"
-#include "string.h"
+#include "mystring.h"
 #include "runtime.h"
 #include "memorymanager.h"
 

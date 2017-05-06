@@ -1,4 +1,4 @@
-#include "string.h"
+#include "mystring.h"
 
 #include "sherwoodmap.h"
 #include "memorymanager.h"

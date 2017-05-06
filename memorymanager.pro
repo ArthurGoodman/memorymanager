@@ -27,7 +27,6 @@ HEADERS += \
     source/memory/semispacememorymanager.h \
     source/runtime/object.h \
     source/runtime/staticobject.h \
-    source/runtime/string.h \
     source/runtime/class.h \
     source/runtime/runtime.h \
     source/runtime/function.h \
@@ -36,7 +35,8 @@ HEADERS += \
     source/runtime/null.h \
     source/runtime/nativefunction.h \
     source/common/bytearray.h \
-    source/memory/frame.h
+    source/memory/frame.h \
+    source/runtime/mystring.h
 
 SOURCES += \
     source/main.cpp \
@@ -56,7 +56,6 @@ SOURCES += \
     source/runtime/object.cpp \
     source/runtime/staticobject.cpp \
     source/runtime/class.cpp \
-    source/runtime/string.cpp \
     source/runtime/runtime.cpp \
     source/runtime/function.cpp \
     source/runtime/true.cpp \
@@ -64,4 +63,5 @@ SOURCES += \
     source/runtime/null.cpp \
     source/runtime/nativefunction.cpp \
     source/common/bytearray.cpp \
-    source/memory/frame.cpp
+    source/memory/frame.cpp \
+    source/runtime/mystring.cpp

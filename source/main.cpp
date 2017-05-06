@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "object.h"
-#include "string.h"
+#include "mystring.h"
 #include "utility.h"
 #include "runtime.h"
 #include "class.h"
